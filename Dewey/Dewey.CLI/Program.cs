@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dewey.CLI.Builds;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -152,16 +153,6 @@ namespace Dewey.CLI
                     {
                         Console.WriteLine("No Action.");
                     }
-
-                    //var componentTypeAtt = componentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "type");
-                    //if (componentTypeAtt == null || string.IsNullOrWhiteSpace(componentTypeAtt.Value))
-                    //{
-                    //    Console.WriteLine("Component element without a valid type: {0}", componentElement.ToString());
-                    //}
-                    //else
-                    //{
-                    //    Console.WriteLine("Component type '{0}'.", componentTypeAtt.Value);
-                    //}
                 }
             }
         }
@@ -195,34 +186,33 @@ namespace Dewey.CLI
                         continue;
                     }
 
-                    string buildTargetPath = Path.Combine(componentLocation, buildTargetAtt.Value);
-                    switch (buildTypeAtt.Value)
+                    try
                     {
-                        case "msbuild":
-                            MSBuild(buildTargetPath);
-                            break;
-                        default:
-                            Console.WriteLine("Unknown build type {0}.", buildTypeAtt.Value);
-                            break;
+                        var buildAction = BuildActionFactory.CreateBuildAction(buildTypeAtt.Value);
+                        string buildTargetPath = Path.Combine(componentLocation, buildTargetAtt.Value);
+                        buildAction.Build(buildTargetPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log(ex);
                     }
                 }
             }
         }
 
-        private static void MSBuild(string target)
+        private static void Log(Exception ex)
         {
-            if (!File.Exists(target))
-            {
-                Console.WriteLine("MSBuild target '{0}' not found.", target);
-            }
+            Log(ex.Message);
+        }
 
-            string msbuildPath = @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe";
-            
-            var msBuildStartInfo = new ProcessStartInfo(msbuildPath, target);
-            msBuildStartInfo.UseShellExecute = false;
-            var msBuildProcess = Process.Start(msBuildStartInfo);
+        private static void Log(string message)
+        {
+            Log(message, null);
+        }
 
-            msBuildProcess.WaitForExit();
+        private static void Log(string format, params object[] arg)
+        {
+            Console.WriteLine(format, arg);
         }
     }
 }
