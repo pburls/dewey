@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,11 @@ using System.Xml.Linq;
 
 namespace Dewey.CLI
 {
+    public delegate void ComponentAction(string componentName, string componentLocation, XElement componentElement);
+
     class Program
     {
-        private static Action<string, XElement> componentAction;
+        private static ComponentAction componentAction;
 
         static void Main(string[] args)
         {
@@ -143,7 +146,7 @@ namespace Dewey.CLI
 
                     if (componentAction != null)
                     {
-                        componentAction(componentName, componentElement);
+                        componentAction(componentName, componentLocation, componentElement);
                     }
                     else
                     {
@@ -163,7 +166,7 @@ namespace Dewey.CLI
             }
         }
 
-        private static void BuildComponent(string componentName, XElement componentElement)
+        private static void BuildComponent(string componentName, string componentLocation, XElement componentElement)
         {
             Console.WriteLine("**Build**");
             var buildsElement = componentElement.Elements().FirstOrDefault(x => x.Name.LocalName == "builds");
@@ -175,7 +178,51 @@ namespace Dewey.CLI
             {
                 var buildElements = buildsElement.Elements().Where(x => x.Name.LocalName == "build").ToList();
                 Console.WriteLine("Found {0} builds for component '{1}'.", buildElements.Count, componentName);
+
+                foreach (var build in buildElements)
+                {
+                    var buildTypeAtt = build.Attributes().FirstOrDefault(x => x.Name.LocalName == "type");
+                    if (buildTypeAtt == null || string.IsNullOrWhiteSpace(buildTypeAtt.Value))
+                    {
+                        Console.WriteLine("Skipping build element without a valid type: {0}", build.ToString());
+                        continue;
+                    }
+
+                    var buildTargetAtt = build.Attributes().FirstOrDefault(x => x.Name.LocalName == "target");
+                    if (buildTargetAtt == null || string.IsNullOrWhiteSpace(buildTargetAtt.Value))
+                    {
+                        Console.WriteLine("Skipping build element without a valid target: {0}", build.ToString());
+                        continue;
+                    }
+
+                    string buildTargetPath = Path.Combine(componentLocation, buildTargetAtt.Value);
+                    switch (buildTypeAtt.Value)
+                    {
+                        case "msbuild":
+                            MSBuild(buildTargetPath);
+                            break;
+                        default:
+                            Console.WriteLine("Unknown build type {0}.", buildTypeAtt.Value);
+                            break;
+                    }
+                }
             }
+        }
+
+        private static void MSBuild(string target)
+        {
+            if (!File.Exists(target))
+            {
+                Console.WriteLine("MSBuild target '{0}' not found.", target);
+            }
+
+            string msbuildPath = @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe";
+            
+            var msBuildStartInfo = new ProcessStartInfo(msbuildPath, target);
+            msBuildStartInfo.UseShellExecute = false;
+            var msBuildProcess = Process.Start(msBuildStartInfo);
+
+            msBuildProcess.WaitForExit();
         }
     }
 }
