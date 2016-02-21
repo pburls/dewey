@@ -29,6 +29,9 @@ namespace Dewey.CLI
                 case "build":
                     componentAction = BuildComponent;
                     break;
+                case "run":
+                    componentAction = RunComponent;
+                    break;
                 default:
                     break;
             }
@@ -194,23 +197,37 @@ namespace Dewey.CLI
                     }
                     catch (Exception ex)
                     {
-                        Log(ex);
+                        Output(ex);
                     }
                 }
             }
         }
 
-        private static void Log(Exception ex)
+        private static void RunComponent(string componentName, string componentLocation, XElement componentElement)
         {
-            Log(ex.Message);
+            Output("**Run**");
+            var compTypeAtt = componentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "type");
+            if (compTypeAtt == null)
+            {
+                Output("Component type not set for component '{0}'.", componentName);
+            }
+            else
+            {
+                Output("Run component type '{0}'.", compTypeAtt.Value);
+            }
         }
 
-        private static void Log(string message)
+        private static void Output(Exception ex)
         {
-            Log(message, null);
+            Output(ex.Message);
         }
 
-        private static void Log(string format, params object[] arg)
+        private static void Output(string message)
+        {
+            Output(message, null);
+        }
+
+        private static void Output(string format, params object[] arg)
         {
             Console.WriteLine(format, arg);
         }

@@ -19,6 +19,9 @@ namespace Dewey.CLI.Builds
                 throw new ArgumentException(string.Format("MSBuild target '{0}' not found.", target), "target");
             }
 
+            //read msbuild version options from registry.
+            //choose version preference from app settings.
+
             var msBuildStartInfo = new ProcessStartInfo(msbuildPath, target);
             msBuildStartInfo.UseShellExecute = false;
             var msBuildProcess = Process.Start(msBuildStartInfo);
