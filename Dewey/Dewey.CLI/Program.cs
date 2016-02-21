@@ -1,4 +1,5 @@
 ﻿using Dewey.CLI.Builds;
+using Dewey.CLI.Deployments;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +11,7 @@ using System.Xml.Linq;
 
 namespace Dewey.CLI
 {
-    public delegate void ComponentAction(string componentName, string componentLocation, XElement componentElement);
+    delegate void ComponentAction(RepositoryComponent repoComponent, ComponentManifest componentManifest, XElement componentElement);
 
     class Program
     {
@@ -29,8 +30,8 @@ namespace Dewey.CLI
                 case "build":
                     componentAction = BuildComponent;
                     break;
-                case "run":
-                    componentAction = RunComponent;
+                case "deploy":
+                    componentAction = DeployComponent;
                     break;
                 default:
                     break;
@@ -112,7 +113,8 @@ namespace Dewey.CLI
                             }
                             else
                             {
-                                LoadComponent(componentNameAtt.Value, Path.Combine(repoLocation, componentLocationAtt.Value));
+                                var repoComponent = new RepositoryComponent(componentNameAtt.Value, Path.Combine(repoLocation, componentLocationAtt.Value));
+                                LoadComponent(repoComponent);
                             }
                         }
                     }
@@ -120,80 +122,79 @@ namespace Dewey.CLI
             }
         }
 
-        private static void LoadComponent(string componentName, string componentLocation)
+        private static void LoadComponent(RepositoryComponent repoComponent)
         {
-            var componentManifestFilePath = Path.Combine(componentLocation, "component.xml");
-            if (!Directory.Exists(componentLocation))
+            var componentManifestFilePath = Path.Combine(repoComponent.Location, "component.xml");
+            if (!Directory.Exists(repoComponent.Location))
             {
-                Console.WriteLine("Unable to find component directory at location '{1}' for component '{0}'.", componentName, componentLocation);
+                Console.WriteLine("Unable to find component directory at location '{1}' for component '{0}'.", repoComponent.Name, repoComponent.Location);
             }
             else if (!File.Exists(componentManifestFilePath))
             {
-                Console.WriteLine("Unable to find component manifest file at path '{1}' for component '{0}'.", componentName, componentManifestFilePath);
+                Console.WriteLine("Unable to find component manifest file at path '{1}' for component '{0}'.", repoComponent.Name, componentManifestFilePath);
             }
             else
             {
                 var componentElement = XElement.Load(componentManifestFilePath);
-                Console.WriteLine("Loaded component '{0}' manifest file.", componentName);
+                Console.WriteLine("Loaded component '{0}' manifest file.", repoComponent.Name);
 
                 var componentNameAtt = componentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "name");
                 if (componentNameAtt == null || string.IsNullOrWhiteSpace(componentNameAtt.Value))
                 {
                     Console.WriteLine("Skipping component element without a valid name: {0}", componentElement.ToString());
+                    return;
+                }
+                else if (componentNameAtt.Value != repoComponent.Name)
+                {
+                    Console.WriteLine("Warning: Component name mismatch. Repository Manifest: '{0}', Component Manifest: '{1}'", repoComponent.Name, componentNameAtt.Value);
+                }
+
+                var componentTypeAtt = componentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "type");
+                if (componentTypeAtt == null || string.IsNullOrWhiteSpace(componentTypeAtt.Value))
+                {
+                    Console.WriteLine("Skipping component element without a valid type: {0}", componentElement.ToString());
+                    return;
+                }
+
+                var componentManifest = new ComponentManifest(componentNameAtt.Value, componentTypeAtt.Value);
+
+                if (componentAction != null)
+                {
+                    componentAction(repoComponent, componentManifest, componentElement);
                 }
                 else
                 {
-                    if (componentNameAtt.Value != componentName)
-                    {
-                        Console.WriteLine("Warning: Component name mismatch. Repository Manifest: '{0}', Component Manifest: '{1}'", componentName, componentNameAtt.Value);
-                    }
-
-                    if (componentAction != null)
-                    {
-                        componentAction(componentName, componentLocation, componentElement);
-                    }
-                    else
-                    {
-                        Console.WriteLine("No Action.");
-                    }
+                    Console.WriteLine("No Action.");
                 }
             }
         }
 
-        private static void BuildComponent(string componentName, string componentLocation, XElement componentElement)
+        private static void BuildComponent(RepositoryComponent repoComponent, ComponentManifest componentManifest, XElement componentElement)
         {
             Console.WriteLine("**Build**");
             var buildsElement = componentElement.Elements().FirstOrDefault(x => x.Name.LocalName == "builds");
             if (buildsElement == null || !buildsElement.Elements().Any(x => x.Name.LocalName == "build"))
             {
-                Console.WriteLine("No builds found for component '{0}'.", componentName);
+                Console.WriteLine("No builds found for component '{0}'.", repoComponent.Name);
             }
             else
             {
                 var buildElements = buildsElement.Elements().Where(x => x.Name.LocalName == "build").ToList();
-                Console.WriteLine("Found {0} builds for component '{1}'.", buildElements.Count, componentName);
+                Console.WriteLine("Found {0} builds for component '{1}'.", buildElements.Count, repoComponent.Name);
 
-                foreach (var build in buildElements)
+                foreach (var buildElement in buildElements)
                 {
-                    var buildTypeAtt = build.Attributes().FirstOrDefault(x => x.Name.LocalName == "type");
+                    var buildTypeAtt = buildElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "type");
                     if (buildTypeAtt == null || string.IsNullOrWhiteSpace(buildTypeAtt.Value))
                     {
-                        Console.WriteLine("Skipping build element without a valid type: {0}", build.ToString());
-                        continue;
-                    }
-
-                    var buildTargetAtt = build.Attributes().FirstOrDefault(x => x.Name.LocalName == "target");
-                    if (buildTargetAtt == null || string.IsNullOrWhiteSpace(buildTargetAtt.Value))
-                    {
-                        Console.WriteLine("Skipping build element without a valid target: {0}", build.ToString());
+                        Console.WriteLine("Skipping build element without a valid type: {0}", buildElement.ToString());
                         continue;
                     }
 
                     try
                     {
                         var buildAction = BuildActionFactory.CreateBuildAction(buildTypeAtt.Value);
-                        string buildTargetPath = Path.Combine(componentLocation, buildTargetAtt.Value);
-                        buildAction.Build(buildTargetPath);
+                        buildAction.Build(repoComponent, componentManifest, buildElement);
                     }
                     catch (Exception ex)
                     {
@@ -203,17 +204,38 @@ namespace Dewey.CLI
             }
         }
 
-        private static void RunComponent(string componentName, string componentLocation, XElement componentElement)
+        private static void DeployComponent(RepositoryComponent repoComponent, ComponentManifest componentManifest, XElement componentElement)
         {
-            Output("**Run**");
-            var compTypeAtt = componentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "type");
-            if (compTypeAtt == null)
+            Output("**Deploy**");
+            var deploymentsElement = componentElement.Elements().FirstOrDefault(x => x.Name.LocalName == "deployments");
+            if (deploymentsElement == null || !deploymentsElement.Elements().Any(x => x.Name.LocalName == "deployment"))
             {
-                Output("Component type not set for component '{0}'.", componentName);
+                Console.WriteLine("No deployments found for component '{0}'.", componentManifest.Name);
             }
             else
             {
-                Output("Run component type '{0}'.", compTypeAtt.Value);
+                var deploymentElements = deploymentsElement.Elements().Where(x => x.Name.LocalName == "deployment").ToList();
+                Console.WriteLine("Found {0} deployment for component '{1}'.", deploymentElements.Count, componentManifest.Name);
+
+                foreach (var deploymentElement in deploymentElements)
+                {
+                    var deploymentTypeAtt = deploymentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "type");
+                    if (deploymentTypeAtt == null || string.IsNullOrWhiteSpace(deploymentTypeAtt.Value))
+                    {
+                        Console.WriteLine("Skipping deployment element without a valid type: {0}", deploymentElement.ToString());
+                        continue;
+                    }
+
+                    try
+                    {
+                        var deploymentAction = DeploymentActionFactory.CreateDeploymentAction(deploymentTypeAtt.Value);
+                        deploymentAction.Deploy(repoComponent, componentManifest, deploymentElement);
+                    }
+                    catch (Exception ex)
+                    {
+                        Output(ex);
+                    }
+                }
             }
         }
 

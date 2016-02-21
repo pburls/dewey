@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Xml.Linq;
 
 namespace Dewey.CLI.Builds
 {
     interface IBuildAction
     {
-        void Build(string target);
+        void Build(RepositoryComponent repoComponent, ComponentManifest componentManifest, XElement buildElement);
     }
 }

@@ -46,8 +46,13 @@
     <Compile Include="Builds\BuildActionFactory.cs" />
     <Compile Include="Builds\IBuildAction.cs" />
     <Compile Include="Builds\MSBuild.cs" />
+    <Compile Include="ComponentManifest.cs" />
+    <Compile Include="Deployments\DeploymentActionFactory.cs" />
+    <Compile Include="Deployments\IDeploymentAction.cs" />
+    <Compile Include="Deployments\IISDeployment.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RepositoryComponent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
