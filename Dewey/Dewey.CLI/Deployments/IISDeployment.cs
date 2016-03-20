@@ -18,11 +18,19 @@ namespace Dewey.CLI.Deployments
 
             //check for app pool
             var appPoolExists = AppPoolExists(iisDeploymentArgs.AppPool);
-
             //create app pool
+            if (!appPoolExists)
+            {
+                CreatePoolExists(iisDeploymentArgs.AppPool);
+            }
 
             //check for siteId
+            var siteIdExists = SiteIdExists(iisDeploymentArgs.SiteId);
             //remove siteId
+            if (siteIdExists)
+            {
+                CreatePoolExists(iisDeploymentArgs.AppPool);
+            }
 
             //check for port
             //fail on port
@@ -36,12 +44,75 @@ namespace Dewey.CLI.Deployments
 
             var msBuildStartInfo = new ProcessStartInfo(appcmdPath, args);
             msBuildStartInfo.UseShellExecute = false;
+            msBuildStartInfo.RedirectStandardOutput = true;
             var msBuildProcess = Process.Start(msBuildStartInfo);
+
+            string output = msBuildProcess.StandardOutput.ReadToEnd();
 
             msBuildProcess.WaitForExit();
 
-            return false;
+            string required = string.Format("APPPOOL \"{0}\"", appPoolName);
+
+            return output.Contains(required);
         }
+
+        void CreatePoolExists(string appPoolName)
+        {
+            var args = string.Format("add apppool /name:\"{0}\"", appPoolName);
+
+            var msBuildStartInfo = new ProcessStartInfo(appcmdPath, args);
+            msBuildStartInfo.UseShellExecute = false;
+            msBuildStartInfo.RedirectStandardOutput = true;
+            var msBuildProcess = Process.Start(msBuildStartInfo);
+
+            string output = msBuildProcess.StandardOutput.ReadToEnd();
+
+            msBuildProcess.WaitForExit();
+
+            string expected = string.Format("APPPOOL object \"{0}\" added", appPoolName);
+            if (expected != output)
+            {
+                //todo
+            }
+        }
+
+        bool SiteIdExists(string siteId)
+        {
+            var args = "list site";
+
+            var msBuildStartInfo = new ProcessStartInfo(appcmdPath, args);
+            msBuildStartInfo.UseShellExecute = false;
+            msBuildStartInfo.RedirectStandardOutput = true;
+            var msBuildProcess = Process.Start(msBuildStartInfo);
+
+            string output = msBuildProcess.StandardOutput.ReadToEnd();
+
+            msBuildProcess.WaitForExit();
+
+            string required = string.Format("(id:{0},)", siteId);
+
+            return output.Contains(required);
+        }
+
+        //void RemoveSiteId(string siteId)
+        //{
+        //    var args = string.Format("add apppool /name:\"{0}\"", appPoolName);
+
+        //    var msBuildStartInfo = new ProcessStartInfo(appcmdPath, args);
+        //    msBuildStartInfo.UseShellExecute = false;
+        //    msBuildStartInfo.RedirectStandardOutput = true;
+        //    var msBuildProcess = Process.Start(msBuildStartInfo);
+
+        //    string output = msBuildProcess.StandardOutput.ReadToEnd();
+
+        //    msBuildProcess.WaitForExit();
+
+        //    string expected = string.Format("APPPOOL object \"{0}\" added", appPoolName);
+        //    if (expected != output)
+        //    {
+        //        //todo
+        //    }
+        //}
 
         class IISDeploumentArgs
         {
