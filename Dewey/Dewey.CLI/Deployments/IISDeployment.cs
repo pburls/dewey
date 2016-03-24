@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.Web.Administration;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,125 +12,67 @@ namespace Dewey.CLI.Deployments
 {
     class IISDeployment : IDeploymentAction
     {
-        string appcmdPath = @"C:\Windows\System32\inetsrv\appcmd.exe";
-
         public void Deploy(RepositoryComponent repoComponent, ComponentManifest componentManifest, XElement deploymentElement)
         {
             var iisDeploymentArgs = IISDeploumentArgs.ParseIISDeploymentElement(deploymentElement);
+            string contentPath = Path.Combine(Environment.CurrentDirectory, repoComponent.Location, iisDeploymentArgs.Content);
+            Console.WriteLine("IIS Deployment of site '{0}' for content path '{1}'.", iisDeploymentArgs.SiteName, contentPath);
 
-            //check for app pool
-            var appPoolExists = AppPoolExists(iisDeploymentArgs.AppPool);
-            //create app pool
-            if (!appPoolExists)
+            DirectoryInfo contentDirectoryInfo = new DirectoryInfo(contentPath);
+            if (!contentDirectoryInfo.Exists)
             {
-                CreatePoolExists(iisDeploymentArgs.AppPool);
+                Console.WriteLine("Content path '{0}' does not exist.", contentPath);
             }
 
-            //check for siteId
-            var siteIdExists = SiteIdExists(iisDeploymentArgs.SiteId);
-            //remove siteId
-            if (siteIdExists)
+            ServerManager serverManager = new ServerManager();
+
+            var appPool = serverManager.ApplicationPools.FirstOrDefault(x => x.Name == iisDeploymentArgs.AppPool);
+            if (appPool == null)
             {
-                CreatePoolExists(iisDeploymentArgs.AppPool);
+                Console.WriteLine("Creating new IIS App Pool'{0}'.", iisDeploymentArgs.AppPool);
+                appPool = serverManager.ApplicationPools.Add(iisDeploymentArgs.AppPool);
             }
 
-            //check for port
-            //fail on port
-
-            //create site
-        }
-
-        bool AppPoolExists(string appPoolName)
-        {
-            var args = "list apppool";
-
-            var msBuildStartInfo = new ProcessStartInfo(appcmdPath, args);
-            msBuildStartInfo.UseShellExecute = false;
-            msBuildStartInfo.RedirectStandardOutput = true;
-            var msBuildProcess = Process.Start(msBuildStartInfo);
-
-            string output = msBuildProcess.StandardOutput.ReadToEnd();
-
-            msBuildProcess.WaitForExit();
-
-            string required = string.Format("APPPOOL \"{0}\"", appPoolName);
-
-            return output.Contains(required);
-        }
-
-        void CreatePoolExists(string appPoolName)
-        {
-            var args = string.Format("add apppool /name:\"{0}\"", appPoolName);
-
-            var msBuildStartInfo = new ProcessStartInfo(appcmdPath, args);
-            msBuildStartInfo.UseShellExecute = false;
-            msBuildStartInfo.RedirectStandardOutput = true;
-            var msBuildProcess = Process.Start(msBuildStartInfo);
-
-            string output = msBuildProcess.StandardOutput.ReadToEnd();
-
-            msBuildProcess.WaitForExit();
-
-            string expected = string.Format("APPPOOL object \"{0}\" added", appPoolName);
-            if (expected != output)
+            var site = serverManager.Sites.FirstOrDefault(x => x.Name == iisDeploymentArgs.SiteName);
+            if (site == null)
             {
-                //todo
+                Console.WriteLine("Creating new IIS Site '{0}' on port {2} mapped to path '{1}'.", iisDeploymentArgs.SiteName, contentDirectoryInfo.FullName, iisDeploymentArgs.Port);
+                site = serverManager.Sites.Add(iisDeploymentArgs.SiteName, contentDirectoryInfo.FullName, iisDeploymentArgs.Port);
             }
+
+            if (site.Applications[0].ApplicationPoolName != iisDeploymentArgs.AppPool)
+            {
+                Console.WriteLine("Setting IIS Site '{0}' to use App Pool '{1}'.", iisDeploymentArgs.SiteName, iisDeploymentArgs.AppPool);
+                site.Applications[0].ApplicationPoolName = iisDeploymentArgs.AppPool;
+            }
+
+            if (site.Applications[0].VirtualDirectories[0].PhysicalPath != contentDirectoryInfo.FullName)
+            {
+                Console.WriteLine("Setting IIS Site '{0}' to use content '{1}'.", iisDeploymentArgs.SiteName, contentDirectoryInfo.FullName);
+                site.Applications[0].VirtualDirectories[0].PhysicalPath = contentDirectoryInfo.FullName;
+            }
+
+            if (site.Bindings[0].EndPoint.Port != iisDeploymentArgs.Port)
+            {
+                Console.WriteLine("Setting IIS Site '{0}' to use port '{1}'.", iisDeploymentArgs.SiteName, iisDeploymentArgs.Port);
+                site.Bindings[0].EndPoint.Port = iisDeploymentArgs.Port;
+            }
+
+            serverManager.CommitChanges();
         }
-
-        bool SiteIdExists(string siteId)
-        {
-            var args = "list site";
-
-            var msBuildStartInfo = new ProcessStartInfo(appcmdPath, args);
-            msBuildStartInfo.UseShellExecute = false;
-            msBuildStartInfo.RedirectStandardOutput = true;
-            var msBuildProcess = Process.Start(msBuildStartInfo);
-
-            string output = msBuildProcess.StandardOutput.ReadToEnd();
-
-            msBuildProcess.WaitForExit();
-
-            string required = string.Format("(id:{0},)", siteId);
-
-            return output.Contains(required);
-        }
-
-        //void RemoveSiteId(string siteId)
-        //{
-        //    var args = string.Format("add apppool /name:\"{0}\"", appPoolName);
-
-        //    var msBuildStartInfo = new ProcessStartInfo(appcmdPath, args);
-        //    msBuildStartInfo.UseShellExecute = false;
-        //    msBuildStartInfo.RedirectStandardOutput = true;
-        //    var msBuildProcess = Process.Start(msBuildStartInfo);
-
-        //    string output = msBuildProcess.StandardOutput.ReadToEnd();
-
-        //    msBuildProcess.WaitForExit();
-
-        //    string expected = string.Format("APPPOOL object \"{0}\" added", appPoolName);
-        //    if (expected != output)
-        //    {
-        //        //todo
-        //    }
-        //}
 
         class IISDeploumentArgs
         {
-            public string SiteId { get; private set; }
-
             public string SiteName { get; private set; }
 
             public string AppPool { get; private set; }
 
-            public string Port { get; set; }
+            public int Port { get; set; }
 
             public string Content { get; private set; }
             
-            public IISDeploumentArgs(string siteId, string siteName, string appPool, string port, string content)
+            private IISDeploumentArgs(string siteName, string appPool, int port, string content)
             {
-                SiteId = siteId;
                 SiteName = siteName;
                 AppPool = appPool;
                 Port = port;
@@ -137,12 +81,6 @@ namespace Dewey.CLI.Deployments
 
             public static IISDeploumentArgs ParseIISDeploymentElement(XElement deploymentElement)
             {
-                var siteIdAtt = deploymentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "siteId");
-                if (siteIdAtt == null || string.IsNullOrWhiteSpace(siteIdAtt.Value))
-                {
-                    throw new ArgumentException(string.Format("IIS Deployment element without a valid siteId: {0}", deploymentElement.ToString()), "deploymentElement");
-                }
-
                 var siteNameAtt = deploymentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "siteName");
                 if (siteNameAtt == null || string.IsNullOrWhiteSpace(siteNameAtt.Value))
                 {
@@ -156,9 +94,14 @@ namespace Dewey.CLI.Deployments
                 }
 
                 var portAtt = deploymentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "port");
+                int port;
                 if (portAtt == null || string.IsNullOrWhiteSpace(portAtt.Value))
                 {
                     throw new ArgumentException(string.Format("IIS Deployment element without a valid port: {0}", deploymentElement.ToString()), "deploymentElement");
+                }
+                else if (!int.TryParse(portAtt.Value, out port))
+                {
+                    throw new ArgumentException(string.Format("IIS Deployment element with invalid port: {0}", deploymentElement.ToString()), "deploymentElement");
                 }
 
                 var contentAtt = deploymentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "content");
@@ -167,7 +110,7 @@ namespace Dewey.CLI.Deployments
                     throw new ArgumentException(string.Format("IIS Deployment element without a valid content: {0}", deploymentElement.ToString()), "deploymentElement");
                 }
 
-                return new IISDeploumentArgs(siteIdAtt.Value, siteNameAtt.Value, appPoolAtt.Value, portAtt.Value, contentAtt.Value);
+                return new IISDeploumentArgs(siteNameAtt.Value, appPoolAtt.Value, port, contentAtt.Value);
             }
         }
     }
