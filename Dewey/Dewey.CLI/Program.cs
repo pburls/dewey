@@ -1,5 +1,6 @@
 ﻿using Dewey.CLI.Builds;
 using Dewey.CLI.Deployments;
+using Dewey.CLI.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,6 +16,8 @@ namespace Dewey.CLI
 
     class Program
     {
+        const string DEFAULT_REPOSITORY_FILE_NAME = "repositories.xml";
+
         private static ComponentAction componentAction;
 
         static void Main(string[] args)
@@ -37,35 +40,20 @@ namespace Dewey.CLI
                     break;
             }
 
-            string repositoriesManifestFileName = "repositories.xml";
-            if(!File.Exists(repositoriesManifestFileName))
+            var result = RepositoriesManifest.LoadRepositoriesManifestFile(DEFAULT_REPOSITORY_FILE_NAME);
+
+            foreach (var errorMessage in result.ErrorMessages)
             {
-                Console.WriteLine("No repositories manifest file '{0}' found in current directory.", repositoriesManifestFileName);
+                Console.WriteLine(errorMessage);
             }
 
-            var repositories = XElement.Load(repositoriesManifestFileName);
-            Console.WriteLine("Loaded development repositories manifest file.");
-
-            var repositoryElements = repositories.Elements().Where(x => x.Name.LocalName == "repository").ToList();
-            Console.WriteLine("Found {0} repository elements.", repositoryElements.Count);
-
-            foreach (var repo in repositoryElements)
+            if (result.RepositoriesManifest != null)
             {
-                var repoNameAtt = repo.Attributes().FirstOrDefault(x => x.Name.LocalName == "name");
-                if (repoNameAtt == null || string.IsNullOrWhiteSpace(repoNameAtt.Value))
+                foreach (var repositoryElementResult in result.RepositoriesManifest.LoadRepositoryElementResults)
                 {
-                    Console.WriteLine("Skipping repository element without a valid name: {0}", repo.ToString());
-                }
-                else
-                {
-                    var repoLocationAtt = repo.Attributes().FirstOrDefault(x => x.Name.LocalName == "location");
-                    if (repoLocationAtt == null || string.IsNullOrWhiteSpace(repoLocationAtt.Value))
+                    if(repositoryElementResult.RepositoryItem != null)
                     {
-                        Console.WriteLine("Repository '{0}' has no location set.", repoNameAtt.Value);
-                    }
-                    else
-                    {
-                        LoadRepository(repoNameAtt.Value, repoLocationAtt.Value);
+                        LoadRepository(repositoryElementResult.RepositoryItem.Name, repositoryElementResult.RepositoryItem.Location);
                     }
                 }
             }
@@ -74,7 +62,7 @@ namespace Dewey.CLI
         private static void LoadRepository(string repoName, string repoLocation)
         {
             var repositoryManifestFilePath = Path.Combine(repoLocation, "repository.xml");
-            if(!Directory.Exists(repoLocation))
+            if (!Directory.Exists(repoLocation))
             {
                 Console.WriteLine("Unable to find repository directory at location '{1}' for repository '{0}'.", repoName, repoLocation);
             }
