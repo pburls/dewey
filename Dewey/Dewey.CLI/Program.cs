@@ -53,27 +53,27 @@ namespace Dewey.CLI
                 {
                     if(repositoryElementResult.RepositoryItem != null)
                     {
-                        LoadRepository(repositoryElementResult.RepositoryItem.Name, repositoryElementResult.RepositoryItem.Location);
+                        LoadRepository(repositoryElementResult.RepositoryItem);
                     }
                 }
             }
         }
 
-        private static void LoadRepository(string repoName, string repoLocation)
+        private static void LoadRepository(RepositoryItem repositoryItem)
         {
-            var repositoryManifestFilePath = Path.Combine(repoLocation, "repository.xml");
-            if (!Directory.Exists(repoLocation))
+            var repositoryManifestFilePath = Path.Combine(repositoryItem.Location, "repository.xml");
+            if (!Directory.Exists(repositoryItem.Location))
             {
-                Console.WriteLine("Unable to find repository directory at location '{1}' for repository '{0}'.", repoName, repoLocation);
+                Console.WriteLine("Unable to find repository directory at location '{1}' for repository '{0}'.", repositoryItem.Name, repositoryItem.Location);
             }
             else if (!File.Exists(repositoryManifestFilePath))
             {
-                Console.WriteLine("Unable to find repository manifest file at path '{1}' for repository '{0}'.", repoName, repositoryManifestFilePath);
+                Console.WriteLine("Unable to find repository manifest file at path '{1}' for repository '{0}'.", repositoryItem.Name, repositoryManifestFilePath);
             }
             else
             {
                 var repository = XElement.Load(repositoryManifestFilePath);
-                Console.WriteLine("Loaded repository '{0}' manifest file.", repoName);
+                Console.WriteLine("Loaded repository '{0}' manifest file.", repositoryItem.Name);
 
                 var componentsElement = repository.Elements().FirstOrDefault(x => x.Name.LocalName == "components");
                 if (componentsElement == null || !componentsElement.Elements().Any(x => x.Name.LocalName == "component"))
@@ -101,7 +101,7 @@ namespace Dewey.CLI
                             }
                             else
                             {
-                                var repoComponent = new RepositoryComponent(componentNameAtt.Value, Path.Combine(repoLocation, componentLocationAtt.Value));
+                                var repoComponent = new RepositoryComponent(componentNameAtt.Value, Path.Combine(repositoryItem.Location, componentLocationAtt.Value));
                                 LoadComponent(repoComponent);
                             }
                         }
