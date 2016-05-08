@@ -7,11 +7,18 @@ namespace Dewey.CLI.Repositories
 {
     public class RepositoriesManifest
     {
+        const string DEFAULT_REPOSITORIES_FILE_NAME = "repositories.xml";
+
         public IEnumerable<LoadRepositoryElementResult> LoadRepositoryElementResults { get; private set; }
 
         private RepositoriesManifest(IEnumerable<LoadRepositoryElementResult> loadRepositoryElementResults)
         {
             LoadRepositoryElementResults = loadRepositoryElementResults;
+        }
+
+        public static LoadRepositoriesManifestResult LoadRepositoriesManifestFile()
+        {
+            return LoadRepositoriesManifestFile(DEFAULT_REPOSITORIES_FILE_NAME);
         }
 
         public static LoadRepositoriesManifestResult LoadRepositoriesManifestFile(string repositoryFileName)

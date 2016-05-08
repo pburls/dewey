@@ -61,6 +61,7 @@
     <Compile Include="Repositories\RepositoriesManifest.cs" />
     <Compile Include="Repositories\RepositoryItem.cs" />
     <Compile Include="RepositoryComponent.cs" />
+    <Compile Include="Repository\RepositoryManifest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

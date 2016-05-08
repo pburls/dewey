@@ -16,8 +16,6 @@ namespace Dewey.CLI
 
     class Program
     {
-        const string DEFAULT_REPOSITORY_FILE_NAME = "repositories.xml";
-
         private static ComponentAction componentAction;
 
         static void Main(string[] args)
@@ -40,7 +38,7 @@ namespace Dewey.CLI
                     break;
             }
 
-            var result = RepositoriesManifest.LoadRepositoriesManifestFile(DEFAULT_REPOSITORY_FILE_NAME);
+            var result = RepositoriesManifest.LoadRepositoriesManifestFile();
 
             foreach (var errorMessage in result.ErrorMessages)
             {
@@ -61,10 +59,10 @@ namespace Dewey.CLI
 
         private static void LoadRepository(RepositoryItem repositoryItem)
         {
-            var repositoryManifestFilePath = Path.Combine(repositoryItem.Location, "repository.xml");
-            if (!Directory.Exists(repositoryItem.Location))
+            var repositoryManifestFilePath = Path.Combine(repositoryItem.RelativeLocation, "repository.xml");
+            if (!Directory.Exists(repositoryItem.RelativeLocation))
             {
-                Console.WriteLine("Unable to find repository directory at location '{1}' for repository '{0}'.", repositoryItem.Name, repositoryItem.Location);
+                Console.WriteLine("Unable to find repository directory at location '{1}' for repository '{0}'.", repositoryItem.Name, repositoryItem.RelativeLocation);
             }
             else if (!File.Exists(repositoryManifestFilePath))
             {
@@ -101,7 +99,7 @@ namespace Dewey.CLI
                             }
                             else
                             {
-                                var repoComponent = new RepositoryComponent(componentNameAtt.Value, Path.Combine(repositoryItem.Location, componentLocationAtt.Value));
+                                var repoComponent = new RepositoryComponent(componentNameAtt.Value, Path.Combine(repositoryItem.RelativeLocation, componentLocationAtt.Value));
                                 LoadComponent(repoComponent);
                             }
                         }

@@ -7,7 +7,7 @@ namespace Dewey.CLI.Repositories
     public class RepositoryItem
     {
         public string Name { get; private set; }
-        public string Location { get; private set; }
+        public string RelativeLocation { get; private set; }
 
         private RepositoryItem(string name)
         {
@@ -40,7 +40,7 @@ namespace Dewey.CLI.Repositories
                 return LoadRepositoryElementResult.CreateMissingAttributesResult(repositoryElement, repositoryItem, missingAttributes);
             }
 
-            repositoryItem.Location = repoLocationAtt.Value;
+            repositoryItem.RelativeLocation = repoLocationAtt.Value;
 
             return LoadRepositoryElementResult.CreateSuccessfulResult(repositoryElement, repositoryItem);
         }

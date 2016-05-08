@@ -4,12 +4,6 @@ using System.Linq;
 
 namespace Dewey.CLI.Repositories
 {
-    public enum FileLoadResult
-    {
-        Success,
-        FileNotFound
-    }
-
     public class LoadRepositoriesManifestResult
     {
         public FileInfo RepositoriesManifestFile { get; private set; }
