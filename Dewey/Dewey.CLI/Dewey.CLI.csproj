@@ -61,6 +61,9 @@
     <Compile Include="Repositories\RepositoriesManifest.cs" />
     <Compile Include="Repositories\RepositoryItem.cs" />
     <Compile Include="RepositoryComponent.cs" />
+    <Compile Include="Repository\ComponentItem.cs" />
+    <Compile Include="Repository\LoadComponentElementResult.cs" />
+    <Compile Include="Repository\LoadRepositoryItemResult.cs" />
     <Compile Include="Repository\RepositoryManifest.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -36,7 +36,7 @@ namespace Dewey.CLI.Repositories
                 return "Repository element without a valid name: " + RepositoryElement.ToString();
             }
 
-            if (RepositoryItem != null && MissingAttributes.Any())
+            if (RepositoryItem != null && MissingAttributes != null && MissingAttributes.Any())
             {
                 return string.Format("Repository element '{0}' is missing the following attributes: {1}", RepositoryItem.Name, string.Join(", ", MissingAttributes));
             }

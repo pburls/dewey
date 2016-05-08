@@ -9,12 +9,9 @@ namespace Dewey.CLI.Repositories
     {
         const string DEFAULT_REPOSITORIES_FILE_NAME = "repositories.xml";
 
-        public IEnumerable<LoadRepositoryElementResult> LoadRepositoryElementResults { get; private set; }
+        public IEnumerable<RepositoryItem> RepositoryItems { get; private set; }
 
-        private RepositoriesManifest(IEnumerable<LoadRepositoryElementResult> loadRepositoryElementResults)
-        {
-            LoadRepositoryElementResults = loadRepositoryElementResults;
-        }
+        private RepositoriesManifest() { }
 
         public static LoadRepositoriesManifestResult LoadRepositoriesManifestFile()
         {
@@ -36,9 +33,10 @@ namespace Dewey.CLI.Repositories
                 loadRepositoryElementResults.Add(RepositoryItem.LoadRepositoryElement(repoElement));
             }
 
-            var repositoriesManifest = new RepositoriesManifest(loadRepositoryElementResults);
+            var repositoriesManifest = new RepositoriesManifest();
+            repositoriesManifest.RepositoryItems = loadRepositoryElementResults.Select(x => x.RepositoryItem);
 
-            return LoadRepositoriesManifestResult.CreateSuccessfulResult(repositoriesManifestFile, repositoriesManifest);
+            return LoadRepositoriesManifestResult.CreateSuccessfulResult(repositoriesManifestFile, repositoriesManifest, loadRepositoryElementResults);
         }
     }
 }

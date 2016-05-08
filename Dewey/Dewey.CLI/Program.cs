@@ -1,6 +1,7 @@
 ﻿using Dewey.CLI.Builds;
 using Dewey.CLI.Deployments;
 using Dewey.CLI.Repositories;
+using Dewey.CLI.Repository;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -45,15 +46,19 @@ namespace Dewey.CLI
                 Console.WriteLine(errorMessage);
             }
 
+            var loadRepositoryItemResults = new List<LoadRepositoryItemResult>();
             if (result.RepositoriesManifest != null)
             {
-                foreach (var repositoryElementResult in result.RepositoriesManifest.LoadRepositoryElementResults)
+                foreach (var repositoryItem in result.RepositoriesManifest.RepositoryItems)
                 {
-                    if(repositoryElementResult.RepositoryItem != null)
-                    {
-                        LoadRepository(repositoryElementResult.RepositoryItem);
-                    }
+                    loadRepositoryItemResults.Add(RepositoryManifest.LoadRepositoryItem(repositoryItem, result.RepositoriesManifestFile.DirectoryName));
                 }
+            }
+
+            var errorMessages = loadRepositoryItemResults.SelectMany(x => x.ErrorMessages);
+            foreach (var errorMessage in result.ErrorMessages)
+            {
+                Console.WriteLine(errorMessage);
             }
         }
 

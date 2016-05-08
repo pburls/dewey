@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Dewey.CLI.Repository
 {
@@ -14,6 +11,8 @@ namespace Dewey.CLI.Repository
         public FileInfo RepositoryManifestFile { get; private set; }
 
         public RepositoryManifest RepositoryManifest { get; private set; }
+
+        public IEnumerable<LoadComponentElementResult> LoadComponentElementResults { get; private set; }
 
         private IEnumerable<string> _errorMessages;
         public IEnumerable<string> ErrorMessages
@@ -46,12 +45,13 @@ namespace Dewey.CLI.Repository
             return result;
         }
 
-        public static LoadRepositoryItemResult CreateSuccessfulResult(DirectoryInfo repositoryDirectory, FileInfo repositoryManifestFile, RepositoryManifest repositoryManifest)
+        public static LoadRepositoryItemResult CreateSuccessfulResult(DirectoryInfo repositoryDirectory, FileInfo repositoryManifestFile, RepositoryManifest repositoryManifest, IEnumerable<LoadComponentElementResult> loadComponentElementResults)
         {
             var result = new LoadRepositoryItemResult();
             result.RepositoryDirectory = repositoryDirectory;
             result.RepositoryManifestFile = repositoryManifestFile;
             result.RepositoryManifest = repositoryManifest;
+            result.LoadComponentElementResults = loadComponentElementResults;
             return result;
         }
 
@@ -60,7 +60,7 @@ namespace Dewey.CLI.Repository
             if (!RepositoryDirectory.Exists) return new string[] { string.Format("Respository directory '{0}' not found.", RepositoryDirectory.FullName) };
             if (!RepositoryManifestFile.Exists) return new string[] { string.Format("Repository Manifest file '{0}' not found.", RepositoryManifestFile.FullName) };
 
-            return null;//RepositoryManifest.LoadRepositoryElementResults.Where(x => x.ErrorMessage != null).Select(x => x.ErrorMessage);
+            return LoadComponentElementResults.Where(x => x.ErrorMessage != null).Select(x => x.ErrorMessage);
         }
     }
 }
