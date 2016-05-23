@@ -1,7 +1,7 @@
 ﻿using Dewey.CLI.Builds;
 using Dewey.CLI.Deployments;
-using Dewey.CLI.Repositories;
-using Dewey.CLI.Repository;
+using Dewey.Manifest.Repositories;
+using Dewey.Manifest.Repository;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
