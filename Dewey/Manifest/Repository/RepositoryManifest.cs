@@ -15,6 +15,8 @@ namespace Dewey.Manifest.Repository
 
         public const string DEFAULT_REPOSITORY_FILE_NAME = "repository.xml";
 
+        private RepositoryManifest () { }
+
         public static LoadRepositoryItemResult LoadRepositoryItem(RepositoryItem repositoryItem, string rootLocation)
         {
             var repositoryDirectory = new DirectoryInfo(Path.Combine(rootLocation, repositoryItem.RelativeLocation));
