@@ -25,7 +25,7 @@ namespace Dewey.Manifest.Repository
             var nameAtt = componentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "name");
             if (nameAtt == null || string.IsNullOrWhiteSpace(nameAtt.Value))
             {
-                missingAttributes.Add(nameAtt.Name.LocalName);
+                missingAttributes.Add("name");
             }
             else
             {
@@ -35,12 +35,12 @@ namespace Dewey.Manifest.Repository
             var locationAtt = componentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "location");
             if (locationAtt == null || string.IsNullOrWhiteSpace(locationAtt.Value))
             {
-                missingAttributes.Add(nameAtt.Name.LocalName);
+                missingAttributes.Add("location");
             }
 
             if (missingAttributes.Any())
             {
-                return LoadComponentElementResult.CreateMissingAttributesResult(componentElement, componentItem, missingAttributes);
+                return LoadComponentElementResult.CreateMissingAttributesResult(componentElement, missingAttributes);
             }
 
             componentItem.RelativeLocation = locationAtt.Value;

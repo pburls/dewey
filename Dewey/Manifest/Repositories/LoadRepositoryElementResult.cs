@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -13,15 +14,20 @@ namespace Dewey.Manifest.Repositories
 
         private LoadRepositoryElementResult(XElement repositoryElement, RepositoryItem repositoryItem, IEnumerable<string> missingAttributes)
         {
+            if (repositoryElement == null)
+            {
+                throw new ArgumentNullException("repositoryElement");
+            }
+
             MissingAttributes = missingAttributes;
             RepositoryItem = repositoryItem;
             RepositoryElement = repositoryElement;
             ErrorMessage = GetErrorMessage();
         }
 
-        public static LoadRepositoryElementResult CreateMissingAttributesResult(XElement repositoryElement, RepositoryItem repositoryItem, IEnumerable<string> missingAttributes)
+        public static LoadRepositoryElementResult CreateMissingAttributesResult(XElement repositoryElement, IEnumerable<string> missingAttributes)
         {
-            return new LoadRepositoryElementResult(repositoryElement, repositoryItem, missingAttributes);
+            return new LoadRepositoryElementResult(repositoryElement, null, missingAttributes);
         }
 
         public static LoadRepositoryElementResult CreateSuccessfulResult(XElement repositoryElement, RepositoryItem repositoryItem)
@@ -31,14 +37,9 @@ namespace Dewey.Manifest.Repositories
 
         private string GetErrorMessage()
         {
-            if (RepositoryItem == null)
+            if (MissingAttributes != null && MissingAttributes.Any())
             {
-                return "Repository element without a valid name: " + RepositoryElement.ToString();
-            }
-
-            if (RepositoryItem != null && MissingAttributes != null && MissingAttributes.Any())
-            {
-                return string.Format("Repository element '{0}' is missing the following attributes: {1}", RepositoryItem.Name, string.Join(", ", MissingAttributes));
+                return string.Format("Repository element '{0}' is missing the following attributes: {1}", RepositoryElement, string.Join(", ", MissingAttributes));
             }
 
             return null;

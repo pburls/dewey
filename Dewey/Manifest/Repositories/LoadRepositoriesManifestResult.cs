@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -12,46 +13,36 @@ namespace Dewey.Manifest.Repositories
 
         public IEnumerable<LoadRepositoryElementResult> LoadRepositoryElementResults { get; private set; }
 
-        private IEnumerable<string> _errorMessages;
-        public IEnumerable<string> ErrorMessages
+        public string ErrorMessage { get; private set; }
+
+        private LoadRepositoriesManifestResult(FileInfo repositoriesManifestFile, RepositoriesManifest repositoriesManifest, IEnumerable<LoadRepositoryElementResult> loadRepositoryElementResult)
         {
-            get
+            if (repositoriesManifestFile == null)
             {
-                if (_errorMessages == null)
-                {
-                    _errorMessages = GetErrorMessages();
-                }
-
-                return _errorMessages;
+                throw new ArgumentNullException("repositoriesManifestFile");
             }
-        }
 
-        private LoadRepositoriesManifestResult()
-        {
-
+            RepositoriesManifestFile = repositoriesManifestFile;
+            RepositoriesManifest = repositoriesManifest;
+            LoadRepositoryElementResults = loadRepositoryElementResult;
+            ErrorMessage = GetErrorMessage();
         }
 
         public static LoadRepositoriesManifestResult CreateFileNotFoundResult(FileInfo repositoriesManifestFile)
         {
-            var result = new LoadRepositoriesManifestResult();
-            result.RepositoriesManifestFile = repositoriesManifestFile;
-            return result;
+            return new LoadRepositoriesManifestResult(repositoriesManifestFile, null, null);
         }
 
         public static LoadRepositoriesManifestResult CreateSuccessfulResult(FileInfo repositoriesManifestFile, RepositoriesManifest repositoriesManifest, IEnumerable<LoadRepositoryElementResult> loadRepositoryElementResult)
         {
-            var result = new LoadRepositoriesManifestResult();
-            result.RepositoriesManifestFile = repositoriesManifestFile;
-            result.RepositoriesManifest = repositoriesManifest;
-            result.LoadRepositoryElementResults = loadRepositoryElementResult;
-            return result;
+            return new LoadRepositoriesManifestResult(repositoriesManifestFile, repositoriesManifest, loadRepositoryElementResult);
         }
 
-        private IEnumerable<string> GetErrorMessages()
+        private string GetErrorMessage()
         {
-            if (!RepositoriesManifestFile.Exists) return new string[] { string.Format("Manifest file '{0}' not found.", RepositoriesManifestFile.FullName) };
+            if (!RepositoriesManifestFile.Exists) return string.Format("Manifest file '{0}' not found.", RepositoriesManifestFile.FullName);
 
-            return LoadRepositoryElementResults.Where(x => x.ErrorMessage != null).Select(x => x.ErrorMessage);
+            return null;
         }
     }
 }

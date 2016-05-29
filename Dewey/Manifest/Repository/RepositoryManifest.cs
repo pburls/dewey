@@ -20,10 +20,10 @@ namespace Dewey.Manifest.Repository
         public static LoadRepositoryItemResult LoadRepositoryItem(RepositoryItem repositoryItem, string rootLocation)
         {
             var repositoryDirectory = new DirectoryInfo(Path.Combine(rootLocation, repositoryItem.RelativeLocation));
-            if (!repositoryDirectory.Exists) return LoadRepositoryItemResult.CreateDirectoryNotFoundResult(repositoryDirectory);
+            if (!repositoryDirectory.Exists) return LoadRepositoryItemResult.CreateDirectoryNotFoundResult(repositoryItem, repositoryDirectory);
 
             var repositoryManifestFile = new FileInfo(Path.Combine(repositoryDirectory.FullName, DEFAULT_REPOSITORY_FILE_NAME));
-            if (!repositoryManifestFile.Exists) return LoadRepositoryItemResult.CreateFileNotFoundResult(repositoryDirectory, repositoryManifestFile);
+            if (!repositoryManifestFile.Exists) return LoadRepositoryItemResult.CreateFileNotFoundResult(repositoryItem, repositoryDirectory, repositoryManifestFile);
 
             var repository = XElement.Load(repositoryManifestFile.FullName);
             var componentsElement = repository.Elements().FirstOrDefault(x => x.Name.LocalName == "components");
@@ -41,7 +41,7 @@ namespace Dewey.Manifest.Repository
             var repositoryManifest = new RepositoryManifest();
             repositoryManifest.ComponentItems = componentItemResults.Select(x => x.ComponentItem);
 
-            return LoadRepositoryItemResult.CreateSuccessfulResult(repositoryDirectory, repositoryManifestFile, repositoryManifest, componentItemResults);
+            return LoadRepositoryItemResult.CreateSuccessfulResult(repositoryItem, repositoryDirectory, repositoryManifestFile, repositoryManifest, componentItemResults);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Dewey.Manifest.Repositories
             }
 
             var repositoriesManifest = new RepositoriesManifest();
-            repositoriesManifest.RepositoryItems = loadRepositoryElementResults.Select(x => x.RepositoryItem);
+            repositoriesManifest.RepositoryItems = loadRepositoryElementResults.Where(x => x.RepositoryItem != null).Select(x => x.RepositoryItem);
 
             return LoadRepositoriesManifestResult.CreateSuccessfulResult(repositoriesManifestFile, repositoriesManifest, loadRepositoryElementResults);
         }

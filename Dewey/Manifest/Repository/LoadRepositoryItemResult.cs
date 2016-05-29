@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Dewey.Manifest.Repositories;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -6,6 +8,8 @@ namespace Dewey.Manifest.Repository
 {
     public class LoadRepositoryItemResult
     {
+        public RepositoryItem RepositoryItem { get; private set; }
+
         public DirectoryInfo RepositoryDirectory { get; private set; }
 
         public FileInfo RepositoryManifestFile { get; private set; }
@@ -14,53 +18,44 @@ namespace Dewey.Manifest.Repository
 
         public IEnumerable<LoadComponentElementResult> LoadComponentElementResults { get; private set; }
 
-        private IEnumerable<string> _errorMessages;
-        public IEnumerable<string> ErrorMessages
+        public string ErrorMessage { get; private set; }
+
+        private LoadRepositoryItemResult(RepositoryItem repositoryItem, DirectoryInfo repositoryDirectory, FileInfo repositoryManifestFile, RepositoryManifest repositoryManifest, IEnumerable<LoadComponentElementResult> loadComponentElementResults)
         {
-            get
+            if (repositoryItem == null)
             {
-                if (_errorMessages == null)
-                {
-                    _errorMessages = GetErrorMessages();
-                }
-
-                return _errorMessages;
+                throw new ArgumentNullException("repositoryItem");
             }
+
+            RepositoryItem = repositoryItem;
+            RepositoryDirectory = repositoryDirectory;
+            RepositoryManifestFile = repositoryManifestFile;
+            RepositoryManifest = repositoryManifest;
+            LoadComponentElementResults = loadComponentElementResults;
+            ErrorMessage = GetErrorMessage();
         }
 
-        private LoadRepositoryItemResult() { }
-
-        public static LoadRepositoryItemResult CreateDirectoryNotFoundResult(DirectoryInfo repositoryDirectory)
+        public static LoadRepositoryItemResult CreateDirectoryNotFoundResult(RepositoryItem repositoryItem, DirectoryInfo repositoryDirectory)
         {
-            var result = new LoadRepositoryItemResult();
-            result.RepositoryDirectory = repositoryDirectory;
-            return result;
+            return new LoadRepositoryItemResult(repositoryItem, repositoryDirectory, null, null, null);
         }
 
-        public static LoadRepositoryItemResult CreateFileNotFoundResult(DirectoryInfo repositoryDirectory, FileInfo repositoryManifestFile)
+        public static LoadRepositoryItemResult CreateFileNotFoundResult(RepositoryItem repositoryItem, DirectoryInfo repositoryDirectory, FileInfo repositoryManifestFile)
         {
-            var result = new LoadRepositoryItemResult();
-            result.RepositoryDirectory = repositoryDirectory;
-            result.RepositoryManifestFile = repositoryManifestFile;
-            return result;
+            return new LoadRepositoryItemResult(repositoryItem, repositoryDirectory, repositoryManifestFile, null, null);
         }
 
-        public static LoadRepositoryItemResult CreateSuccessfulResult(DirectoryInfo repositoryDirectory, FileInfo repositoryManifestFile, RepositoryManifest repositoryManifest, IEnumerable<LoadComponentElementResult> loadComponentElementResults)
+        public static LoadRepositoryItemResult CreateSuccessfulResult(RepositoryItem repositoryItem, DirectoryInfo repositoryDirectory, FileInfo repositoryManifestFile, RepositoryManifest repositoryManifest, IEnumerable<LoadComponentElementResult> loadComponentElementResults)
         {
-            var result = new LoadRepositoryItemResult();
-            result.RepositoryDirectory = repositoryDirectory;
-            result.RepositoryManifestFile = repositoryManifestFile;
-            result.RepositoryManifest = repositoryManifest;
-            result.LoadComponentElementResults = loadComponentElementResults;
-            return result;
+            return new LoadRepositoryItemResult(repositoryItem, repositoryDirectory, repositoryManifestFile, repositoryManifest, loadComponentElementResults);
         }
 
-        private IEnumerable<string> GetErrorMessages()
+        private string GetErrorMessage()
         {
-            if (!RepositoryDirectory.Exists) return new string[] { string.Format("Respository directory '{0}' not found.", RepositoryDirectory.FullName) };
-            if (!RepositoryManifestFile.Exists) return new string[] { string.Format("Repository Manifest file '{0}' not found.", RepositoryManifestFile.FullName) };
+            if (!RepositoryDirectory.Exists) return string.Format("Respository directory '{0}' not found.", RepositoryDirectory.FullName);
+            if (!RepositoryManifestFile.Exists) return string.Format("Repository Manifest file '{0}' not found.", RepositoryManifestFile.FullName);
 
-            return LoadComponentElementResults.Where(x => x.ErrorMessage != null).Select(x => x.ErrorMessage);
+            return null;
         }
     }
 }

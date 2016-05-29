@@ -22,7 +22,7 @@ namespace Dewey.Manifest.Repositories
             var repoNameAtt = repositoryElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "name");
             if (repoNameAtt == null || string.IsNullOrWhiteSpace(repoNameAtt.Value))
             {
-                missingAttributes.Add(repoNameAtt.Name.LocalName);
+                missingAttributes.Add("name");
             }
             else
             {
@@ -32,12 +32,12 @@ namespace Dewey.Manifest.Repositories
             var repoLocationAtt = repositoryElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "location");
             if (repoLocationAtt == null || string.IsNullOrWhiteSpace(repoLocationAtt.Value))
             {
-                missingAttributes.Add(repoNameAtt.Name.LocalName);
+                missingAttributes.Add("location");
             }
 
             if (missingAttributes.Any())
             {
-                return LoadRepositoryElementResult.CreateMissingAttributesResult(repositoryElement, repositoryItem, missingAttributes);
+                return LoadRepositoryElementResult.CreateMissingAttributesResult(repositoryElement, missingAttributes);
             }
 
             repositoryItem.RelativeLocation = repoLocationAtt.Value;

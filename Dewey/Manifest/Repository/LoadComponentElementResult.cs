@@ -12,48 +12,31 @@ namespace Dewey.Manifest.Repository
         public IEnumerable<string> MissingAttributes { get; private set; }
         public ComponentItem ComponentItem { get; private set; }
         public XElement ComponentElement { get; private set; }
+        public string ErrorMessage { get; private set; }
 
-        private string _errorMessage;
-        public string ErrorMessage
+        private LoadComponentElementResult(XElement componentElement, ComponentItem componentItem, IEnumerable<string> missingAttributes)
         {
-            get
-            {
-                if (_errorMessage == null)
-                {
-                    _errorMessage = GetErrorMessage();
-                }
-
-                return _errorMessage;
-            }
+            ComponentElement = componentElement;
+            ComponentItem = componentItem;
+            MissingAttributes = missingAttributes;
+            ErrorMessage = GetErrorMessage();
         }
 
-        public static LoadComponentElementResult CreateMissingAttributesResult(XElement componentElement, ComponentItem componentItem, IEnumerable<string> missingAttributes)
+        public static LoadComponentElementResult CreateMissingAttributesResult(XElement componentElement, IEnumerable<string> missingAttributes)
         {
-            var result = new LoadComponentElementResult();
-            result.ComponentElement = componentElement;
-            result.ComponentItem = componentItem;
-            result.MissingAttributes = missingAttributes;
-            return result;
+            return new LoadComponentElementResult(componentElement, null, missingAttributes);
         }
 
         public static LoadComponentElementResult CreateSuccessfulResult(XElement componentElement, ComponentItem componentItem)
         {
-            var result = new LoadComponentElementResult();
-            result.ComponentElement = componentElement;
-            result.ComponentItem = componentItem;
-            return result;
+            return new LoadComponentElementResult(componentElement, componentItem, null);
         }
 
         private string GetErrorMessage()
         {
-            if (ComponentItem == null)
+            if (MissingAttributes != null && MissingAttributes.Any())
             {
-                return "Repository element without a valid name: " + ComponentElement.ToString();
-            }
-
-            if (ComponentItem != null && MissingAttributes.Any())
-            {
-                return string.Format("Component element '{0}' is missing the following attributes: {1}", ComponentItem.Name, string.Join(", ", MissingAttributes));
+                return string.Format("Component element '{0}' is missing the following attributes: {1}", ComponentElement, string.Join(", ", MissingAttributes));
             }
 
             return null;

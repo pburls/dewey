@@ -1,5 +1,6 @@
 ﻿using Dewey.CLI.Builds;
 using Dewey.CLI.Deployments;
+using Dewey.CLI.Writers;
 using Dewey.Manifest.Repositories;
 using Dewey.Manifest.Repository;
 using System;
@@ -41,25 +42,48 @@ namespace Dewey.CLI
 
             var result = RepositoriesManifest.LoadRepositoriesManifestFile();
 
-            foreach (var errorMessage in result.ErrorMessages)
-            {
-                Console.WriteLine(errorMessage);
-            }
-
-            var loadRepositoryItemResults = new List<LoadRepositoryItemResult>();
+            var loadRepositoryItemResults = new Dictionary<RepositoryItem, LoadRepositoryItemResult>();
             if (result.RepositoriesManifest != null)
             {
                 foreach (var repositoryItem in result.RepositoriesManifest.RepositoryItems)
                 {
-                    loadRepositoryItemResults.Add(RepositoryManifest.LoadRepositoryItem(repositoryItem, result.RepositoriesManifestFile.DirectoryName));
+                    loadRepositoryItemResults.Add(repositoryItem, RepositoryManifest.LoadRepositoryItem(repositoryItem, result.RepositoriesManifestFile.DirectoryName));
                 }
             }
 
-            var errorMessages = loadRepositoryItemResults.SelectMany(x => x.ErrorMessages);
-            foreach (var errorMessage in result.ErrorMessages)
-            {
-                Console.WriteLine(errorMessage);
-            }
+            result.Write(loadRepositoryItemResults);
+
+            //foreach (var repositoryItem in result.RepositoriesManifest.RepositoryItems)
+            //{
+            //    Console.ForegroundColor = ConsoleColor.Green;
+            //    Console.WriteLine(" |");
+            //    Console.WriteLine(string.Format(" |- {0}", repositoryItem.Name));
+
+            //    var loadRepositoryItemResult = loadRepositoryItemResults[repositoryItem];
+            //    if (loadRepositoryItemResult.RepositoryManifestFile != null)
+            //    {
+            //        Console.WriteLine(string.Format(" |  {0}", loadRepositoryItemResult.RepositoryManifestFile.FullName));
+            //    }
+
+            //    if(loadRepositoryItemResult.RepositoryManifest != null)
+            //    {
+            //        foreach (var item in loadRepositoryItemResult.RepositoryManifest.ComponentItems)
+            //        {
+            //            Console.ForegroundColor = ConsoleColor.Yellow;
+            //            Console.WriteLine(string.Format("    |- {0}", item.Name));
+            //        }
+            //    }
+            //    else
+            //    {
+            //        foreach (var errorMessage in loadRepositoryItemResult.ErrorMessages)
+            //        {
+            //            Console.ForegroundColor = ConsoleColor.Red;
+            //            Console.WriteLine(string.Format("    {0}", errorMessage));
+            //        }
+            //    }
+            //}
+
+            Console.ReadLine();
         }
 
         private static void LoadRepository(RepositoryItem repositoryItem)
