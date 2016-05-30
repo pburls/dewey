@@ -40,48 +40,19 @@ namespace Dewey.CLI
                     break;
             }
 
-            var result = RepositoriesManifest.LoadRepositoriesManifestFile();
+            var loadRepositoriesManifestFileResult = RepositoriesManifest.LoadRepositoriesManifestFile();
 
-            var loadRepositoryItemResults = new Dictionary<RepositoryItem, LoadRepositoryItemResult>();
-            if (result.RepositoriesManifest != null)
+            var loadRepositoryItemResults = new List<LoadRepositoryItemResult>();
+            if (loadRepositoriesManifestFileResult.RepositoriesManifest != null)
             {
-                foreach (var repositoryItem in result.RepositoriesManifest.RepositoryItems)
+                foreach (var repositoryItem in loadRepositoriesManifestFileResult.RepositoriesManifest.RepositoryItems)
                 {
-                    loadRepositoryItemResults.Add(repositoryItem, RepositoryManifest.LoadRepositoryItem(repositoryItem, result.RepositoriesManifestFile.DirectoryName));
+                    loadRepositoryItemResults.Add(RepositoryManifest.LoadRepositoryItem(repositoryItem, loadRepositoriesManifestFileResult.RepositoriesManifestFile.DirectoryName));
                 }
             }
 
-            result.Write(loadRepositoryItemResults);
-
-            //foreach (var repositoryItem in result.RepositoriesManifest.RepositoryItems)
-            //{
-            //    Console.ForegroundColor = ConsoleColor.Green;
-            //    Console.WriteLine(" |");
-            //    Console.WriteLine(string.Format(" |- {0}", repositoryItem.Name));
-
-            //    var loadRepositoryItemResult = loadRepositoryItemResults[repositoryItem];
-            //    if (loadRepositoryItemResult.RepositoryManifestFile != null)
-            //    {
-            //        Console.WriteLine(string.Format(" |  {0}", loadRepositoryItemResult.RepositoryManifestFile.FullName));
-            //    }
-
-            //    if(loadRepositoryItemResult.RepositoryManifest != null)
-            //    {
-            //        foreach (var item in loadRepositoryItemResult.RepositoryManifest.ComponentItems)
-            //        {
-            //            Console.ForegroundColor = ConsoleColor.Yellow;
-            //            Console.WriteLine(string.Format("    |- {0}", item.Name));
-            //        }
-            //    }
-            //    else
-            //    {
-            //        foreach (var errorMessage in loadRepositoryItemResult.ErrorMessages)
-            //        {
-            //            Console.ForegroundColor = ConsoleColor.Red;
-            //            Console.WriteLine(string.Format("    {0}", errorMessage));
-            //        }
-            //    }
-            //}
+            loadRepositoriesManifestFileResult.WriteErrors();
+            loadRepositoryItemResults.WriteErrors();
 
             Console.ReadLine();
         }

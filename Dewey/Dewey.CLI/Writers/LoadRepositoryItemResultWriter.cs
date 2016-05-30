@@ -9,37 +9,38 @@ namespace Dewey.CLI.Writers
 {
     public static class LoadRepositoryItemResultWriter
     {
-        public static void Write(this LoadRepositoryItemResult result)
+        public static void WriteErrors(this IEnumerable<LoadRepositoryItemResult> results)
         {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(string.Format(" |- {0}", result.RepositoryItem.Name));
+            foreach (var result in results)
+            {
+                result.WriteErrors();
+            }
+        }
+
+        public static void WriteErrors(this LoadRepositoryItemResult result)
+        {
+            var errorMessages = new List<string>();
+
+            if (result.ErrorMessage != null)
+            {
+                errorMessages.Add(result.ErrorMessage);
+            }
+
+            if (result.LoadComponentElementResults != null)
+            {
+                errorMessages.AddRange(result.LoadComponentElementResults.Where(x => x.ErrorMessage != null).Select(x => x.ErrorMessage));
+            }
 
             if (result.RepositoryManifestFile != null)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine(string.Format(" |  {0}", result.RepositoryManifestFile.FullName));
+                Console.WriteLine(result.RepositoryManifestFile.FullName);
             }
 
-            if (result.ErrorMessage != null)
+            Console.ForegroundColor = ConsoleColor.Red;
+            foreach (var message in errorMessages)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(result.ErrorMessage);
-            }
-            else
-            {
-                foreach (var elementResult in result.LoadComponentElementResults)
-                {
-                    if (elementResult.ComponentItem == null)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine(string.Format("    |- {0}", elementResult.ErrorMessage));
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine(string.Format("    |- {0}", elementResult.ComponentItem.Name));
-                    }
-                }
+                Console.WriteLine(message);
             }
         }
     }

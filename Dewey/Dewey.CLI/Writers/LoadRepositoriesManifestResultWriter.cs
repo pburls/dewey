@@ -10,37 +10,30 @@ namespace Dewey.CLI.Writers
 {
     public static class LoadRepositoriesManifestResultWriter
     {
-        public static void Write(this LoadRepositoriesManifestResult result, IReadOnlyDictionary<RepositoryItem, LoadRepositoryItemResult> loadRepositoryItemResults)
+        public static void WriteErrors(this LoadRepositoriesManifestResult result)
         {
+            var errorMessages = new List<string>();
+
+            if (result.ErrorMessage != null)
+            {
+                errorMessages.Add(result.ErrorMessage);
+            }
+
+            if (result.LoadRepositoryElementResults != null)
+            {
+                errorMessages.AddRange(result.LoadRepositoryElementResults.Where(x => x.ErrorMessage != null).Select(x => x.ErrorMessage));
+            }
+
             if (result.RepositoriesManifestFile != null)
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine(result.RepositoriesManifestFile.FullName);
             }
 
-
-            if (result.ErrorMessage != null)
+            Console.ForegroundColor = ConsoleColor.Red;
+            foreach (var message in errorMessages)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(result.ErrorMessage);
-            }
-            else
-            {
-                foreach (var elementResult in result.LoadRepositoryElementResults)
-                {
-                    //Console.ForegroundColor = ConsoleColor.Green;
-                    //Console.WriteLine(" |");
-                    if (elementResult.RepositoryItem == null)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine(string.Format(" |- {0}", elementResult.ErrorMessage));
-                    }
-                    else
-                    {
-                        var loadRepositoryItemResult = loadRepositoryItemResults[elementResult.RepositoryItem];
-                        loadRepositoryItemResult.Write();
-                    }
-                }
+                Console.WriteLine(message);
             }
         }
     }
