@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using Dewey.Manifest.Component;
+using System.Xml.Linq;
 
 namespace Dewey.CLI.Builds
 {

@@ -1,4 +1,5 @@
-﻿using Microsoft.Web.Administration;
+﻿using Dewey.Manifest.Component;
+using Microsoft.Web.Administration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
