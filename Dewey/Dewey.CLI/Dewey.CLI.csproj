@@ -50,7 +50,6 @@
     <Compile Include="Builds\BuildActionFactory.cs" />
     <Compile Include="Builds\IBuildAction.cs" />
     <Compile Include="Builds\MSBuild.cs" />
-    <Compile Include="ComponentManifest.cs" />
     <Compile Include="Deployments\DeploymentActionFactory.cs" />
     <Compile Include="Deployments\IDeploymentAction.cs" />
     <Compile Include="Deployments\IISDeployment.cs" />

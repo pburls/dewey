@@ -1,4 +1,5 @@
 ﻿using Dewey.Manifest.Component;
+using Dewey.Manifest.Repository;
 using Microsoft.Web.Administration;
 using System;
 using System.Collections.Generic;
@@ -13,10 +14,10 @@ namespace Dewey.CLI.Deployments
 {
     class IISDeployment : IDeploymentAction
     {
-        public void Deploy(RepositoryComponent repoComponent, ComponentManifest componentManifest, XElement deploymentElement)
+        public void Deploy(ComponentItem repoComponent, ComponentManifest componentManifest, XElement deploymentElement)
         {
             var iisDeploymentArgs = IISDeploumentArgs.ParseIISDeploymentElement(deploymentElement);
-            string contentPath = Path.Combine(Environment.CurrentDirectory, repoComponent.Location, iisDeploymentArgs.Content);
+            string contentPath = Path.Combine(Environment.CurrentDirectory, repoComponent.RelativeLocation, iisDeploymentArgs.Content);
             Console.WriteLine("IIS Deployment of site '{0}' for content path '{1}'.", iisDeploymentArgs.SiteName, contentPath);
 
             DirectoryInfo contentDirectoryInfo = new DirectoryInfo(contentPath);

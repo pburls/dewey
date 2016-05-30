@@ -1,10 +1,11 @@
 ﻿using Dewey.Manifest.Component;
+using Dewey.Manifest.Repository;
 using System.Xml.Linq;
 
 namespace Dewey.CLI.Builds
 {
     interface IBuildAction
     {
-        void Build(RepositoryComponent repoComponent, ComponentManifest componentManifest, XElement buildElement);
+        void Build(ComponentItem repoComponent, ComponentManifest componentManifest, XElement buildElement);
     }
 }

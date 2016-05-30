@@ -15,7 +15,7 @@ using System.Xml.Linq;
 
 namespace Dewey.CLI
 {
-    delegate void ComponentAction(RepositoryComponent repoComponent, ComponentManifest componentManifest, XElement componentElement);
+    delegate void ComponentAction(ComponentItem repoComponent, ComponentManifest componentManifest, XElement componentElement);
 
     class Program
     {
@@ -71,7 +71,11 @@ namespace Dewey.CLI
             loadRepositoryItemResults.WriteErrors();
             loadComponentItemResults.WriteErrors();
 
+            Console.ResetColor();
+            Console.WriteLine("Continue...");
             Console.ReadLine();
+
+
         }
 
         //private static void LoadRepository(RepositoryItem repositoryItem)
@@ -172,7 +176,7 @@ namespace Dewey.CLI
         //    }
         //}
 
-        private static void BuildComponent(RepositoryComponent repoComponent, ComponentManifest componentManifest, XElement componentElement)
+        private static void BuildComponent(ComponentItem repoComponent, ComponentManifest componentManifest, XElement componentElement)
         {
             Console.WriteLine("**Build**");
             var buildsElement = componentElement.Elements().FirstOrDefault(x => x.Name.LocalName == "builds");
@@ -207,7 +211,7 @@ namespace Dewey.CLI
             }
         }
 
-        private static void DeployComponent(RepositoryComponent repoComponent, ComponentManifest componentManifest, XElement componentElement)
+        private static void DeployComponent(ComponentItem repoComponent, ComponentManifest componentManifest, XElement componentElement)
         {
             Output("**Deploy**");
             var deploymentsElement = componentElement.Elements().FirstOrDefault(x => x.Name.LocalName == "deployments");

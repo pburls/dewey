@@ -1,4 +1,5 @@
 ﻿using Dewey.Manifest.Component;
+using Dewey.Manifest.Repository;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,7 +15,7 @@ namespace Dewey.CLI.Builds
     {
         string msbuildPath = @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe";
 
-        public void Build(RepositoryComponent repoComponent, ComponentManifest componentManifest, XElement buildElement)
+        public void Build(ComponentItem repoComponent, ComponentManifest componentManifest, XElement buildElement)
         {
             var buildTargetAtt = buildElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "target");
             if (buildTargetAtt == null || string.IsNullOrWhiteSpace(buildTargetAtt.Value))
@@ -22,7 +23,7 @@ namespace Dewey.CLI.Builds
                 throw new ArgumentException(string.Format("MSBuild element without a valid target: {0}", buildElement.ToString()), "buildElement");
             }
 
-            string buildTargetPath = Path.Combine(repoComponent.Location, buildTargetAtt.Value);
+            string buildTargetPath = Path.Combine(repoComponent.RelativeLocation, buildTargetAtt.Value);
             if (!File.Exists(buildTargetPath))
             {
                 throw new ArgumentException(string.Format("MSBuild target '{0}' not found.", buildTargetAtt.Value), "buildElement");
