@@ -67,10 +67,9 @@ namespace Dewey.CLI
                 }
             }
 
-            //var loadComponentItemResults = new List<LoadC>
-
             loadRepositoriesManifestFileResult.WriteErrors();
             loadRepositoryItemResults.WriteErrors();
+            loadComponentItemResults.WriteErrors();
 
             Console.ReadLine();
         }
