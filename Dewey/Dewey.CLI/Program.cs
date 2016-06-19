@@ -20,6 +20,7 @@ namespace Dewey.CLI
     class Program
     {
         private static ComponentAction componentAction;
+        private static Action<LoadRepositoriesManifestResult> loadRepositoriesManifestResultAction;
 
         static void Main(string[] args)
         {
@@ -37,6 +38,9 @@ namespace Dewey.CLI
                 case "deploy":
                     componentAction = DeployComponent;
                     break;
+                case "list":
+                    loadRepositoriesManifestResultAction = ListItems.WriteList;
+                    break;
                 default:
                     break;
             }
@@ -45,7 +49,7 @@ namespace Dewey.CLI
 
             loadRepositoriesManifestFileResult.WriteErrors();
 
-            ListItems.WriteList(loadRepositoriesManifestFileResult);
+            loadRepositoriesManifestResultAction(loadRepositoriesManifestFileResult);
 
             Console.ResetColor();
             Console.WriteLine("Continue...");
