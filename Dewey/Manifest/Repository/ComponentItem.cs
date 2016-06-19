@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dewey.Manifest.Component;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,7 @@ namespace Dewey.Manifest.Repository
             Name = name;
         }
 
-        public static LoadComponentElementResult LoadComponentElement(XElement componentElement)
+        public static LoadComponentElementResult LoadComponentElement(XElement componentElement, string repositoryRoot)
         {
             var missingAttributes = new List<string>();
             ComponentItem componentItem = null;
@@ -45,7 +46,9 @@ namespace Dewey.Manifest.Repository
 
             componentItem.RelativeLocation = locationAtt.Value;
 
-            return LoadComponentElementResult.CreateSuccessfulResult(componentElement, componentItem);
+            var loadComponentItemResult = ComponentManifest.LoadComponentItem(componentItem, repositoryRoot);
+
+            return LoadComponentElementResult.CreateSuccessfulResult(componentElement, componentItem, loadComponentItemResult);
         }
     }
 }

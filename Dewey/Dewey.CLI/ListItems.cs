@@ -8,10 +8,15 @@ using Dewey.Manifest.Repository;
 
 namespace Dewey.CLI
 {
+    enum ItemColor
+    {
+        Repositories = ConsoleColor.Cyan,
+        RepositoryItem = ConsoleColor.Green,
+        ComponentItem = ConsoleColor.Yellow,
+    }
+
     static class ListItems
     {
-        static readonly WriteOffset RepositoryItemWriteOffset = new WriteOffset() { ConsoleColor = ConsoleColor.Green, OffsetText = "│" };
-
         internal static void WriteList(LoadRepositoriesManifestResult result)
         {
             if (result.RepositoriesManifestFile != null)
@@ -19,8 +24,8 @@ namespace Dewey.CLI
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine(result.RepositoriesManifestFile.FullName);
 
-                var writeOffsetList = new List<WriteOffset>();
-                writeOffsetList.Add(RepositoryItemWriteOffset);
+                var writeOffsetList = new List<ItemColor>();
+                writeOffsetList.Add(ItemColor.RepositoryItem);
 
                 foreach (var repoResult in result.LoadRepositoryElementResults)
                 {
@@ -35,13 +40,13 @@ namespace Dewey.CLI
             }
         }
 
-        private static void WriteList(LoadRepositoryItemResult result, List<WriteOffset> offsets)
+        internal static void WriteList(LoadRepositoryItemResult result, List<ItemColor> offsets)
         {
             foreach (var compResult in result.LoadComponentElementResults)
             {
                 if (compResult.ComponentItem != null)
                 {
-                    offsets.Write();
+                    offsets.WriteOffsets();
 
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine("├ {0}", compResult.ComponentItem.Name);
@@ -50,25 +55,19 @@ namespace Dewey.CLI
         }
     }
 
-    class WriteOffset
+    static class ItemColorExtensions
     {
-        public string OffsetText { get; set; }
-        public ConsoleColor ConsoleColor { get; set; }
-
-        public void Write()
+        public static void WriteOffset(this ItemColor color)
         {
-            Console.ForegroundColor = ConsoleColor;
-            Console.Write(OffsetText);
+            Console.ForegroundColor = (ConsoleColor)color;
+            Console.Write("│");
         }
-    }
 
-    static class WriteOffsetExtensions
-    {
-        public static void Write(this IEnumerable<WriteOffset> offsets)
+        public static void WriteOffsets(this IEnumerable<ItemColor> colors)
         {
-            foreach (var offset in offsets)
+            foreach (var color in colors)
             {
-                offset.Write();
+                color.WriteOffset();
             }
         }
     }

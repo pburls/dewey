@@ -34,7 +34,7 @@ namespace Dewey.Manifest.Repository
                 var componentElements = componentsElement.Elements().Where(x => x.Name.LocalName == "component");
                 foreach (var componentElement in componentElements)
                 {
-                    componentItemResults.Add(ComponentItem.LoadComponentElement(componentElement));
+                    componentItemResults.Add(ComponentItem.LoadComponentElement(componentElement, repositoryManifestFile.DirectoryName));
                 }
             }
 
