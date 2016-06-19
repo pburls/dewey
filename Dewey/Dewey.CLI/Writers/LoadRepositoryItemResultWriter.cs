@@ -42,6 +42,8 @@ namespace Dewey.CLI.Writers
             {
                 Console.WriteLine(message);
             }
+
+            result.LoadComponentElementResults.Where(x => x.LoadComponentItemResult != null).Select(x => x.LoadComponentItemResult).WriteErrors();
         }
     }
 }

@@ -68,8 +68,6 @@ namespace Dewey.CLI
             }
 
             loadRepositoriesManifestFileResult.WriteErrors();
-            loadRepositoryItemResults.WriteErrors();
-            loadComponentItemResults.WriteErrors();
 
             ListItems.WriteList(loadRepositoriesManifestFileResult);
 
