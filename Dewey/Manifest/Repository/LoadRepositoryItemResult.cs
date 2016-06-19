@@ -31,7 +31,7 @@ namespace Dewey.Manifest.Repository
             RepositoryDirectory = repositoryDirectory;
             RepositoryManifestFile = repositoryManifestFile;
             RepositoryManifest = repositoryManifest;
-            LoadComponentElementResults = loadComponentElementResults;
+            LoadComponentElementResults = loadComponentElementResults ?? new List<LoadComponentElementResult>();
             ErrorMessage = GetErrorMessage();
         }
 

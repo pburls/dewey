@@ -30,7 +30,7 @@ namespace Dewey.Manifest.Repositories
             var loadRepositoryElementResults = new List<LoadRepositoryElementResult>();
             foreach (var repoElement in repositoryElements)
             {
-                loadRepositoryElementResults.Add(RepositoryItem.LoadRepositoryElement(repoElement));
+                loadRepositoryElementResults.Add(RepositoryItem.LoadRepositoryElement(repoElement, repositoriesManifestFile.DirectoryName));
             }
 
             var repositoriesManifest = new RepositoriesManifest();
