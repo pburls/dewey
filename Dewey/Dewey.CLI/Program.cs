@@ -71,63 +71,14 @@ namespace Dewey.CLI
             loadRepositoryItemResults.WriteErrors();
             loadComponentItemResults.WriteErrors();
 
+            ListItems.WriteList(loadRepositoriesManifestFileResult);
+
             Console.ResetColor();
             Console.WriteLine("Continue...");
             Console.ReadLine();
 
 
         }
-
-        //private static void LoadRepository(RepositoryItem repositoryItem)
-        //{
-        //    var repositoryManifestFilePath = Path.Combine(repositoryItem.RelativeLocation, "repository.xml");
-        //    if (!Directory.Exists(repositoryItem.RelativeLocation))
-        //    {
-        //        Console.WriteLine("Unable to find repository directory at location '{1}' for repository '{0}'.", repositoryItem.Name, repositoryItem.RelativeLocation);
-        //    }
-        //    else if (!File.Exists(repositoryManifestFilePath))
-        //    {
-        //        Console.WriteLine("Unable to find repository manifest file at path '{1}' for repository '{0}'.", repositoryItem.Name, repositoryManifestFilePath);
-        //    }
-        //    else
-        //    {
-        //        var repository = XElement.Load(repositoryManifestFilePath);
-        //        Console.WriteLine("Loaded repository '{0}' manifest file.", repositoryItem.Name);
-
-        //        var componentsElement = repository.Elements().FirstOrDefault(x => x.Name.LocalName == "components");
-        //        if (componentsElement == null || !componentsElement.Elements().Any(x => x.Name.LocalName == "component"))
-        //        {
-        //            Console.WriteLine("No components found.");
-        //        }
-        //        else
-        //        {
-        //            var componentElements = componentsElement.Elements().Where(x => x.Name.LocalName == "component").ToList();
-        //            Console.WriteLine("Found {0} component elements.", componentElements.Count);
-
-        //            foreach (var component in componentElements)
-        //            {
-        //                var componentNameAtt = component.Attributes().FirstOrDefault(x => x.Name.LocalName == "name");
-        //                if (componentNameAtt == null || string.IsNullOrWhiteSpace(componentNameAtt.Value))
-        //                {
-        //                    Console.WriteLine("Skipping component element without a valid name: {0}", component.ToString());
-        //                }
-        //                else
-        //                {
-        //                    var componentLocationAtt = component.Attributes().FirstOrDefault(x => x.Name.LocalName == "location");
-        //                    if (componentLocationAtt == null || string.IsNullOrWhiteSpace(componentLocationAtt.Value))
-        //                    {
-        //                        Console.WriteLine("Component '{0}' has no location set.", componentNameAtt.Value);
-        //                    }
-        //                    else
-        //                    {
-        //                        var repoComponent = new RepositoryComponent(componentNameAtt.Value, Path.Combine(repositoryItem.RelativeLocation, componentLocationAtt.Value));
-        //                        LoadComponent(repoComponent);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
 
         //private static void LoadComponent(RepositoryComponent repoComponent)
         //{

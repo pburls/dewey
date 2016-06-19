@@ -53,9 +53,9 @@
     <Compile Include="Deployments\DeploymentActionFactory.cs" />
     <Compile Include="Deployments\IDeploymentAction.cs" />
     <Compile Include="Deployments\IISDeployment.cs" />
+    <Compile Include="ListItems.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RepositoryComponent.cs" />
     <Compile Include="Writers\LoadRepositoriesManifestResultWriter.cs" />
     <Compile Include="Writers\LoadComponentItemResultWriter.cs" />
     <Compile Include="Writers\LoadRepositoryItemResultWriter.cs" />
