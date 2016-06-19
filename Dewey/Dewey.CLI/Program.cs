@@ -43,30 +43,6 @@ namespace Dewey.CLI
 
             var loadRepositoriesManifestFileResult = RepositoriesManifest.LoadRepositoriesManifestFile();
 
-            var loadRepositoryItemResults = new List<LoadRepositoryItemResult>();
-            if (loadRepositoriesManifestFileResult.RepositoriesManifest != null)
-            {
-                foreach (var repositoryItem in loadRepositoriesManifestFileResult.RepositoriesManifest.RepositoryItems)
-                {
-                    loadRepositoryItemResults.Add(RepositoryManifest.LoadRepositoryItem(repositoryItem, loadRepositoriesManifestFileResult.RepositoriesManifestFile.DirectoryName));
-                }
-            }
-
-            var loadComponentItemResults = new List<LoadComponentItemResult>();
-            foreach (var loadRepositoryItemResult in loadRepositoryItemResults)
-            {
-                if (loadRepositoryItemResult.RepositoryManifest != null)
-                {
-                    foreach (var componentItem in loadRepositoryItemResult.RepositoryManifest.ComponentItems)
-                    {
-                        if (componentItem != null)
-                        {
-                            loadComponentItemResults.Add(ComponentManifest.LoadComponentItem(componentItem, loadRepositoryItemResult.RepositoryManifestFile.DirectoryName));
-                        }
-                    }
-                }
-            }
-
             loadRepositoriesManifestFileResult.WriteErrors();
 
             ListItems.WriteList(loadRepositoriesManifestFileResult);
@@ -74,8 +50,6 @@ namespace Dewey.CLI
             Console.ResetColor();
             Console.WriteLine("Continue...");
             Console.ReadLine();
-
-
         }
 
         //private static void LoadComponent(RepositoryComponent repoComponent)
