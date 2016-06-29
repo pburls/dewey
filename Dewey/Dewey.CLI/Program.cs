@@ -29,7 +29,7 @@ namespace Dewey.CLI
             switch (args[0])
             {
                 case "build":
-                    command = BuildAction.Create(args);
+                    command = BuildCommand.Create(args);
                     //componentAction = BuildComponent;
                     break;
                 case "deploy":

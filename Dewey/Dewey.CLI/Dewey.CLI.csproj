@@ -47,7 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BuildAction.cs" />
+    <Compile Include="BuildCommand.cs" />
     <Compile Include="Builds\BuildActionFactory.cs" />
     <Compile Include="Builds\IBuildAction.cs" />
     <Compile Include="Builds\MSBuild.cs" />
