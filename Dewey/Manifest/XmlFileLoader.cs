@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dewey.CLI
+namespace Dewey.Manfiest
 {
     class XmlFileLoader
     {
@@ -13,7 +13,21 @@ namespace Dewey.CLI
 
         public string RelativeFilePath { get; private set; }
 
+        public bool Exists
+        {
+            get
+            {
+                return fileInfo.Exists;
+            }
+        }
 
+        public string FullName
+        {
+            get
+            {
+                return fileInfo.FullName;
+            }
+        }
 
         public XmlFileLoader(string relativeFilePath)
         {

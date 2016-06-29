@@ -51,6 +51,7 @@
     <Compile Include="Repository\LoadComponentElementResult.cs" />
     <Compile Include="Repository\LoadRepositoryItemResult.cs" />
     <Compile Include="Repository\RepositoryManifest.cs" />
+    <Compile Include="XmlFileLoader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
