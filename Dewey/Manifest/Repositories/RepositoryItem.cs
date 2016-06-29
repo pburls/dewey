@@ -1,4 +1,5 @@
-﻿using Dewey.Manifest.Repository;
+﻿using Dewey.Manfiest;
+using Dewey.Manifest.Repository;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
@@ -15,7 +16,7 @@ namespace Dewey.Manifest.Repositories
             Name = name;
         }
 
-        public static LoadRepositoryElementResult LoadRepositoryElement(XElement repositoryElement, string respositoriesRoot)
+        public static LoadRepositoryElementResult LoadRepositoryElement(XElement repositoryElement, string respositoriesRoot, IManifestFileReaderService manifestFileReaderService)
         {
             var missingAttributes = new List<string>();
             RepositoryItem repositoryItem = null;
@@ -43,7 +44,7 @@ namespace Dewey.Manifest.Repositories
 
             repositoryItem.RelativeLocation = repoLocationAtt.Value;
 
-            var loadRepositoryItemResult = RepositoryManifest.LoadRepositoryItem(repositoryItem, respositoriesRoot);
+            var loadRepositoryItemResult = RepositoryManifest.LoadRepositoryItem(repositoryItem, respositoriesRoot, manifestFileReaderService);
 
             return LoadRepositoryElementResult.CreateSuccessfulResult(repositoryElement, repositoryItem, loadRepositoryItemResult);
         }

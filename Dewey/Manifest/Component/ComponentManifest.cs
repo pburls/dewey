@@ -20,9 +20,9 @@ namespace Dewey.Manifest.Component
             Type = type;
         }
 
-        public static LoadComponentItemResult LoadComponentItem(ComponentItem componentItem, string rootLocation)
+        public static LoadComponentItemResult LoadComponentItem(ComponentItem componentItem, string rootLocation, IManifestFileReaderService manifestFileReaderService)
         {
-            var componentManifestFile = new ComponentManifestFileReader(rootLocation, componentItem.RelativeLocation);
+            var componentManifestFile = manifestFileReaderService.ReadComponentManifestFile(rootLocation, componentItem.RelativeLocation);
             if (!componentManifestFile.DirectoryExists || !componentManifestFile.FileExists) return LoadComponentItemResult.CreateFileNotFoundResult(componentItem, componentManifestFile);
 
             var rootElement = componentManifestFile.Load();

@@ -1,6 +1,7 @@
 ﻿using Dewey.CLI.Builds;
 using Dewey.CLI.Deployments;
 using Dewey.CLI.Writers;
+using Dewey.File;
 using Dewey.Manifest.Component;
 using Dewey.Manifest.Repositories;
 using Dewey.Manifest.Repository;
@@ -46,7 +47,7 @@ namespace Dewey.CLI
             if (command == null)
                 goto done;
 
-            var loadRepositoriesManifestFileResult = RepositoriesManifest.LoadRepositoriesManifestFile();
+            var loadRepositoriesManifestFileResult = RepositoriesManifest.LoadRepositoriesManifestFile(new ManifestFileReaderService());
 
             loadRepositoriesManifestFileResult.WriteErrors();
 

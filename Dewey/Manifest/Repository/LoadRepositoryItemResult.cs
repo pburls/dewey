@@ -11,7 +11,7 @@ namespace Dewey.Manifest.Repository
     {
         public RepositoryItem RepositoryItem { get; private set; }
 
-        public XmlFileLoader RepositoryManifestFile { get; private set; }
+        public IManifestFileReader RepositoryManifestFile { get; private set; }
 
         public RepositoryManifest RepositoryManifest { get; private set; }
 
@@ -19,7 +19,7 @@ namespace Dewey.Manifest.Repository
 
         public string ErrorMessage { get; private set; }
 
-        private LoadRepositoryItemResult(RepositoryItem repositoryItem, XmlFileLoader repositoryManifestFile, RepositoryManifest repositoryManifest, IEnumerable<LoadComponentElementResult> loadComponentElementResults)
+        private LoadRepositoryItemResult(RepositoryItem repositoryItem, IManifestFileReader repositoryManifestFile, RepositoryManifest repositoryManifest, IEnumerable<LoadComponentElementResult> loadComponentElementResults)
         {
             if (repositoryItem == null)
             {
@@ -33,12 +33,12 @@ namespace Dewey.Manifest.Repository
             ErrorMessage = GetErrorMessage();
         }
 
-        public static LoadRepositoryItemResult CreateFileNotFoundResult(RepositoryItem repositoryItem, XmlFileLoader repositoryManifestFile)
+        public static LoadRepositoryItemResult CreateFileNotFoundResult(RepositoryItem repositoryItem, IManifestFileReader repositoryManifestFile)
         {
             return new LoadRepositoryItemResult(repositoryItem, repositoryManifestFile, null, null);
         }
 
-        public static LoadRepositoryItemResult CreateSuccessfulResult(RepositoryItem repositoryItem, XmlFileLoader repositoryManifestFile, RepositoryManifest repositoryManifest, IEnumerable<LoadComponentElementResult> loadComponentElementResults)
+        public static LoadRepositoryItemResult CreateSuccessfulResult(RepositoryItem repositoryItem, IManifestFileReader repositoryManifestFile, RepositoryManifest repositoryManifest, IEnumerable<LoadComponentElementResult> loadComponentElementResults)
         {
             return new LoadRepositoryItemResult(repositoryItem, repositoryManifestFile, repositoryManifest, loadComponentElementResults);
         }

@@ -12,9 +12,9 @@ namespace Dewey.Manifest.Repository
 
         private RepositoryManifest () { }
 
-        public static LoadRepositoryItemResult LoadRepositoryItem(RepositoryItem repositoryItem, string rootLocation)
+        public static LoadRepositoryItemResult LoadRepositoryItem(RepositoryItem repositoryItem, string rootLocation, IManifestFileReaderService manifestFileReaderService)
         {
-            var repositoryManifestFile = new RepositoryManifestFileReader(rootLocation, repositoryItem.RelativeLocation);
+            var repositoryManifestFile = manifestFileReaderService.ReadRepositoryManifestFile(rootLocation, repositoryItem.RelativeLocation);
             if (!repositoryManifestFile.DirectoryExists || !repositoryManifestFile.FileExists) return LoadRepositoryItemResult.CreateFileNotFoundResult(repositoryItem, repositoryManifestFile);
 
             var repository = repositoryManifestFile.Load();
@@ -26,7 +26,7 @@ namespace Dewey.Manifest.Repository
                 var componentElements = componentsElement.Elements().Where(x => x.Name.LocalName == "component");
                 foreach (var componentElement in componentElements)
                 {
-                    componentItemResults.Add(ComponentItem.LoadComponentElement(componentElement, repositoryManifestFile.DirectoryName));
+                    componentItemResults.Add(ComponentItem.LoadComponentElement(componentElement, repositoryManifestFile.DirectoryName, manifestFileReaderService));
                 }
             }
 

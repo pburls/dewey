@@ -12,7 +12,7 @@ namespace Dewey.Manifest.Component
     {
         public ComponentItem ComponentItem { get; private set; }
         
-        public XmlFileLoader ComponentManifestFile { get; private set; }
+        public IManifestFileReader ComponentManifestFile { get; private set; }
 
         public ComponentManifest ComponentManifest { get; private set; }
 
@@ -22,7 +22,7 @@ namespace Dewey.Manifest.Component
 
         public string ErrorMessage { get; private set; }
 
-        private LoadComponentItemResult(ComponentItem componentItem, XmlFileLoader componentManifestFile, XElement componentElement, IEnumerable<string> missingAttributes, ComponentManifest componentManifest)
+        private LoadComponentItemResult(ComponentItem componentItem, IManifestFileReader componentManifestFile, XElement componentElement, IEnumerable<string> missingAttributes, ComponentManifest componentManifest)
         {
             ComponentItem = componentItem;
             ComponentManifestFile = componentManifestFile;
@@ -32,17 +32,17 @@ namespace Dewey.Manifest.Component
             ErrorMessage = GetErrorMessage();
         }
 
-        internal static LoadComponentItemResult CreateFileNotFoundResult(ComponentItem componentItem, XmlFileLoader componentManifestFile)
+        internal static LoadComponentItemResult CreateFileNotFoundResult(ComponentItem componentItem, IManifestFileReader componentManifestFile)
         {
             return new LoadComponentItemResult(componentItem, componentManifestFile, null, null, null);
         }
 
-        internal static LoadComponentItemResult CreateMissingAttributesResult(ComponentItem componentItem, XmlFileLoader componentManifestFile, XElement componentElement, List<string> missingAttributes)
+        internal static LoadComponentItemResult CreateMissingAttributesResult(ComponentItem componentItem, IManifestFileReader componentManifestFile, XElement componentElement, List<string> missingAttributes)
         {
             return new LoadComponentItemResult(componentItem, componentManifestFile, componentElement, missingAttributes, null);
         }
 
-        internal static LoadComponentItemResult CreateSuccessfulResult(ComponentItem componentItem, XmlFileLoader componentManifestFile, ComponentManifest componentManifest)
+        internal static LoadComponentItemResult CreateSuccessfulResult(ComponentItem componentItem, IManifestFileReader componentManifestFile, ComponentManifest componentManifest)
         {
             return new LoadComponentItemResult(componentItem, componentManifestFile, null, null, componentManifest);
         }

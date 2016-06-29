@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dewey.Manifest", "Manifest\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dewey.Test", "Dewey.Test\Dewey.Test.csproj", "{8F96AC59-2297-4885-B5A7-8D286CE8DAB6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dewey.File", "Dewey.File\Dewey.File.csproj", "{9078B56E-2979-4BD4-ABF7-34EED2662E29}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{8F96AC59-2297-4885-B5A7-8D286CE8DAB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F96AC59-2297-4885-B5A7-8D286CE8DAB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F96AC59-2297-4885-B5A7-8D286CE8DAB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9078B56E-2979-4BD4-ABF7-34EED2662E29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9078B56E-2979-4BD4-ABF7-34EED2662E29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9078B56E-2979-4BD4-ABF7-34EED2662E29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9078B56E-2979-4BD4-ABF7-34EED2662E29}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,7 +8,7 @@ namespace Dewey.Manifest.Repositories
 {
     public class LoadRepositoriesManifestResult
     {
-        public XmlFileLoader RepositoriesManifestFile { get; private set; }
+        public IManifestFileReader RepositoriesManifestFile { get; private set; }
 
         public RepositoriesManifest RepositoriesManifest { get; private set; }
 
@@ -16,7 +16,7 @@ namespace Dewey.Manifest.Repositories
 
         public string ErrorMessage { get; private set; }
 
-        private LoadRepositoriesManifestResult(XmlFileLoader repositoriesManifestFile, RepositoriesManifest repositoriesManifest, IEnumerable<LoadRepositoryElementResult> loadRepositoryElementResult)
+        private LoadRepositoriesManifestResult(IManifestFileReader repositoriesManifestFile, RepositoriesManifest repositoriesManifest, IEnumerable<LoadRepositoryElementResult> loadRepositoryElementResult)
         {
             if (repositoriesManifestFile == null)
             {
@@ -29,12 +29,12 @@ namespace Dewey.Manifest.Repositories
             ErrorMessage = GetErrorMessage();
         }
 
-        public static LoadRepositoriesManifestResult CreateFileNotFoundResult(XmlFileLoader repositoriesManifestFile)
+        public static LoadRepositoriesManifestResult CreateFileNotFoundResult(IManifestFileReader repositoriesManifestFile)
         {
             return new LoadRepositoriesManifestResult(repositoriesManifestFile, null, null);
         }
 
-        public static LoadRepositoriesManifestResult CreateSuccessfulResult(XmlFileLoader repositoriesManifestFile, RepositoriesManifest repositoriesManifest, IEnumerable<LoadRepositoryElementResult> loadRepositoryElementResult)
+        public static LoadRepositoriesManifestResult CreateSuccessfulResult(IManifestFileReader repositoriesManifestFile, RepositoriesManifest repositoriesManifest, IEnumerable<LoadRepositoryElementResult> loadRepositoryElementResult)
         {
             return new LoadRepositoriesManifestResult(repositoriesManifestFile, repositoriesManifest, loadRepositoryElementResult);
         }

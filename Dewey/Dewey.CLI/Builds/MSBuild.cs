@@ -24,7 +24,7 @@ namespace Dewey.CLI.Builds
             }
 
             string buildTargetPath = Path.Combine(repoComponent.RelativeLocation, buildTargetAtt.Value);
-            if (!File.Exists(buildTargetPath))
+            if (!System.IO.File.Exists(buildTargetPath))
             {
                 throw new ArgumentException(string.Format("MSBuild target '{0}' not found.", buildTargetAtt.Value), "buildElement");
             }

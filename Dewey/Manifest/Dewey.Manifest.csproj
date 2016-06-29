@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Component\ComponentManifest.cs" />
     <Compile Include="Component\LoadComponentItemResult.cs" />
+    <Compile Include="IManifestFileReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\LoadRepositoriesManifestResult.cs" />
     <Compile Include="Repositories\LoadRepositoryElementResult.cs" />
@@ -51,7 +52,6 @@
     <Compile Include="Repository\LoadComponentElementResult.cs" />
     <Compile Include="Repository\LoadRepositoryItemResult.cs" />
     <Compile Include="Repository\RepositoryManifest.cs" />
-    <Compile Include="XmlFileLoader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
