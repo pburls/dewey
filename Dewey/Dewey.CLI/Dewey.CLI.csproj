@@ -47,12 +47,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BuildAction.cs" />
     <Compile Include="Builds\BuildActionFactory.cs" />
     <Compile Include="Builds\IBuildAction.cs" />
     <Compile Include="Builds\MSBuild.cs" />
     <Compile Include="Deployments\DeploymentActionFactory.cs" />
     <Compile Include="Deployments\IDeploymentAction.cs" />
     <Compile Include="Deployments\IISDeployment.cs" />
+    <Compile Include="ICommand.cs" />
     <Compile Include="ListItems.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

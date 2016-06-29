@@ -5,12 +5,7 @@ using Dewey.Manifest.Component;
 using Dewey.Manifest.Repositories;
 using Dewey.Manifest.Repository;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Dewey.CLI
@@ -21,6 +16,7 @@ namespace Dewey.CLI
     {
         private static ComponentAction componentAction;
         private static Action<LoadRepositoriesManifestResult> loadRepositoriesManifestResultAction;
+        private static ICommand command;
 
         static void Main(string[] args)
         {
@@ -33,24 +29,30 @@ namespace Dewey.CLI
             switch (args[0])
             {
                 case "build":
-                    componentAction = BuildComponent;
+                    command = BuildAction.Create(args);
+                    //componentAction = BuildComponent;
                     break;
                 case "deploy":
-                    componentAction = DeployComponent;
+                    //componentAction = DeployComponent;
                     break;
                 case "list":
-                    loadRepositoriesManifestResultAction = ListItems.WriteList;
+                    command = ListItems.Create();
                     break;
                 default:
-                    break;
+                    Console.WriteLine("Unknown command.");
+                    return;
             }
+
+            if (command == null)
+                goto done;
 
             var loadRepositoriesManifestFileResult = RepositoriesManifest.LoadRepositoriesManifestFile();
 
             loadRepositoriesManifestFileResult.WriteErrors();
 
-            loadRepositoriesManifestResultAction(loadRepositoriesManifestFileResult);
+            command.Execute(loadRepositoriesManifestFileResult);
 
+            done:
             Console.ResetColor();
             Console.WriteLine("Continue...");
             Console.ReadLine();

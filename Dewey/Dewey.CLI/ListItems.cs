@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Dewey.Manifest.Repositories;
+﻿using Dewey.Manifest.Repositories;
 using Dewey.Manifest.Repository;
+using System;
+using System.Collections.Generic;
 
 namespace Dewey.CLI
 {
@@ -15,9 +12,19 @@ namespace Dewey.CLI
         ComponentItem = ConsoleColor.Yellow,
     }
 
-    static class ListItems
+    class ListItems : ICommand
     {
-        internal static void WriteList(LoadRepositoriesManifestResult result)
+        ListItems()
+        {
+
+        }
+
+        public static ListItems Create()
+        {
+            return new ListItems();
+        }
+
+        public void Execute(LoadRepositoriesManifestResult result)
         {
             if (result.RepositoriesManifestFile != null)
             {
@@ -40,7 +47,7 @@ namespace Dewey.CLI
             }
         }
 
-        internal static void WriteList(LoadRepositoryItemResult result, List<ItemColor> offsets)
+        internal void WriteList(LoadRepositoryItemResult result, List<ItemColor> offsets)
         {
             foreach (var compResult in result.LoadComponentElementResults)
             {
