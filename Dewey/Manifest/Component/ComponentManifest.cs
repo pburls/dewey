@@ -1,10 +1,7 @@
-﻿using Dewey.Manifest.Repository;
-using System;
+﻿using Dewey.Manfiest;
+using Dewey.Manifest.Repository;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Dewey.Manifest.Component
@@ -25,13 +22,10 @@ namespace Dewey.Manifest.Component
 
         public static LoadComponentItemResult LoadComponentItem(ComponentItem componentItem, string rootLocation)
         {
-            var componentDirectory = new DirectoryInfo(Path.Combine(rootLocation, componentItem.RelativeLocation));
-            if (!componentDirectory.Exists) return LoadComponentItemResult.CreateDirectoryNotFoundResult(componentItem, componentDirectory);
+            var componentManifestFile = new ComponentManifestFileReader(rootLocation, componentItem.RelativeLocation);
+            if (!componentManifestFile.DirectoryExists || !componentManifestFile.FileExists) return LoadComponentItemResult.CreateFileNotFoundResult(componentItem, componentManifestFile);
 
-            var componentManifestFile = new FileInfo(Path.Combine(componentDirectory.FullName, DEFAULT_COMPONENT_FILE_NAME));
-            if (!componentManifestFile.Exists) return LoadComponentItemResult.CreateFileNotFoundResult(componentItem, componentDirectory, componentManifestFile);
-
-            var rootElement = XElement.Load(componentManifestFile.FullName);
+            var rootElement = componentManifestFile.Load();
 
             var missingAttributes = new List<string>();
 
@@ -49,12 +43,12 @@ namespace Dewey.Manifest.Component
 
             if (missingAttributes.Any())
             {
-                return LoadComponentItemResult.CreateMissingAttributesResult(componentItem, componentDirectory, componentManifestFile, rootElement, missingAttributes);
+                return LoadComponentItemResult.CreateMissingAttributesResult(componentItem, componentManifestFile, rootElement, missingAttributes);
             }
 
             var componentManifest = new ComponentManifest(nameAtt.Value, typeAtt.Value);
 
-            return LoadComponentItemResult.CreateSuccessfulResult(componentItem, componentDirectory, componentManifestFile, componentManifest);
+            return LoadComponentItemResult.CreateSuccessfulResult(componentItem, componentManifestFile, componentManifest);
         }
     }
 }

@@ -4,16 +4,15 @@ using System.IO;
 using Dewey.Manifest.Repository;
 using System.Linq;
 using System.Xml.Linq;
+using Dewey.Manfiest;
 
 namespace Dewey.Manifest.Component
 {
     public class LoadComponentItemResult
     {
         public ComponentItem ComponentItem { get; private set; }
-
-        public DirectoryInfo ComponentDirectory { get; private set; }
-
-        public FileInfo ComponentManifestFile { get; private set; }
+        
+        public XmlFileLoader ComponentManifestFile { get; private set; }
 
         public ComponentManifest ComponentManifest { get; private set; }
 
@@ -23,10 +22,9 @@ namespace Dewey.Manifest.Component
 
         public string ErrorMessage { get; private set; }
 
-        private LoadComponentItemResult(ComponentItem componentItem, DirectoryInfo componentDirectory, FileInfo componentManifestFile, XElement componentElement, IEnumerable<string> missingAttributes, ComponentManifest componentManifest)
+        private LoadComponentItemResult(ComponentItem componentItem, XmlFileLoader componentManifestFile, XElement componentElement, IEnumerable<string> missingAttributes, ComponentManifest componentManifest)
         {
             ComponentItem = componentItem;
-            ComponentDirectory = componentDirectory;
             ComponentManifestFile = componentManifestFile;
             ComponentElement = componentElement;
             MissingAttributes = missingAttributes;
@@ -34,30 +32,25 @@ namespace Dewey.Manifest.Component
             ErrorMessage = GetErrorMessage();
         }
 
-        internal static LoadComponentItemResult CreateDirectoryNotFoundResult(ComponentItem componentItem, DirectoryInfo componentDirectory)
+        internal static LoadComponentItemResult CreateFileNotFoundResult(ComponentItem componentItem, XmlFileLoader componentManifestFile)
         {
-            return new LoadComponentItemResult(componentItem, componentDirectory, null, null, null, null);
+            return new LoadComponentItemResult(componentItem, componentManifestFile, null, null, null);
         }
 
-        internal static LoadComponentItemResult CreateFileNotFoundResult(ComponentItem componentItem, DirectoryInfo componentDirectory, FileInfo componentManifestFile)
+        internal static LoadComponentItemResult CreateMissingAttributesResult(ComponentItem componentItem, XmlFileLoader componentManifestFile, XElement componentElement, List<string> missingAttributes)
         {
-            return new LoadComponentItemResult(componentItem, componentDirectory, componentManifestFile, null, null, null);
+            return new LoadComponentItemResult(componentItem, componentManifestFile, componentElement, missingAttributes, null);
         }
 
-        internal static LoadComponentItemResult CreateMissingAttributesResult(ComponentItem componentItem, DirectoryInfo componentDirectory, FileInfo componentManifestFile, XElement componentElement, List<string> missingAttributes)
+        internal static LoadComponentItemResult CreateSuccessfulResult(ComponentItem componentItem, XmlFileLoader componentManifestFile, ComponentManifest componentManifest)
         {
-            return new LoadComponentItemResult(componentItem, componentDirectory, componentManifestFile, componentElement, missingAttributes, null);
-        }
-
-        internal static LoadComponentItemResult CreateSuccessfulResult(ComponentItem componentItem, DirectoryInfo componentDirectory, FileInfo componentManifestFile, ComponentManifest componentManifest)
-        {
-            return new LoadComponentItemResult(componentItem, componentDirectory, componentManifestFile, null, null, componentManifest);
+            return new LoadComponentItemResult(componentItem, componentManifestFile, null, null, componentManifest);
         }
 
         private string GetErrorMessage()
         {
-            if (!ComponentDirectory.Exists) return string.Format("Component directory '{0}' not found.", ComponentDirectory.FullName);
-            if (!ComponentManifestFile.Exists) return string.Format("Component Manifest file '{0}' not found.", ComponentManifestFile.FullName);
+            if (!ComponentManifestFile.DirectoryExists) return string.Format("Component directory '{0}' not found.", ComponentManifestFile.DirectoryName);
+            if (!ComponentManifestFile.FileExists) return string.Format("Component Manifest file '{0}' not found.", ComponentManifestFile.FileName);
 
             if (MissingAttributes != null && MissingAttributes.Any())
             {

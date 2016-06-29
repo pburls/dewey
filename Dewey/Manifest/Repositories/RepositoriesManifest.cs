@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using Dewey.Manfiest;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -7,7 +7,6 @@ namespace Dewey.Manifest.Repositories
 {
     public class RepositoriesManifest
     {
-        const string DEFAULT_REPOSITORIES_FILE_NAME = "repositories.xml";
 
         public IEnumerable<RepositoryItem> RepositoryItems { get; private set; }
 
@@ -15,16 +14,11 @@ namespace Dewey.Manifest.Repositories
 
         public static LoadRepositoriesManifestResult LoadRepositoriesManifestFile()
         {
-            return LoadRepositoriesManifestFile(DEFAULT_REPOSITORIES_FILE_NAME);
-        }
+            var repositoriesManifestFile = new RepositoriesManifestFileReader();
 
-        public static LoadRepositoriesManifestResult LoadRepositoriesManifestFile(string repositoryFileName)
-        {
-            var repositoriesManifestFile = new FileInfo(repositoryFileName);
+            if (!repositoriesManifestFile.FileExists) return LoadRepositoriesManifestResult.CreateFileNotFoundResult(repositoriesManifestFile);
 
-            if (!repositoriesManifestFile.Exists) return LoadRepositoriesManifestResult.CreateFileNotFoundResult(repositoriesManifestFile);
-
-            var repositories = XElement.Load(repositoriesManifestFile.FullName);
+            var repositories = repositoriesManifestFile.Load();
             var repositoryElements = repositories.Elements().Where(x => x.Name.LocalName == "repository").ToList();
 
             var loadRepositoryElementResults = new List<LoadRepositoryElementResult>();

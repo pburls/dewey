@@ -29,7 +29,7 @@ namespace Dewey.CLI.Writers
             if (result.ComponentManifestFile != null)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine(result.ComponentManifestFile.FullName);
+                Console.WriteLine(result.ComponentManifestFile.FileName);
             }
 
             Console.ForegroundColor = ConsoleColor.Red;

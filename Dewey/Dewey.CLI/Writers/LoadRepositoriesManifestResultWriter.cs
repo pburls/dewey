@@ -27,7 +27,7 @@ namespace Dewey.CLI.Writers
             if (result.RepositoriesManifestFile != null)
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine(result.RepositoriesManifestFile.FullName);
+                Console.WriteLine(result.RepositoriesManifestFile.FileName);
             }
 
             Console.ForegroundColor = ConsoleColor.Red;

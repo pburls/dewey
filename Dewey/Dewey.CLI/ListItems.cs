@@ -29,7 +29,7 @@ namespace Dewey.CLI
             if (result.RepositoriesManifestFile != null)
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine(result.RepositoriesManifestFile.FullName);
+                Console.WriteLine(result.RepositoriesManifestFile.FileName);
 
                 var writeOffsetList = new List<ItemColor>();
                 writeOffsetList.Add(ItemColor.RepositoryItem);
