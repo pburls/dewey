@@ -14,24 +14,20 @@ namespace Dewey.Manifest.Repository
         public string Name { get; private set; }
         public string RelativeLocation { get; private set; }
 
-        private ComponentItem(string name)
+        public ComponentItem(string name, string relativeLocation)
         {
             Name = name;
+            RelativeLocation = relativeLocation;
         }
 
         public static LoadComponentElementResult LoadComponentElement(XElement componentElement, string repositoryRoot, IManifestFileReaderService manifestFileReaderService)
         {
             var missingAttributes = new List<string>();
-            ComponentItem componentItem = null;
 
             var nameAtt = componentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "name");
             if (nameAtt == null || string.IsNullOrWhiteSpace(nameAtt.Value))
             {
                 missingAttributes.Add("name");
-            }
-            else
-            {
-                componentItem = new ComponentItem(nameAtt.Value);
             }
 
             var locationAtt = componentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "location");
@@ -45,7 +41,7 @@ namespace Dewey.Manifest.Repository
                 return LoadComponentElementResult.CreateMissingAttributesResult(componentElement, missingAttributes);
             }
 
-            componentItem.RelativeLocation = locationAtt.Value;
+            var componentItem = new ComponentItem(nameAtt.Value, locationAtt.Value);
 
             var loadComponentItemResult = ComponentManifest.LoadComponentItem(componentItem, repositoryRoot, manifestFileReaderService);
 

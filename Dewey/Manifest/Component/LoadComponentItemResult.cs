@@ -20,10 +20,13 @@ namespace Dewey.Manifest.Component
 
         public IEnumerable<string> MissingAttributes { get; private set; }
 
+        public bool IsSuccessful { get; private set; }
+
         public string ErrorMessage { get; private set; }
 
-        private LoadComponentItemResult(ComponentItem componentItem, IManifestFileReader componentManifestFile, XElement componentElement, IEnumerable<string> missingAttributes, ComponentManifest componentManifest)
+        private LoadComponentItemResult(bool isSuccessful, ComponentItem componentItem, IManifestFileReader componentManifestFile, XElement componentElement, IEnumerable<string> missingAttributes, ComponentManifest componentManifest)
         {
+            IsSuccessful = isSuccessful;
             ComponentItem = componentItem;
             ComponentManifestFile = componentManifestFile;
             ComponentElement = componentElement;
@@ -34,17 +37,17 @@ namespace Dewey.Manifest.Component
 
         internal static LoadComponentItemResult CreateFileNotFoundResult(ComponentItem componentItem, IManifestFileReader componentManifestFile)
         {
-            return new LoadComponentItemResult(componentItem, componentManifestFile, null, null, null);
+            return new LoadComponentItemResult(false, componentItem, componentManifestFile, null, null, null);
         }
 
         internal static LoadComponentItemResult CreateMissingAttributesResult(ComponentItem componentItem, IManifestFileReader componentManifestFile, XElement componentElement, List<string> missingAttributes)
         {
-            return new LoadComponentItemResult(componentItem, componentManifestFile, componentElement, missingAttributes, null);
+            return new LoadComponentItemResult(false, componentItem, componentManifestFile, componentElement, missingAttributes, null);
         }
 
         internal static LoadComponentItemResult CreateSuccessfulResult(ComponentItem componentItem, IManifestFileReader componentManifestFile, ComponentManifest componentManifest)
         {
-            return new LoadComponentItemResult(componentItem, componentManifestFile, null, null, componentManifest);
+            return new LoadComponentItemResult(true, componentItem, componentManifestFile, null, null, componentManifest);
         }
 
         private string GetErrorMessage()
