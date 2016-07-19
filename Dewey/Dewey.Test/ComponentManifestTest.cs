@@ -39,5 +39,19 @@ namespace Dewey.Test
             //Then
             Assert.False(result.IsSuccessful);
         }
+
+        [Fact]
+        public void LoadComponentItem_returns_SuccessfulResult_for_complete_componentManifest_element()
+        {
+            //Given
+            var mockManifestFileReader = new MockManifestFileReader() { XmlText = "<componentManifest name=\"ExampleWebApiComp\" type=\"web\"/>" };
+            var componentItem = new Fixture().Create<ComponentItem>();
+
+            //When
+            var result = ComponentManifest.LoadComponentItem(componentItem, "root", mockManifestFileReader.CreateService());
+
+            //Then
+            Assert.True(result.IsSuccessful);
+        }
     }
 }
