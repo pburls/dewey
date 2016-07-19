@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Dewey.CLI.Writers
 {
@@ -43,7 +41,7 @@ namespace Dewey.CLI.Writers
                 Console.WriteLine(message);
             }
 
-            result.LoadComponentElementResults.Where(x => x.LoadComponentItemResult != null).Select(x => x.LoadComponentItemResult).WriteErrors();
+            //result.LoadComponentElementResults.Where(x => x.LoadComponentItemResult != null).Select(x => x.LoadComponentItemResult).WriteErrors();
         }
     }
 }

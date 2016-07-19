@@ -10,7 +10,10 @@ namespace Dewey.Manifest.Repository
     {
         public IEnumerable<ComponentItem> ComponentItems { get; private set; }
 
-        private RepositoryManifest () { }
+        private RepositoryManifest (IEnumerable<ComponentItem> componentItems)
+        {
+            ComponentItems = componentItems;
+        }
 
         public static LoadRepositoryItemResult LoadRepositoryItem(RepositoryItem repositoryItem, string rootLocation, IManifestFileReaderService manifestFileReaderService)
         {
@@ -26,12 +29,12 @@ namespace Dewey.Manifest.Repository
                 var componentElements = componentsElement.Elements().Where(x => x.Name.LocalName == "component");
                 foreach (var componentElement in componentElements)
                 {
-                    componentItemResults.Add(ComponentItem.LoadComponentElement(componentElement, repositoryManifestFile.DirectoryName, manifestFileReaderService));
+                    var loadComponentElementResult = ComponentItem.LoadComponentElement(componentElement, repositoryManifestFile.DirectoryName);
+                    componentItemResults.Add(loadComponentElementResult);
                 }
             }
 
-            var repositoryManifest = new RepositoryManifest();
-            repositoryManifest.ComponentItems = componentItemResults.Select(x => x.ComponentItem);
+            var repositoryManifest = new RepositoryManifest(componentItemResults.Select(x => x.ComponentItem));
 
             return LoadRepositoryItemResult.CreateSuccessfulResult(repositoryItem, repositoryManifestFile, repositoryManifest, componentItemResults);
         }

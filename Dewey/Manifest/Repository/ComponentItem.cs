@@ -1,10 +1,7 @@
 ﻿using Dewey.Manfiest;
 using Dewey.Manifest.Component;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Dewey.Manifest.Repository
@@ -20,7 +17,7 @@ namespace Dewey.Manifest.Repository
             RelativeLocation = relativeLocation;
         }
 
-        public static LoadComponentElementResult LoadComponentElement(XElement componentElement, string repositoryRoot, IManifestFileReaderService manifestFileReaderService)
+        public static LoadComponentElementResult LoadComponentElement(XElement componentElement, string repositoryRoot)
         {
             var missingAttributes = new List<string>();
 
@@ -43,9 +40,9 @@ namespace Dewey.Manifest.Repository
 
             var componentItem = new ComponentItem(nameAtt.Value, locationAtt.Value);
 
-            var loadComponentItemResult = ComponentManifest.LoadComponentItem(componentItem, repositoryRoot, manifestFileReaderService);
+            //var loadComponentItemResult = ComponentManifest.LoadComponentItem(componentItem, repositoryRoot, manifestFileReaderService);
 
-            return LoadComponentElementResult.CreateSuccessfulResult(componentElement, componentItem, loadComponentItemResult);
+            return LoadComponentElementResult.CreateSuccessfulResult(componentElement, componentItem/*, loadComponentItemResult*/);
         }
     }
 }

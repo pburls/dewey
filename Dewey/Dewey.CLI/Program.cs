@@ -48,8 +48,9 @@ namespace Dewey.CLI
                 goto done;
 
             var loadRepositoriesManifestFileResult = RepositoriesManifest.LoadRepositoriesManifestFile(new ManifestFileReaderService());
-
             loadRepositoriesManifestFileResult.WriteErrors();
+
+            //loadRepositoriesManifestFileResult.LoadRepositoryElementResults.SelectMany(x => x.LoadRepositoryItemResult.)
 
             command.Execute(loadRepositoriesManifestFileResult);
 

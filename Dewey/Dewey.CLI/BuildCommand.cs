@@ -34,12 +34,12 @@ namespace Dewey.CLI
                 return;
             }
 
-            var loadComponentElementResult = loadRepositoryElementResult.LoadRepositoryItemResult.LoadComponentElementResults.FirstOrDefault(result => result.ComponentItem.Name == ComponentName);
+            /*var loadComponentElementResult = loadRepositoryElementResult.LoadRepositoryItemResult.LoadComponentElementResults.FirstOrDefault(result => result.ComponentItem.Name == ComponentName);
             if (loadComponentElementResult == null || loadComponentElementResult.LoadComponentItemResult.ComponentManifest == null)
             {
                 Console.WriteLine("No Component with name '{0}' was successfully loaded.", ComponentName);
                 return;
-            }
+            }*/
         }
     }
 }
