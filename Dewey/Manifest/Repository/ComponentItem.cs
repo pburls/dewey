@@ -10,14 +10,16 @@ namespace Dewey.Manifest.Repository
     {
         public string Name { get; private set; }
         public string RelativeLocation { get; private set; }
+        public RepositoryManifest RepositoryManifest { get; private set; }
 
-        public ComponentItem(string name, string relativeLocation)
+        public ComponentItem(string name, string relativeLocation, RepositoryManifest repositoryManifest)
         {
             Name = name;
+            RepositoryManifest = repositoryManifest;
             RelativeLocation = relativeLocation;
         }
 
-        public static LoadComponentElementResult LoadComponentElement(XElement componentElement, string repositoryRoot)
+        public static LoadComponentElementResult LoadComponentElement(XElement componentElement, string repositoryRoot, RepositoryManifest repositoryManifest)
         {
             var missingAttributes = new List<string>();
 
@@ -38,11 +40,9 @@ namespace Dewey.Manifest.Repository
                 return LoadComponentElementResult.CreateMissingAttributesResult(componentElement, missingAttributes);
             }
 
-            var componentItem = new ComponentItem(nameAtt.Value, locationAtt.Value);
+            var componentItem = new ComponentItem(nameAtt.Value, locationAtt.Value, repositoryManifest);
 
-            //var loadComponentItemResult = ComponentManifest.LoadComponentItem(componentItem, repositoryRoot, manifestFileReaderService);
-
-            return LoadComponentElementResult.CreateSuccessfulResult(componentElement, componentItem/*, loadComponentItemResult*/);
+            return LoadComponentElementResult.CreateSuccessfulResult(componentElement, componentItem);
         }
     }
 }

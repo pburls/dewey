@@ -34,7 +34,7 @@ namespace Dewey.Test
             var componentItem = new Fixture().Create<ComponentItem>();
 
             //When
-            var result = ComponentManifest.LoadComponentItem(componentItem, "root", mockManifestFileReader.CreateService());
+            var result = ComponentManifest.LoadComponentItem(componentItem, mockManifestFileReader.CreateService());
 
             //Then
             Assert.False(result.IsSuccessful);
@@ -48,7 +48,7 @@ namespace Dewey.Test
             var componentItem = new Fixture().Create<ComponentItem>();
 
             //When
-            var result = ComponentManifest.LoadComponentItem(componentItem, "root", mockManifestFileReader.CreateService());
+            var result = ComponentManifest.LoadComponentItem(componentItem, mockManifestFileReader.CreateService());
 
             //Then
             Assert.True(result.IsSuccessful);

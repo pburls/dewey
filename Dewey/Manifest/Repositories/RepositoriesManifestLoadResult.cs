@@ -1,12 +1,11 @@
 ﻿using Dewey.Manfiest;
+using Dewey.Messaging;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace Dewey.Manifest.Repositories
 {
-    public class LoadRepositoriesManifestResult
+    public class RepositoriesManifestLoadResult : IEvent
     {
         public IManifestFileReader RepositoriesManifestFile { get; private set; }
 
@@ -14,29 +13,32 @@ namespace Dewey.Manifest.Repositories
 
         public IEnumerable<LoadRepositoryElementResult> LoadRepositoryElementResults { get; private set; }
 
+        public bool IsSuccessful { get; private set; }
+
         public string ErrorMessage { get; private set; }
 
-        private LoadRepositoriesManifestResult(IManifestFileReader repositoriesManifestFile, RepositoriesManifest repositoriesManifest, IEnumerable<LoadRepositoryElementResult> loadRepositoryElementResult)
+        private RepositoriesManifestLoadResult(bool isSuccessful, IManifestFileReader repositoriesManifestFile, RepositoriesManifest repositoriesManifest, IEnumerable<LoadRepositoryElementResult> loadRepositoryElementResult)
         {
             if (repositoriesManifestFile == null)
             {
                 throw new ArgumentNullException("repositoriesManifestFile");
             }
 
+            IsSuccessful = isSuccessful;
             RepositoriesManifestFile = repositoriesManifestFile;
             RepositoriesManifest = repositoriesManifest;
             LoadRepositoryElementResults = loadRepositoryElementResult;
             ErrorMessage = GetErrorMessage();
         }
 
-        public static LoadRepositoriesManifestResult CreateFileNotFoundResult(IManifestFileReader repositoriesManifestFile)
+        public static RepositoriesManifestLoadResult CreateFileNotFoundResult(IManifestFileReader repositoriesManifestFile)
         {
-            return new LoadRepositoriesManifestResult(repositoriesManifestFile, null, null);
+            return new RepositoriesManifestLoadResult(false, repositoriesManifestFile, null, null);
         }
 
-        public static LoadRepositoriesManifestResult CreateSuccessfulResult(IManifestFileReader repositoriesManifestFile, RepositoriesManifest repositoriesManifest, IEnumerable<LoadRepositoryElementResult> loadRepositoryElementResult)
+        public static RepositoriesManifestLoadResult CreateSuccessfulResult(IManifestFileReader repositoriesManifestFile, RepositoriesManifest repositoriesManifest, IEnumerable<LoadRepositoryElementResult> loadRepositoryElementResult)
         {
-            return new LoadRepositoriesManifestResult(repositoriesManifestFile, repositoriesManifest, loadRepositoryElementResult);
+            return new RepositoriesManifestLoadResult(true, repositoriesManifestFile, repositoriesManifest, loadRepositoryElementResult);
         }
 
         private string GetErrorMessage()

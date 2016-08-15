@@ -1,5 +1,6 @@
 ﻿using Dewey.Manfiest;
 using Dewey.Manifest.Repository;
+using Dewey.Messaging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
@@ -10,25 +11,23 @@ namespace Dewey.Manifest.Repositories
     {
         public string Name { get; private set; }
         public string RelativeLocation { get; private set; }
+        public RepositoriesManifest RepositoriesManifest { get; private set; }
 
-        private RepositoryItem(string name)
+        private RepositoryItem(string name, string relativeLocation, RepositoriesManifest repositoriesManifest)
         {
             Name = name;
+            RelativeLocation = relativeLocation;
+            RepositoriesManifest = repositoriesManifest;
         }
 
-        public static LoadRepositoryElementResult LoadRepositoryElement(XElement repositoryElement, string respositoriesRoot, IManifestFileReaderService manifestFileReaderService)
+        public static LoadRepositoryElementResult LoadRepositoryElement(XElement repositoryElement, RepositoriesManifest repositoriesManifest)
         {
             var missingAttributes = new List<string>();
-            RepositoryItem repositoryItem = null;
 
             var repoNameAtt = repositoryElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "name");
             if (repoNameAtt == null || string.IsNullOrWhiteSpace(repoNameAtt.Value))
             {
                 missingAttributes.Add("name");
-            }
-            else
-            {
-                repositoryItem = new RepositoryItem(repoNameAtt.Value);
             }
 
             var repoLocationAtt = repositoryElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "location");
@@ -42,11 +41,9 @@ namespace Dewey.Manifest.Repositories
                 return LoadRepositoryElementResult.CreateMissingAttributesResult(repositoryElement, missingAttributes);
             }
 
-            repositoryItem.RelativeLocation = repoLocationAtt.Value;
+            var repositoryItem = new RepositoryItem(repoNameAtt.Value, repoLocationAtt.Value, repositoriesManifest);
 
-            var loadRepositoryItemResult = RepositoryManifest.LoadRepositoryItem(repositoryItem, respositoriesRoot, manifestFileReaderService);
-
-            return LoadRepositoryElementResult.CreateSuccessfulResult(repositoryElement, repositoryItem, loadRepositoryItemResult);
+            return LoadRepositoryElementResult.CreateSuccessfulResult(repositoryElement, repositoryItem);
         }
     }
 }

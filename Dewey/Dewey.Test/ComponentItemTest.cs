@@ -1,4 +1,5 @@
 ﻿using Dewey.Manifest.Repository;
+using Ploeh.AutoFixture;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using Xunit;
@@ -35,10 +36,11 @@ namespace Dewey.Test
         public void LoadComponentElement_returns_UnsuccessfulResult_for(XmlElementData xmlElementData)
         {
             //Given
+            var repositoryManifest = new Fixture().Create<RepositoryManifest>();
             XElement componentItemElement = XElement.Parse(xmlElementData.XmlText);
 
             //When
-            var result = ComponentItem.LoadComponentElement(componentItemElement, "root");
+            var result = ComponentItem.LoadComponentElement(componentItemElement, "root", repositoryManifest);
 
             //Then
             Assert.False(result.IsSuccessful);
@@ -48,10 +50,11 @@ namespace Dewey.Test
         public void LoadComponentElement_returns_SuccessfulResult_for_complete_component_element()
         {
             //Given
+            var repositoryManifest = new Fixture().Create<RepositoryManifest>();
             XElement componentItemElement = XElement.Parse("<component name=\"ExampleWebApiComp\" location=\"ExampleWebApiComp/\" />");
 
             //When
-            var result = ComponentItem.LoadComponentElement(componentItemElement, "root");
+            var result = ComponentItem.LoadComponentElement(componentItemElement, "root", repositoryManifest);
 
             //Then
             Assert.True(result.IsSuccessful);

@@ -41,17 +41,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Component\ComponentManifest.cs" />
-    <Compile Include="Component\LoadComponentItemResult.cs" />
+    <Compile Include="Component\ComponentManifestLoadResult.cs" />
     <Compile Include="IManifestFileReader.cs" />
+    <Compile Include="ManifestLoadHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\LoadRepositoriesManifestResult.cs" />
+    <Compile Include="Repositories\RepositoriesManifestLoadResult.cs" />
     <Compile Include="Repositories\LoadRepositoryElementResult.cs" />
     <Compile Include="Repositories\RepositoriesManifest.cs" />
     <Compile Include="Repositories\RepositoryItem.cs" />
     <Compile Include="Repository\ComponentItem.cs" />
     <Compile Include="Repository\LoadComponentElementResult.cs" />
-    <Compile Include="Repository\LoadRepositoryItemResult.cs" />
+    <Compile Include="Repository\RepositoryManifestLoadResult.cs" />
     <Compile Include="Repository\RepositoryManifest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dewey.Messaging\Dewey.Messaging.csproj">
+      <Project>{a3986e8a-3009-41b1-8636-0c431305255c}</Project>
+      <Name>Dewey.Messaging</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

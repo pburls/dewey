@@ -11,10 +11,9 @@ namespace Dewey.Manifest.Repositories
         public IEnumerable<string> MissingAttributes { get; private set; }
         public RepositoryItem RepositoryItem { get; private set; }
         public XElement RepositoryElement { get; private set; }
-        public LoadRepositoryItemResult LoadRepositoryItemResult { get; private set; }
         public string ErrorMessage { get; private set; }
 
-        private LoadRepositoryElementResult(XElement repositoryElement, RepositoryItem repositoryItem, IEnumerable<string> missingAttributes, LoadRepositoryItemResult loadRepositoryItemResult)
+        private LoadRepositoryElementResult(XElement repositoryElement, RepositoryItem repositoryItem, IEnumerable<string> missingAttributes)
         {
             if (repositoryElement == null)
             {
@@ -24,18 +23,17 @@ namespace Dewey.Manifest.Repositories
             MissingAttributes = missingAttributes;
             RepositoryItem = repositoryItem;
             RepositoryElement = repositoryElement;
-            LoadRepositoryItemResult = loadRepositoryItemResult;
             ErrorMessage = GetErrorMessage();
         }
 
         public static LoadRepositoryElementResult CreateMissingAttributesResult(XElement repositoryElement, IEnumerable<string> missingAttributes)
         {
-            return new LoadRepositoryElementResult(repositoryElement, null, missingAttributes, null);
+            return new LoadRepositoryElementResult(repositoryElement, null, missingAttributes);
         }
 
-        internal static LoadRepositoryElementResult CreateSuccessfulResult(XElement repositoryElement, RepositoryItem repositoryItem, LoadRepositoryItemResult loadRepositoryItemResult)
+        internal static LoadRepositoryElementResult CreateSuccessfulResult(XElement repositoryElement, RepositoryItem repositoryItem)
         {
-            return new LoadRepositoryElementResult(repositoryElement, repositoryItem, null, loadRepositoryItemResult);
+            return new LoadRepositoryElementResult(repositoryElement, repositoryItem, null);
         }
 
         private string GetErrorMessage()

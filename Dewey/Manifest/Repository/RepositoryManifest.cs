@@ -1,5 +1,6 @@
 ﻿using Dewey.Manfiest;
 using Dewey.Manifest.Repositories;
+using Dewey.Messaging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
@@ -8,19 +9,41 @@ namespace Dewey.Manifest.Repository
 {
     public class RepositoryManifest
     {
+        public string DirectoryName { get; private set; }
+
+        public string FileName { get; private set; }
+
+        public string Name { get; private set; }
+
         public IEnumerable<ComponentItem> ComponentItems { get; private set; }
 
-        private RepositoryManifest (IEnumerable<ComponentItem> componentItems)
+        public RepositoryManifest (string name, string directoryName, string fileName)
         {
-            ComponentItems = componentItems;
+            Name = name;
+            DirectoryName = directoryName;
+            FileName = fileName;
         }
 
-        public static LoadRepositoryItemResult LoadRepositoryItem(RepositoryItem repositoryItem, string rootLocation, IManifestFileReaderService manifestFileReaderService)
+        public static RepositoryManifestLoadResult LoadRepositoryItem(RepositoryItem repositoryItem, IManifestFileReaderService manifestFileReaderService)
         {
-            var repositoryManifestFile = manifestFileReaderService.ReadRepositoryManifestFile(rootLocation, repositoryItem.RelativeLocation);
-            if (!repositoryManifestFile.DirectoryExists || !repositoryManifestFile.FileExists) return LoadRepositoryItemResult.CreateFileNotFoundResult(repositoryItem, repositoryManifestFile);
+            var repositoryManifestFile = manifestFileReaderService.ReadRepositoryManifestFile(repositoryItem.RepositoriesManifest.DirectoryName, repositoryItem.RelativeLocation);
+            return LoadRepositoryManifestFile(repositoryManifestFile, repositoryItem.RepositoriesManifest);
+        }
+
+        public static RepositoryManifestLoadResult LoadRepositoryManifestFile(IManifestFileReader repositoryManifestFile, RepositoriesManifest repositoriesManifest)
+        {
+            if (!repositoryManifestFile.DirectoryExists || !repositoryManifestFile.FileExists) return RepositoryManifestLoadResult.CreateFileNotFoundResult(repositoriesManifest, repositoryManifestFile);
 
             var repository = repositoryManifestFile.Load();
+
+            var nameAtt = repository.Attribute(XName.Get("name"));
+            if (nameAtt == null || string.IsNullOrWhiteSpace(nameAtt.Value))
+            {
+                return RepositoryManifestLoadResult.CreateMissingAttributesResult(repositoriesManifest, repositoryManifestFile, new string[] { "name" });
+            }
+
+            var repositoryManifest = new RepositoryManifest(nameAtt.Value, repositoryManifestFile.DirectoryName, repositoryManifestFile.FileName);
+
             var componentsElement = repository.Elements().FirstOrDefault(x => x.Name.LocalName == "components");
 
             var componentItemResults = new List<LoadComponentElementResult>();
@@ -29,14 +52,13 @@ namespace Dewey.Manifest.Repository
                 var componentElements = componentsElement.Elements().Where(x => x.Name.LocalName == "component");
                 foreach (var componentElement in componentElements)
                 {
-                    var loadComponentElementResult = ComponentItem.LoadComponentElement(componentElement, repositoryManifestFile.DirectoryName);
-                    componentItemResults.Add(loadComponentElementResult);
+                    componentItemResults.Add(ComponentItem.LoadComponentElement(componentElement, repositoryManifestFile.DirectoryName, repositoryManifest));
                 }
             }
 
-            var repositoryManifest = new RepositoryManifest(componentItemResults.Select(x => x.ComponentItem));
+            repositoryManifest.ComponentItems = componentItemResults.Where(x => x.IsSuccessful).Select(x => x.ComponentItem).ToList();
 
-            return LoadRepositoryItemResult.CreateSuccessfulResult(repositoryItem, repositoryManifestFile, repositoryManifest, componentItemResults);
+            return RepositoryManifestLoadResult.CreateSuccessfulResult(repositoriesManifest, repositoryManifestFile, repositoryManifest, componentItemResults);
         }
     }
 }

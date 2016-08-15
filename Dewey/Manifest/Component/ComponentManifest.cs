@@ -20,10 +20,15 @@ namespace Dewey.Manifest.Component
             Type = type;
         }
 
-        public static LoadComponentItemResult LoadComponentItem(ComponentItem componentItem, string rootLocation, IManifestFileReaderService manifestFileReaderService)
+        public static ComponentManifestLoadResult LoadComponentItem(ComponentItem componentItem, IManifestFileReaderService manifestFileReaderService)
         {
-            var componentManifestFile = manifestFileReaderService.ReadComponentManifestFile(rootLocation, componentItem.RelativeLocation);
-            if (!componentManifestFile.DirectoryExists || !componentManifestFile.FileExists) return LoadComponentItemResult.CreateFileNotFoundResult(componentItem, componentManifestFile);
+            var componentManifestFile = manifestFileReaderService.ReadComponentManifestFile(componentItem.RepositoryManifest.DirectoryName, componentItem.RelativeLocation);
+            return LoadComponentManifestFile(componentManifestFile, componentItem.RepositoryManifest);
+        }
+
+        public static ComponentManifestLoadResult LoadComponentManifestFile(IManifestFileReader componentManifestFile, RepositoryManifest repositoryManifest)
+        {
+            if (!componentManifestFile.DirectoryExists || !componentManifestFile.FileExists) return ComponentManifestLoadResult.CreateFileNotFoundResult(repositoryManifest, componentManifestFile);
 
             var rootElement = componentManifestFile.Load();
 
@@ -43,12 +48,12 @@ namespace Dewey.Manifest.Component
 
             if (missingAttributes.Any())
             {
-                return LoadComponentItemResult.CreateMissingAttributesResult(componentItem, componentManifestFile, rootElement, missingAttributes);
+                return ComponentManifestLoadResult.CreateMissingAttributesResult(repositoryManifest, componentManifestFile, rootElement, missingAttributes);
             }
 
             var componentManifest = new ComponentManifest(nameAtt.Value, typeAtt.Value);
 
-            return LoadComponentItemResult.CreateSuccessfulResult(componentItem, componentManifestFile, componentManifest);
+            return ComponentManifestLoadResult.CreateSuccessfulResult(repositoryManifest, componentManifestFile, componentManifest);
         }
     }
 }

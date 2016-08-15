@@ -1,5 +1,7 @@
-﻿using Dewey.Manifest.Repositories;
+﻿using Dewey.Manifest.Component;
+using Dewey.Manifest.Repositories;
 using Dewey.Manifest.Repository;
+using Dewey.Messaging;
 using System;
 using System.Collections.Generic;
 
@@ -14,17 +16,15 @@ namespace Dewey.CLI
 
     class ListItems : ICommand
     {
-        ListItems()
-        {
+        private readonly ListItemState _listItemState;
 
+        public ListItems(EventAggregator eventAggregator)
+        {
+            _listItemState = new ListItemState();
+            eventAggregator.Subscribe<ComponentManifestLoadResult>(_listItemState);
         }
 
-        public static ListItems Create()
-        {
-            return new ListItems();
-        }
-
-        public void Execute(LoadRepositoriesManifestResult result)
+        public void Execute(RepositoriesManifestLoadResult result)
         {
             if (result.RepositoriesManifestFile != null)
             {
@@ -41,13 +41,13 @@ namespace Dewey.CLI
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("├ {0}", repoResult.RepositoryItem.Name);
 
-                        WriteList(repoResult.LoadRepositoryItemResult, writeOffsetList);
+                        //WriteList(repoResult.LoadRepositoryItemResult, writeOffsetList);
                     }
                 }
             }
         }
 
-        internal void WriteList(LoadRepositoryItemResult result, List<ItemColor> offsets)
+        internal void WriteList(RepositoryManifestLoadResult result, List<ItemColor> offsets)
         {
             foreach (var compResult in result.LoadComponentElementResults)
             {
@@ -76,6 +76,59 @@ namespace Dewey.CLI
             {
                 color.WriteOffset();
             }
+        }
+    }
+
+    class ListItemState : IEventHandler<ComponentManifestLoadResult>
+    {
+        Dictionary<string, Repository> _repositoriesDictionary { get; set; }
+
+        public ListItemState()
+        {
+            _repositoriesDictionary = new Dictionary<string, Repository>();
+        }
+
+        public void Handle(ComponentManifestLoadResult componentManifestLoadedEvent)
+        {
+            if (componentManifestLoadedEvent.IsSuccessful)
+            {
+                Repository repository = null;
+                if (!_repositoriesDictionary.TryGetValue(componentManifestLoadedEvent.RepositoryManifest.Name, out repository))
+                {
+                    repository = new Repository(componentManifestLoadedEvent.RepositoryManifest.Name);
+                    _repositoriesDictionary.Add(repository.Name, repository);
+                }
+
+                repository.AddComponent(componentManifestLoadedEvent.ComponentManifest);
+            }
+        }
+    }
+
+    class Repository
+    {
+        private List<Component> _componentList;
+        public IEnumerable<Component> Components;
+        public string Name { get; private set; }
+
+        public Repository(string name)
+        {
+            Name = name;
+            _componentList = new List<Component>();
+        }
+
+        public void AddComponent(ComponentManifest component)
+        {
+            _componentList.Add(new Component(component));
+        }
+    }
+
+    class Component
+    {
+        public string Name { get; private set; }
+
+        public Component(ComponentManifest component)
+        {
+            Name = component.Name;
         }
     }
 }

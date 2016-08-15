@@ -1,10 +1,10 @@
 ﻿using Dewey.CLI.Builds;
 using Dewey.CLI.Deployments;
-using Dewey.CLI.Writers;
 using Dewey.File;
+using Dewey.Manifest;
 using Dewey.Manifest.Component;
-using Dewey.Manifest.Repositories;
 using Dewey.Manifest.Repository;
+using Dewey.Messaging;
 using System;
 using System.Linq;
 using System.Xml.Linq;
@@ -15,12 +15,13 @@ namespace Dewey.CLI
 
     class Program
     {
-        private static ComponentAction componentAction;
-        private static Action<LoadRepositoriesManifestResult> loadRepositoriesManifestResultAction;
         private static ICommand command;
 
         static void Main(string[] args)
         {
+            var eventAggregator = new EventAggregator();
+            var manifestFileReaderService = new ManifestFileReaderService();
+
             if (args.Length < 1)
             {
                 Console.WriteLine("No action paramerter specified.");
@@ -37,7 +38,7 @@ namespace Dewey.CLI
                     //componentAction = DeployComponent;
                     break;
                 case "list":
-                    command = ListItems.Create();
+                    command = new ListItems(eventAggregator);
                     break;
                 default:
                     Console.WriteLine("Unknown command.");
@@ -47,12 +48,19 @@ namespace Dewey.CLI
             if (command == null)
                 goto done;
 
-            var loadRepositoriesManifestFileResult = RepositoriesManifest.LoadRepositoriesManifestFile(new ManifestFileReaderService());
-            loadRepositoriesManifestFileResult.WriteErrors();
+            var manifestLoadResultErrorWriter = new ManifestLoadResultErrorWriter(eventAggregator);
+
+            var manifestLoadHandler = new ManifestLoadHandler(eventAggregator, manifestFileReaderService);
+            manifestLoadHandler.HandleLoadRepositories();
+            
+            //loadRepositoriesManifestFileResult.WriteErrors();
+
+            
+
 
             //loadRepositoriesManifestFileResult.LoadRepositoryElementResults.SelectMany(x => x.LoadRepositoryItemResult.)
 
-            command.Execute(loadRepositoriesManifestFileResult);
+            //command.Execute(loadRepositoriesManifestFileResult);
 
             done:
             Console.ResetColor();
