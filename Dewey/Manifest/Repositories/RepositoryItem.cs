@@ -1,7 +1,4 @@
-﻿using Dewey.Manfiest;
-using Dewey.Manifest.Repository;
-using Dewey.Messaging;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 

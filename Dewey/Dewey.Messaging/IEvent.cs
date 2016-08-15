@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Dewey.Messaging
+﻿namespace Dewey.Messaging
 {
     public interface IEvent
     {

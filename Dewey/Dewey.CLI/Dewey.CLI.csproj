@@ -54,7 +54,6 @@
     <Compile Include="Deployments\DeploymentActionFactory.cs" />
     <Compile Include="Deployments\IDeploymentAction.cs" />
     <Compile Include="Deployments\IISDeployment.cs" />
-    <Compile Include="ICommand.cs" />
     <Compile Include="ListItems.cs" />
     <Compile Include="ManifestLoadResultErrorWriter.cs" />
     <Compile Include="Program.cs" />

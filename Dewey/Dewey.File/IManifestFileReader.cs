@@ -1,6 +1,6 @@
 ﻿using System.Xml.Linq;
 
-namespace Dewey.Manfiest
+namespace Dewey.File
 {
     public interface IManifestFileReaderService
     {

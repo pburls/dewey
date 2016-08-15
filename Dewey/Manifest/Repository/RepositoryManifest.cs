@@ -1,6 +1,5 @@
-﻿using Dewey.Manfiest;
+﻿using Dewey.File;
 using Dewey.Manifest.Repositories;
-using Dewey.Messaging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;

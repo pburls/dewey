@@ -75,6 +75,10 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Dewey.File\Dewey.File.csproj">
+      <Project>{9078b56e-2979-4bd4-abf7-34eed2662e29}</Project>
+      <Name>Dewey.File</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Manifest\Dewey.Manifest.csproj">
       <Project>{00ea83da-674d-4ffc-8e63-4c3a37a79cf9}</Project>
       <Name>Dewey.Manifest</Name>

@@ -1,5 +1,4 @@
-﻿using Dewey.Manfiest;
-using Dewey.Manifest.Component;
+﻿using Dewey.Manifest.Component;
 using Dewey.Manifest.Repositories;
 using Dewey.Manifest.Repository;
 using Ploeh.AutoFixture;

@@ -1,4 +1,4 @@
-﻿using Dewey.Manfiest;
+﻿using Dewey.File;
 using System.Xml.Linq;
 
 namespace Dewey.Test

@@ -41,17 +41,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentManifestFileReader.cs" />
+    <Compile Include="IManifestFileReader.cs" />
     <Compile Include="ManifestFileReader.cs" />
     <Compile Include="ManifestFileReaderService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoriesManifestFileReader.cs" />
     <Compile Include="RepositoryManifestFileReader.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Manifest\Dewey.Manifest.csproj">
-      <Project>{00ea83da-674d-4ffc-8e63-4c3a37a79cf9}</Project>
-      <Name>Dewey.Manifest</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

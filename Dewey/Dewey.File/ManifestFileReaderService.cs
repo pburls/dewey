@@ -1,6 +1,4 @@
-﻿using Dewey.Manfiest;
-
-namespace Dewey.File
+﻿namespace Dewey.File
 {
     public class ManifestFileReaderService : IManifestFileReaderService
     {

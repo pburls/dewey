@@ -1,29 +1,28 @@
-﻿using Dewey.Manfiest;
+﻿using Dewey.File;
 using Dewey.Manifest.Component;
 using Dewey.Manifest.Repositories;
 using Dewey.Manifest.Repository;
 using Dewey.Messaging;
-using System;
 using System.Linq;
 
 namespace Dewey.Manifest
 {
-    public class ManifestLoadHandler : IEventHandler<RepositoriesManifestLoadResult>, IEventHandler<RepositoryManifestLoadResult>, IEventHandler<ComponentManifestLoadResult>
+    public class ManifestLoadHandler : IEventHandler<RepositoriesManifestLoadResult>, IEventHandler<RepositoryManifestLoadResult>, IEventHandler<ComponentManifestLoadResult>, ICommandHandler<LoadManifestFiles>
     {
         private readonly EventAggregator _eventAggregator;
         private readonly IManifestFileReaderService _manifestFileReaderService;
 
-        public ManifestLoadHandler(EventAggregator eventAggregator, IManifestFileReaderService manifestFileReaderService)
+        public ManifestLoadHandler(CommandProcessor commandProcessor, EventAggregator eventAggregator)
         {
             _eventAggregator = eventAggregator;
-            _manifestFileReaderService = manifestFileReaderService;
+            _manifestFileReaderService = new ManifestFileReaderService();
 
             _eventAggregator.Subscribe<RepositoriesManifestLoadResult>(this);
             _eventAggregator.Subscribe<ComponentManifestLoadResult>(this);
             _eventAggregator.Subscribe<RepositoryManifestLoadResult>(this);
         }
 
-        public void HandleLoadRepositories()
+        public void Execute(LoadManifestFiles command)
         {
             var loadRepositoriesManifestFileResult = RepositoriesManifest.LoadRepositoriesManifestFile(_manifestFileReaderService);
             _eventAggregator.PublishEvent(loadRepositoriesManifestFileResult);

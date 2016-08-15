@@ -1,4 +1,5 @@
-﻿using Dewey.Manifest.Component;
+﻿using Dewey.Manifest;
+using Dewey.Manifest.Component;
 using Dewey.Manifest.Repositories;
 using Dewey.Manifest.Repository;
 using Dewey.Messaging;
@@ -37,12 +38,14 @@ namespace Dewey.CLI
 
     class ListItemsHandler : ICommandHandler<ListItems>, IEventHandler<ComponentManifestLoadResult>, IEventHandler<RepositoryManifestLoadResult>, IEventHandler<RepositoriesManifestLoadResult>
     {
+        CommandProcessor _commandProcessor;
         Dictionary<string, RepositoriesFile> _repositoriesDictionary { get; set; }
         Dictionary<string, Repository> _repositoryDictionary { get; set; }
 
 
-        public ListItemsHandler(EventAggregator eventAggregator)
+        public ListItemsHandler(CommandProcessor commandProcessor, EventAggregator eventAggregator)
         {
+            _commandProcessor = commandProcessor;
             _repositoriesDictionary = new Dictionary<string, RepositoriesFile>();
             _repositoryDictionary = new Dictionary<string, Repository>();
 
@@ -53,6 +56,8 @@ namespace Dewey.CLI
 
         public void Execute(ListItems command)
         {
+            _commandProcessor.Execute(new LoadManifestFiles());
+
             foreach (var repositoriesFile in _repositoriesDictionary.Values)
             {
                 repositoriesFile.Write();

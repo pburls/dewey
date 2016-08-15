@@ -1,5 +1,6 @@
 ﻿using System;
 using Dewey.Manifest.Repositories;
+using Dewey.Messaging;
 using System.Linq;
 
 namespace Dewey.CLI

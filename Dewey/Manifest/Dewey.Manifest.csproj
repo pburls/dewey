@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="Component\ComponentManifest.cs" />
     <Compile Include="Component\ComponentManifestLoadResult.cs" />
-    <Compile Include="IManifestFileReader.cs" />
+    <Compile Include="LoadManifestFiles.cs" />
     <Compile Include="ManifestLoadHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\RepositoriesManifestLoadResult.cs" />
@@ -55,6 +55,10 @@
     <Compile Include="Repository\RepositoryManifest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Dewey.File\Dewey.File.csproj">
+      <Project>{9078b56e-2979-4bd4-abf7-34eed2662e29}</Project>
+      <Name>Dewey.File</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Dewey.Messaging\Dewey.Messaging.csproj">
       <Project>{a3986e8a-3009-41b1-8636-0c431305255c}</Project>
       <Name>Dewey.Messaging</Name>

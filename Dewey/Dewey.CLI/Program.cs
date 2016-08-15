@@ -1,6 +1,5 @@
 ﻿using Dewey.CLI.Builds;
 using Dewey.CLI.Deployments;
-using Dewey.File;
 using Dewey.Manifest;
 using Dewey.Manifest.Component;
 using Dewey.Manifest.Repository;
@@ -20,7 +19,10 @@ namespace Dewey.CLI
         static void Main(string[] args)
         {
             var eventAggregator = new EventAggregator();
-            var manifestFileReaderService = new ManifestFileReaderService();
+            var commandProcessor = new CommandProcessor(eventAggregator);
+
+            commandProcessor.RegisterHandler<LoadManifestFiles, ManifestLoadHandler>();
+            commandProcessor.RegisterHandler<ListItems, ListItemsHandler>();
 
             if (args.Length < 1)
             {
@@ -49,72 +51,18 @@ namespace Dewey.CLI
                 goto done;
 
             var manifestLoadResultErrorWriter = new ManifestLoadResultErrorWriter(eventAggregator);
-            var listItemsHandler = new ListItemsHandler(eventAggregator);
 
-            var manifestLoadHandler = new ManifestLoadHandler(eventAggregator, manifestFileReaderService);
-            manifestLoadHandler.HandleLoadRepositories();
-            listItemsHandler.Execute(new ListItems());
-            //loadRepositoriesManifestFileResult.WriteErrors();
-
-
-
-
-            //loadRepositoriesManifestFileResult.LoadRepositoryElementResults.SelectMany(x => x.LoadRepositoryItemResult.)
-
-            //command.Execute(loadRepositoriesManifestFileResult);
+            var commandHandler = commandProcessor.Execute(command);
+            if (commandHandler == null)
+            {
+                Console.WriteLine("No command handler registered for command.");
+            }
 
             done:
             Console.ResetColor();
             Console.WriteLine("Continue...");
             Console.ReadLine();
         }
-
-        //private static void LoadComponent(RepositoryComponent repoComponent)
-        //{
-        //    var componentManifestFilePath = Path.Combine(repoComponent.Location, "component.xml");
-        //    if (!Directory.Exists(repoComponent.Location))
-        //    {
-        //        Console.WriteLine("Unable to find component directory at location '{1}' for component '{0}'.", repoComponent.Name, repoComponent.Location);
-        //    }
-        //    else if (!File.Exists(componentManifestFilePath))
-        //    {
-        //        Console.WriteLine("Unable to find component manifest file at path '{1}' for component '{0}'.", repoComponent.Name, componentManifestFilePath);
-        //    }
-        //    else
-        //    {
-        //        var componentElement = XElement.Load(componentManifestFilePath);
-        //        Console.WriteLine("Loaded component '{0}' manifest file.", repoComponent.Name);
-
-        //        var componentNameAtt = componentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "name");
-        //        if (componentNameAtt == null || string.IsNullOrWhiteSpace(componentNameAtt.Value))
-        //        {
-        //            Console.WriteLine("Skipping component element without a valid name: {0}", componentElement.ToString());
-        //            return;
-        //        }
-        //        else if (componentNameAtt.Value != repoComponent.Name)
-        //        {
-        //            Console.WriteLine("Warning: Component name mismatch. Repository Manifest: '{0}', Component Manifest: '{1}'", repoComponent.Name, componentNameAtt.Value);
-        //        }
-
-        //        var componentTypeAtt = componentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "type");
-        //        if (componentTypeAtt == null || string.IsNullOrWhiteSpace(componentTypeAtt.Value))
-        //        {
-        //            Console.WriteLine("Skipping component element without a valid type: {0}", componentElement.ToString());
-        //            return;
-        //        }
-
-        //        var componentManifest = new ComponentManifest(componentNameAtt.Value, componentTypeAtt.Value);
-
-        //        if (componentAction != null)
-        //        {
-        //            componentAction(repoComponent, componentManifest, componentElement);
-        //        }
-        //        else
-        //        {
-        //            Console.WriteLine("No Action.");
-        //        }
-        //    }
-        //}
 
         private static void BuildComponent(ComponentItem repoComponent, ComponentManifest componentManifest, XElement componentElement)
         {

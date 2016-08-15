@@ -1,5 +1,4 @@
-﻿using Dewey.Manfiest;
-using System.IO;
+﻿using System.IO;
 using System.Xml.Linq;
 
 namespace Dewey.File
