@@ -38,7 +38,7 @@ namespace Dewey.CLI
                     //componentAction = DeployComponent;
                     break;
                 case "list":
-                    command = new ListItems(eventAggregator);
+                    command = new ListItems();
                     break;
                 default:
                     Console.WriteLine("Unknown command.");
@@ -49,13 +49,14 @@ namespace Dewey.CLI
                 goto done;
 
             var manifestLoadResultErrorWriter = new ManifestLoadResultErrorWriter(eventAggregator);
+            var listItemsHandler = new ListItemsHandler(eventAggregator);
 
             var manifestLoadHandler = new ManifestLoadHandler(eventAggregator, manifestFileReaderService);
             manifestLoadHandler.HandleLoadRepositories();
-            
+            listItemsHandler.Execute(new ListItems());
             //loadRepositoriesManifestFileResult.WriteErrors();
 
-            
+
 
 
             //loadRepositoriesManifestFileResult.LoadRepositoryElementResults.SelectMany(x => x.LoadRepositoryItemResult.)
