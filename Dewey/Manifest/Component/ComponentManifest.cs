@@ -53,7 +53,7 @@ namespace Dewey.Manifest.Component
 
             var componentManifest = new ComponentManifest(nameAtt.Value, typeAtt.Value);
 
-            return ComponentManifestLoadResult.CreateSuccessfulResult(repositoryManifest, componentManifestFile, componentManifest);
+            return ComponentManifestLoadResult.CreateSuccessfulResult(repositoryManifest, componentManifestFile, rootElement, componentManifest);
         }
     }
 }

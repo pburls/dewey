@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Dewey.CLI.Builds
+namespace Dewey.Build
 {
     class BuildActionFactory
     {

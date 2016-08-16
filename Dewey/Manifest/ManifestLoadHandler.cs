@@ -24,6 +24,8 @@ namespace Dewey.Manifest
 
         public void Execute(LoadManifestFiles command)
         {
+            _eventAggregator.PublishEvent(new LoadManifestFilesStarted());
+
             var loadRepositoriesManifestFileResult = RepositoriesManifest.LoadRepositoriesManifestFile(_manifestFileReaderService);
             _eventAggregator.PublishEvent(loadRepositoriesManifestFileResult);
         }

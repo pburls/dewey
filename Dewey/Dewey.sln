@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dewey.ListItems", "Dewey.Li
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Commands", "Commands", "{C769EC16-EAF7-41FE-94BF-8171D6A5E559}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dewey.Build", "Dewey.Build\Dewey.Build.csproj", "{B1E2A5FD-E29C-4F59-A169-8D5896AA8840}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,11 +49,16 @@ Global
 		{B2561B13-71EF-45CC-BDEA-615556C22283}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2561B13-71EF-45CC-BDEA-615556C22283}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2561B13-71EF-45CC-BDEA-615556C22283}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1E2A5FD-E29C-4F59-A169-8D5896AA8840}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1E2A5FD-E29C-4F59-A169-8D5896AA8840}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1E2A5FD-E29C-4F59-A169-8D5896AA8840}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1E2A5FD-E29C-4F59-A169-8D5896AA8840}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B2561B13-71EF-45CC-BDEA-615556C22283} = {C769EC16-EAF7-41FE-94BF-8171D6A5E559}
+		{B1E2A5FD-E29C-4F59-A169-8D5896AA8840} = {C769EC16-EAF7-41FE-94BF-8171D6A5E559}
 	EndGlobalSection
 EndGlobal

@@ -44,9 +44,9 @@ namespace Dewey.Manifest.Component
             return new ComponentManifestLoadResult(false, repositoryManifest, componentManifestFile, componentElement, missingAttributes, null);
         }
 
-        internal static ComponentManifestLoadResult CreateSuccessfulResult(RepositoryManifest repositoryManifest, IManifestFileReader componentManifestFile, ComponentManifest componentManifest)
+        internal static ComponentManifestLoadResult CreateSuccessfulResult(RepositoryManifest repositoryManifest, IManifestFileReader componentManifestFile, XElement componentElement, ComponentManifest componentManifest)
         {
-            return new ComponentManifestLoadResult(true, repositoryManifest, componentManifestFile, null, null, componentManifest);
+            return new ComponentManifestLoadResult(true, repositoryManifest, componentManifestFile, componentElement, null, componentManifest);
         }
 
         private string GetErrorMessage()

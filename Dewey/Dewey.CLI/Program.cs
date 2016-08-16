@@ -1,4 +1,4 @@
-﻿using Dewey.CLI.Builds;
+﻿using Dewey.Build;
 using Dewey.CLI.Deployments;
 using Dewey.ListItems;
 using Dewey.Manifest;
@@ -20,7 +20,8 @@ namespace Dewey.CLI
         static void Main(string[] args)
         {
             var eventAggregator = new EventAggregator();
-            var manifestLoadResultErrorWriter = new ManifestLoadResultErrorWriter(eventAggregator);
+            var manifestLoadResultErrorWriter = new LoadManifestFilesWriter(eventAggregator);
+            var buildCommandResultWriter = new BuildCommandWriter(eventAggregator);
 
             var commandProcessor = new CommandProcessor(eventAggregator);
             commandProcessor.RegisterHandler<LoadManifestFiles, ManifestLoadHandler>();
@@ -63,41 +64,6 @@ namespace Dewey.CLI
             Console.ResetColor();
             Console.WriteLine("Continue...");
             Console.ReadLine();
-        }
-
-        private static void BuildComponent(ComponentItem repoComponent, ComponentManifest componentManifest, XElement componentElement)
-        {
-            Console.WriteLine("**Build**");
-            var buildsElement = componentElement.Elements().FirstOrDefault(x => x.Name.LocalName == "builds");
-            if (buildsElement == null || !buildsElement.Elements().Any(x => x.Name.LocalName == "build"))
-            {
-                Console.WriteLine("No builds found for component '{0}'.", repoComponent.Name);
-            }
-            else
-            {
-                var buildElements = buildsElement.Elements().Where(x => x.Name.LocalName == "build").ToList();
-                Console.WriteLine("Found {0} builds for component '{1}'.", buildElements.Count, repoComponent.Name);
-
-                foreach (var buildElement in buildElements)
-                {
-                    var buildTypeAtt = buildElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "type");
-                    if (buildTypeAtt == null || string.IsNullOrWhiteSpace(buildTypeAtt.Value))
-                    {
-                        Console.WriteLine("Skipping build element without a valid type: {0}", buildElement.ToString());
-                        continue;
-                    }
-
-                    try
-                    {
-                        var buildAction = BuildActionFactory.CreateBuildAction(buildTypeAtt.Value);
-                        buildAction.Build(repoComponent, componentManifest, buildElement);
-                    }
-                    catch (Exception ex)
-                    {
-                        Output(ex);
-                    }
-                }
-            }
         }
 
         private static void DeployComponent(ComponentItem repoComponent, ComponentManifest componentManifest, XElement componentElement)

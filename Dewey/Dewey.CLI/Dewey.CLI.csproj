@@ -47,14 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BuildCommand.cs" />
-    <Compile Include="Builds\BuildActionFactory.cs" />
-    <Compile Include="Builds\IBuildAction.cs" />
-    <Compile Include="Builds\MSBuild.cs" />
+    <Compile Include="BuildCommandWriter.cs" />
     <Compile Include="Deployments\DeploymentActionFactory.cs" />
     <Compile Include="Deployments\IDeploymentAction.cs" />
     <Compile Include="Deployments\IISDeployment.cs" />
-    <Compile Include="ManifestLoadResultErrorWriter.cs" />
+    <Compile Include="LoadManifestFilesWriter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -63,6 +60,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Dewey.Build\Dewey.Build.csproj">
+      <Project>{b1e2a5fd-e29c-4f59-a169-8d5896aa8840}</Project>
+      <Name>Dewey.Build</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Dewey.File\Dewey.File.csproj">
       <Project>{9078b56e-2979-4bd4-abf7-34eed2662e29}</Project>
       <Name>Dewey.File</Name>

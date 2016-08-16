@@ -1,4 +1,5 @@
-﻿using Dewey.Manifest.Component;
+﻿using Dewey.Manifest;
+using Dewey.Manifest.Component;
 using Dewey.Manifest.Repositories;
 using Dewey.Manifest.Repository;
 using Dewey.Messaging;
@@ -8,13 +9,24 @@ using System.Linq;
 
 namespace Dewey.CLI
 {
-    class ManifestLoadResultErrorWriter : IEventHandler<RepositoriesManifestLoadResult>, IEventHandler<RepositoryManifestLoadResult>, IEventHandler<ComponentManifestLoadResult>
+    class LoadManifestFilesWriter : 
+        IEventHandler<RepositoriesManifestLoadResult>, 
+        IEventHandler<RepositoryManifestLoadResult>, 
+        IEventHandler<ComponentManifestLoadResult>,
+        IEventHandler<LoadManifestFilesStarted>
     {
-        public ManifestLoadResultErrorWriter(EventAggregator eventAggregator)
+        public LoadManifestFilesWriter(EventAggregator eventAggregator)
         {
             eventAggregator.Subscribe<RepositoriesManifestLoadResult>(this);
             eventAggregator.Subscribe<RepositoryManifestLoadResult>(this);
             eventAggregator.Subscribe<ComponentManifestLoadResult>(this);
+            eventAggregator.Subscribe<LoadManifestFilesStarted>(this);
+        }
+
+        public void Handle(LoadManifestFilesStarted @event)
+        {
+            Console.ResetColor();
+            Console.WriteLine("Reading repositories.xml manifest file.");
         }
 
         public void Handle(RepositoriesManifestLoadResult @event)

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{00EA83DA-674D-4FFC-8E63-4C3A37A79CF9}</ProjectGuid>
+    <ProjectGuid>{B1E2A5FD-E29C-4F59-A169-8D5896AA8840}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Dewey.Manifest</RootNamespace>
-    <AssemblyName>Dewey.Manifest</AssemblyName>
+    <RootNamespace>Dewey.Build</RootNamespace>
+    <AssemblyName>Dewey.Build</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,20 +40,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Component\ComponentManifest.cs" />
-    <Compile Include="Component\ComponentManifestLoadResult.cs" />
-    <Compile Include="LoadManifestFiles.cs" />
-    <Compile Include="LoadManifestFilesStarted.cs" />
-    <Compile Include="ManifestLoadHandler.cs" />
+    <Compile Include="BuildActionFactory.cs" />
+    <Compile Include="BuildCommand.cs" />
+    <Compile Include="BuildCommandHandler.cs" />
+    <Compile Include="Events\BuildCommandErrorResult.cs" />
+    <Compile Include="Events\BuildCommandEventBase.cs" />
+    <Compile Include="Events\BuildCommandStarted.cs" />
+    <Compile Include="Events\BuildElementMissingTypeAttributeResult.cs" />
+    <Compile Include="Events\BuildElementResult.cs" />
+    <Compile Include="Events\ComponentNotFoundResult.cs" />
+    <Compile Include="Events\NoBuildElementsFoundResult.cs" />
+    <Compile Include="IBuildAction.cs" />
+    <Compile Include="MSBuild.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\RepositoriesManifestLoadResult.cs" />
-    <Compile Include="Repositories\LoadRepositoryElementResult.cs" />
-    <Compile Include="Repositories\RepositoriesManifest.cs" />
-    <Compile Include="Repositories\RepositoryItem.cs" />
-    <Compile Include="Repository\ComponentItem.cs" />
-    <Compile Include="Repository\LoadComponentElementResult.cs" />
-    <Compile Include="Repository\RepositoryManifestLoadResult.cs" />
-    <Compile Include="Repository\RepositoryManifest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dewey.File\Dewey.File.csproj">
@@ -63,6 +62,10 @@
     <ProjectReference Include="..\Dewey.Messaging\Dewey.Messaging.csproj">
       <Project>{a3986e8a-3009-41b1-8636-0c431305255c}</Project>
       <Name>Dewey.Messaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Manifest\Dewey.Manifest.csproj">
+      <Project>{00ea83da-674d-4ffc-8e63-4c3a37a79cf9}</Project>
+      <Name>Dewey.Manifest</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
