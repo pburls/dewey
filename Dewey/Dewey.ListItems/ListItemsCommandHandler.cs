@@ -6,44 +6,16 @@ using Dewey.Messaging;
 using System;
 using System.Collections.Generic;
 
-namespace Dewey.CLI
+namespace Dewey.ListItems
 {
-    enum ItemColor
+    public class ListItemsCommandHandler : ICommandHandler<ListItemsCommand>, IEventHandler<ComponentManifestLoadResult>, IEventHandler<RepositoryManifestLoadResult>, IEventHandler<RepositoriesManifestLoadResult>
     {
-        Repositories = ConsoleColor.Cyan,
-        RepositoryItem = ConsoleColor.Green,
-        ComponentItem = ConsoleColor.Yellow,
-    }
+        readonly ICommandProcessor _commandProcessor;
 
-    static class ItemColorExtensions
-    {
-        public static void WriteOffset(this ItemColor color)
-        {
-            Console.ForegroundColor = (ConsoleColor)color;
-            Console.Write("│");
-        }
-
-        public static void WriteOffsets(this IEnumerable<ItemColor> colors)
-        {
-            foreach (var color in colors)
-            {
-                color.WriteOffset();
-            }
-        }
-    }
-
-    class ListItems : ICommand
-    {
-    }
-
-    class ListItemsHandler : ICommandHandler<ListItems>, IEventHandler<ComponentManifestLoadResult>, IEventHandler<RepositoryManifestLoadResult>, IEventHandler<RepositoriesManifestLoadResult>
-    {
-        CommandProcessor _commandProcessor;
         Dictionary<string, RepositoriesFile> _repositoriesDictionary { get; set; }
         Dictionary<string, Repository> _repositoryDictionary { get; set; }
 
-
-        public ListItemsHandler(CommandProcessor commandProcessor, EventAggregator eventAggregator)
+        public ListItemsCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator)
         {
             _commandProcessor = commandProcessor;
             _repositoriesDictionary = new Dictionary<string, RepositoriesFile>();
@@ -54,7 +26,7 @@ namespace Dewey.CLI
             eventAggregator.Subscribe<ComponentManifestLoadResult>(this);
         }
 
-        public void Execute(ListItems command)
+        public void Execute(ListItemsCommand command)
         {
             _commandProcessor.Execute(new LoadManifestFiles());
 
@@ -112,94 +84,6 @@ namespace Dewey.CLI
 
                 repository.AddComponent(componentManifestLoadedEvent.ComponentManifest);
             }
-        }
-    }
-
-    class RepositoriesFile
-    {
-        private List<Repository> _repositoryList;
-
-        public IEnumerable<Repository> Repositories { get { return _repositoryList; } }
-
-        public string FileName { get; private set; }
-
-        public RepositoriesFile(string fileName)
-        {
-            FileName = fileName;
-            _repositoryList = new List<Repository>();
-        }
-
-        public void AddRepository(Repository repository)
-        {
-            _repositoryList.Add(repository);
-        }
-
-        public void Write()
-        {
-            Console.ForegroundColor = (ConsoleColor)ItemColor.Repositories;
-            Console.WriteLine(FileName);
-
-            var offsets = new Stack<ItemColor>();
-
-            foreach (var repository in Repositories)
-            {
-                repository.Write(offsets);
-            }
-        }
-    }
-
-    class Repository
-    {
-        private List<Component> _componentList;
-
-        public IEnumerable<Component> Components { get { return _componentList; } }
-
-        public string Name { get; private set; }
-
-        public Repository(string name)
-        {
-            Name = name;
-            _componentList = new List<Component>();
-        }
-
-        public void AddComponent(ComponentManifest component)
-        {
-            _componentList.Add(new Component(component));
-        }
-
-        public void Write(Stack<ItemColor> offsets)
-        {
-            offsets.WriteOffsets();
-
-            Console.ForegroundColor = (ConsoleColor)ItemColor.RepositoryItem;
-            Console.WriteLine("├ {0}", Name);
-
-            offsets.Push(ItemColor.RepositoryItem);
-
-            foreach (var component in Components)
-            {
-                component.Write(offsets);
-            }
-
-            offsets.Pop();
-        }
-    }
-
-    class Component
-    {
-        public string Name { get; private set; }
-
-        public Component(ComponentManifest component)
-        {
-            Name = component.Name;
-        }
-
-        public void Write(Stack<ItemColor> offsets)
-        {
-            offsets.WriteOffsets();
-
-            Console.ForegroundColor = (ConsoleColor)ItemColor.ComponentItem;
-            Console.WriteLine("├ {0}", Name);
         }
     }
 }

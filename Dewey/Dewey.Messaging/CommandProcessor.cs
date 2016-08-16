@@ -4,12 +4,12 @@ using System.Reflection;
 
 namespace Dewey.Messaging
 {
-    public class CommandProcessor
+    public class CommandProcessor : ICommandProcessor
     {
-        private EventAggregator _eventAggregator;
+        private IEventAggregator _eventAggregator;
         private Dictionary<Type, Type> _commandHandlers = new Dictionary<Type, Type>();
 
-        public CommandProcessor(EventAggregator eventAggregator)
+        public CommandProcessor(IEventAggregator eventAggregator)
         {
             _eventAggregator = eventAggregator;
         }

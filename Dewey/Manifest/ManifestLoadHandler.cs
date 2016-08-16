@@ -9,10 +9,10 @@ namespace Dewey.Manifest
 {
     public class ManifestLoadHandler : IEventHandler<RepositoriesManifestLoadResult>, IEventHandler<RepositoryManifestLoadResult>, IEventHandler<ComponentManifestLoadResult>, ICommandHandler<LoadManifestFiles>
     {
-        private readonly EventAggregator _eventAggregator;
+        private readonly IEventAggregator _eventAggregator;
         private readonly IManifestFileReaderService _manifestFileReaderService;
 
-        public ManifestLoadHandler(CommandProcessor commandProcessor, EventAggregator eventAggregator)
+        public ManifestLoadHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator)
         {
             _eventAggregator = eventAggregator;
             _manifestFileReaderService = new ManifestFileReaderService();

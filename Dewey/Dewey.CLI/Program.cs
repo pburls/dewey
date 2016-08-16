@@ -1,5 +1,6 @@
 ﻿using Dewey.CLI.Builds;
 using Dewey.CLI.Deployments;
+using Dewey.ListItems;
 using Dewey.Manifest;
 using Dewey.Manifest.Component;
 using Dewey.Manifest.Repository;
@@ -19,10 +20,12 @@ namespace Dewey.CLI
         static void Main(string[] args)
         {
             var eventAggregator = new EventAggregator();
-            var commandProcessor = new CommandProcessor(eventAggregator);
+            var manifestLoadResultErrorWriter = new ManifestLoadResultErrorWriter(eventAggregator);
 
+            var commandProcessor = new CommandProcessor(eventAggregator);
             commandProcessor.RegisterHandler<LoadManifestFiles, ManifestLoadHandler>();
-            commandProcessor.RegisterHandler<ListItems, ListItemsHandler>();
+            commandProcessor.RegisterHandler<ListItemsCommand, ListItemsCommandHandler>();
+            commandProcessor.RegisterHandler<BuildCommand, BuildCommandHandler>();
 
             if (args.Length < 1)
             {
@@ -40,7 +43,7 @@ namespace Dewey.CLI
                     //componentAction = DeployComponent;
                     break;
                 case "list":
-                    command = new ListItems();
+                    command = new ListItemsCommand();
                     break;
                 default:
                     Console.WriteLine("Unknown command.");
@@ -49,8 +52,6 @@ namespace Dewey.CLI
 
             if (command == null)
                 goto done;
-
-            var manifestLoadResultErrorWriter = new ManifestLoadResultErrorWriter(eventAggregator);
 
             var commandHandler = commandProcessor.Execute(command);
             if (commandHandler == null)
