@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Dewey.Build.Events;
+using Dewey.Manifest.Component;
+using Dewey.Messaging;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,21 +11,34 @@ namespace Dewey.Build
 {
     class MSBuild : IBuildAction
     {
-        string msbuildPath = @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe";
+        readonly IEventAggregator _eventAggregator;
 
-        public void Build(string rootLocation, XElement buildElement)
+        const string msbuildPath = @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe";
+
+        public const string BUILD_TYPE = "msbuild";
+
+        public MSBuild(IEventAggregator eventAggregator)
+        {
+            _eventAggregator = eventAggregator;
+        }
+
+        public void Build(ComponentManifest componentManifest, XElement buildElement)
         {
             var buildTargetAtt = buildElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "target");
             if (buildTargetAtt == null || string.IsNullOrWhiteSpace(buildTargetAtt.Value))
             {
-                throw new ArgumentException(string.Format("MSBuild element without a valid target: {0}", buildElement.ToString()), "buildElement");
+                _eventAggregator.PublishEvent(new BuildElementMissingAttributeResult(componentManifest, BUILD_TYPE, buildElement, "target"));
+                return;
             }
 
-            string buildTargetPath = Path.Combine(rootLocation, buildTargetAtt.Value);
+            string buildTargetPath = Path.Combine(componentManifest.File.DirectoryName, buildTargetAtt.Value);
             if (!System.IO.File.Exists(buildTargetPath))
             {
-                throw new ArgumentException(string.Format("MSBuild target '{0}' not found.", buildTargetAtt.Value), "buildElement");
+                _eventAggregator.PublishEvent(new BuildActionTargetNotFoundResult(componentManifest, BUILD_TYPE, buildTargetPath));
+                return;
             }
+
+            _eventAggregator.PublishEvent(new BuildActionStartedResult(componentManifest, BUILD_TYPE, buildTargetPath));
 
             //read msbuild version options from registry.
             //choose version preference from app settings.
@@ -32,6 +48,8 @@ namespace Dewey.Build
             var msBuildProcess = Process.Start(msBuildStartInfo);
 
             msBuildProcess.WaitForExit();
+
+            _eventAggregator.PublishEvent(new BuildActionCompletedResult(componentManifest, BUILD_TYPE, buildTargetPath));
         }
     }
 }

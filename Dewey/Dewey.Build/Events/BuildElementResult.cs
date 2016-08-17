@@ -7,7 +7,7 @@ namespace Dewey.Build.Events
         public XElement BuildElement { get; private set; }
         public string BuildType { get; private set; }
 
-        public BuildElementResult(string componentName, XElement buildElement, string buildType) : base(componentName)
+        public BuildElementResult(BuildCommand command, XElement buildElement, string buildType) : base(command)
         {
             BuildElement = buildElement;
             BuildType = buildType;

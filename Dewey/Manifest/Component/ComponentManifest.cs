@@ -14,10 +14,13 @@ namespace Dewey.Manifest.Component
 
         public string Type { get; private set; }
 
-        private ComponentManifest(string name, string type)
+        public IManifestFileReader File { get; private set; }
+
+        private ComponentManifest(string name, string type, IManifestFileReader file)
         {
             Name = name;
             Type = type;
+            File = file;
         }
 
         public static ComponentManifestLoadResult LoadComponentItem(ComponentItem componentItem, IManifestFileReaderService manifestFileReaderService)
@@ -51,7 +54,7 @@ namespace Dewey.Manifest.Component
                 return ComponentManifestLoadResult.CreateMissingAttributesResult(repositoryManifest, componentManifestFile, rootElement, missingAttributes);
             }
 
-            var componentManifest = new ComponentManifest(nameAtt.Value, typeAtt.Value);
+            var componentManifest = new ComponentManifest(nameAtt.Value, typeAtt.Value, componentManifestFile);
 
             return ComponentManifestLoadResult.CreateSuccessfulResult(repositoryManifest, componentManifestFile, rootElement, componentManifest);
         }

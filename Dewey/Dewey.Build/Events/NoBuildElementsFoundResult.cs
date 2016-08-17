@@ -2,7 +2,7 @@
 {
     public class NoBuildElementsFoundResult : BuildCommandEventBase
     {
-        public NoBuildElementsFoundResult(string componentName) : base(componentName)
+        public NoBuildElementsFoundResult(BuildCommand command) : base(command)
         {
         }
     }

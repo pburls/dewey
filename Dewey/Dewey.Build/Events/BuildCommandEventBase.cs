@@ -6,9 +6,9 @@ namespace Dewey.Build.Events
     {
         public string ComponentName { get; protected set; }
 
-        public BuildCommandEventBase(string componentName)
+        public BuildCommandEventBase(BuildCommand command)
         {
-            ComponentName = componentName;
+            ComponentName = command.ComponentName;
         }
     }
 }
