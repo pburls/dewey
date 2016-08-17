@@ -2,7 +2,7 @@
 
 namespace Dewey.Build.Events
 {
-    public class BuildActionCompletedResult : BuildActionResult
+    public class BuildActionCompletedResult : BuildActionEvent
     {
         public string Target { get; private set; }
 

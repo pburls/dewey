@@ -2,11 +2,11 @@
 
 namespace Dewey.Build.Events
 {
-    public abstract class BuildCommandEventBase : IEvent
+    public abstract class BuildCommandEvent : IEvent
     {
         public string ComponentName { get; protected set; }
 
-        public BuildCommandEventBase(BuildCommand command)
+        public BuildCommandEvent(BuildCommand command)
         {
             ComponentName = command.ComponentName;
         }

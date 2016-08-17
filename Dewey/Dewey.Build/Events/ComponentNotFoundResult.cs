@@ -2,7 +2,7 @@
 
 namespace Dewey.Build.Events
 {
-    public class ComponentNotFoundResult : BuildCommandEventBase
+    public class ComponentNotFoundResult : BuildCommandEvent
     {
         public ComponentNotFoundResult(BuildCommand command) : base(command)
         {

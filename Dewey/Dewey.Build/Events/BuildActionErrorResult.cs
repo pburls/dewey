@@ -3,7 +3,7 @@ using System;
 
 namespace Dewey.Build.Events
 {
-    public class BuildActionErrorResult : BuildActionResult
+    public class BuildActionErrorResult : BuildActionEvent
     {
         public Exception Exception { get; private set; }
 

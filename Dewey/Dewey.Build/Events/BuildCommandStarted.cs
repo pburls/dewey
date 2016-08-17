@@ -2,7 +2,7 @@
 
 namespace Dewey.Build.Events
 {
-    public class BuildCommandStarted : BuildCommandEventBase
+    public class BuildCommandStarted : BuildCommandEvent
     {
         public BuildCommandStarted(BuildCommand command) : base(command)
         {

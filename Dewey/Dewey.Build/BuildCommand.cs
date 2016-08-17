@@ -5,6 +5,8 @@ namespace Dewey.Build
 {
     public class BuildCommand : ICommand
     {
+        public const string COMMAND_TEXT = "build";
+
         public string ComponentName { get; private set; }
 
         BuildCommand()

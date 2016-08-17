@@ -2,7 +2,7 @@
 
 namespace Dewey.Build.Events
 {
-    public class BuildActionTargetNotFoundResult : BuildActionResult
+    public class BuildActionTargetNotFoundResult : BuildActionEvent
     {
         public string FileName { get; private set; }
 

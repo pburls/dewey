@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Commands", "Commands", "{C7
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dewey.Build", "Dewey.Build\Dewey.Build.csproj", "{B1E2A5FD-E29C-4F59-A169-8D5896AA8840}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dewey.Deploy", "Dewey.Deploy\Dewey.Deploy.csproj", "{C6F16C2B-A471-408D-A22F-BC75BFD11699}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{B1E2A5FD-E29C-4F59-A169-8D5896AA8840}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1E2A5FD-E29C-4F59-A169-8D5896AA8840}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1E2A5FD-E29C-4F59-A169-8D5896AA8840}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6F16C2B-A471-408D-A22F-BC75BFD11699}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6F16C2B-A471-408D-A22F-BC75BFD11699}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6F16C2B-A471-408D-A22F-BC75BFD11699}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6F16C2B-A471-408D-A22F-BC75BFD11699}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,5 +66,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{B2561B13-71EF-45CC-BDEA-615556C22283} = {C769EC16-EAF7-41FE-94BF-8171D6A5E559}
 		{B1E2A5FD-E29C-4F59-A169-8D5896AA8840} = {C769EC16-EAF7-41FE-94BF-8171D6A5E559}
+		{C6F16C2B-A471-408D-A22F-BC75BFD11699} = {C769EC16-EAF7-41FE-94BF-8171D6A5E559}
 	EndGlobalSection
 EndGlobal

@@ -2,7 +2,7 @@
 
 namespace Dewey.Build.Events
 {
-    public class BuildElementResult : BuildCommandEventBase
+    public class BuildElementResult : BuildCommandEvent
     {
         public XElement BuildElement { get; private set; }
         public string BuildType { get; private set; }

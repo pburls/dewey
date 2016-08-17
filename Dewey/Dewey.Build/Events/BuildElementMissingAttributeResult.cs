@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 namespace Dewey.Build.Events
 {
-    public class BuildElementMissingAttributeResult : BuildActionResult
+    public class BuildElementMissingAttributeResult : BuildActionEvent
     {
         public XElement BuildElement { get; private set; }
 

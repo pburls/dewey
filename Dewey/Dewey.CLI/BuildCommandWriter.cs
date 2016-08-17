@@ -11,7 +11,7 @@ namespace Dewey.CLI
         IEventHandler<BuildElementMissingTypeAttributeResult>,
         IEventHandler<BuildElementMissingAttributeResult>,
         IEventHandler<BuildActionTargetNotFoundResult>,
-        IEventHandler<BuildActionStartedResult>,
+        IEventHandler<BuildActionStarted>,
         IEventHandler<BuildActionCompletedResult>,
         IEventHandler<BuildActionErrorResult>
     {
@@ -23,7 +23,7 @@ namespace Dewey.CLI
             eventAggregator.Subscribe<BuildElementMissingTypeAttributeResult>(this);
             eventAggregator.Subscribe<BuildElementMissingAttributeResult>(this);
             eventAggregator.Subscribe<BuildActionTargetNotFoundResult>(this);
-            eventAggregator.Subscribe<BuildActionStartedResult>(this);
+            eventAggregator.Subscribe<BuildActionStarted>(this);
             eventAggregator.Subscribe<BuildActionCompletedResult>(this);
             eventAggregator.Subscribe<BuildActionErrorResult>(this);
         }
@@ -64,7 +64,7 @@ namespace Dewey.CLI
             Console.WriteLine(string.Format("Target file '{0}' not found for '{1}' action of component '{2}'.", buildTargetNotFoundResult.FileName, buildTargetNotFoundResult.BuildType, buildTargetNotFoundResult.ComponentManifest.Name));
         }
 
-        public void Handle(BuildActionStartedResult buildActionStartedResult)
+        public void Handle(BuildActionStarted buildActionStartedResult)
         {
             Console.ResetColor();
             Console.WriteLine(string.Format("Build action '{0}' of component '{1}' started with target: {2}", buildActionStartedResult.BuildType, buildActionStartedResult.ComponentManifest.Name, buildActionStartedResult.Target));

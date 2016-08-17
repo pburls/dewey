@@ -38,7 +38,7 @@ namespace Dewey.Build
                 return;
             }
 
-            _eventAggregator.PublishEvent(new BuildActionStartedResult(componentManifest, BUILD_TYPE, buildTargetPath));
+            _eventAggregator.PublishEvent(new BuildActionStarted(componentManifest, BUILD_TYPE, buildTargetPath));
 
             //read msbuild version options from registry.
             //choose version preference from app settings.

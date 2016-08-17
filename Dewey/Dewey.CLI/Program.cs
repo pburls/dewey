@@ -1,5 +1,6 @@
 ﻿using Dewey.Build;
 using Dewey.CLI.Deployments;
+using Dewey.Deploy;
 using Dewey.ListItems;
 using Dewey.Manifest;
 using Dewey.Manifest.Component;
@@ -27,6 +28,7 @@ namespace Dewey.CLI
             commandProcessor.RegisterHandler<LoadManifestFiles, ManifestLoadHandler>();
             commandProcessor.RegisterHandler<ListItemsCommand, ListItemsCommandHandler>();
             commandProcessor.RegisterHandler<BuildCommand, BuildCommandHandler>();
+            commandProcessor.RegisterHandler<DeployCommand, DeployCommandHandler>();
 
             if (args.Length < 1)
             {
@@ -36,15 +38,14 @@ namespace Dewey.CLI
 
             switch (args[0])
             {
-                case "build":
+                case BuildCommand.COMMAND_TEXT:
                     command = BuildCommand.Create(args);
-                    //componentAction = BuildComponent;
                     break;
-                case "deploy":
-                    //componentAction = DeployComponent;
+                case DeployCommand.COMMAND_TEXT:
+                    command = DeployCommand.Create(args);
                     break;
-                case "list":
-                    command = new ListItemsCommand();
+                case ListItemsCommand.COMMAND_TEXT:
+                    command = ListItemsCommand.Create(args);
                     break;
                 default:
                     Console.WriteLine("Unknown command.");
