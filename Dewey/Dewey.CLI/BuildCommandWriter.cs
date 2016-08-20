@@ -43,7 +43,7 @@ namespace Dewey.CLI
         public void Handle(NoBuildElementsFoundResult noBuildElementsFoundResult)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(string.Format("No builds found for component '{0}'.", noBuildElementsFoundResult.ComponentName));
+            Console.WriteLine(string.Format("No builds found for component '{0}' in manifest: {1}", noBuildElementsFoundResult.ComponentName, noBuildElementsFoundResult.ComponentElement.ToString()));
         }
 
         public void Handle(BuildElementMissingTypeAttributeResult buildElementMissingTypeAttributeResult)

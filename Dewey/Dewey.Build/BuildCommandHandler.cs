@@ -75,14 +75,14 @@ namespace Dewey.Build
             var buildsElement = componentElement.Elements().FirstOrDefault(x => x.Name.LocalName == "builds");
             if (buildsElement == null)
             {
-                _eventAggregator.PublishEvent(new ComponentNotFoundResult(_command));
+                _eventAggregator.PublishEvent(new NoBuildElementsFoundResult(_command, componentElement));
                 return;
             }
 
             var buildElements = buildsElement.Elements().Where(x => x.Name.LocalName == "build").ToList();
             if (buildElements.Count == 0)
             {
-                _eventAggregator.PublishEvent(new ComponentNotFoundResult(_command));
+                _eventAggregator.PublishEvent(new NoBuildElementsFoundResult(_command, componentElement));
                 return;
             }
 

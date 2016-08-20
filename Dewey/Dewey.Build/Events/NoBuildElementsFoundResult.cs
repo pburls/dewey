@@ -1,9 +1,14 @@
-﻿namespace Dewey.Build.Events
+﻿using System.Xml.Linq;
+
+namespace Dewey.Build.Events
 {
     public class NoBuildElementsFoundResult : BuildCommandEvent
     {
-        public NoBuildElementsFoundResult(BuildCommand command) : base(command)
+        public XElement ComponentElement { get; private set; }
+
+        public NoBuildElementsFoundResult(BuildCommand command, XElement componentElement) : base(command)
         {
+            ComponentElement = componentElement;
         }
     }
 }

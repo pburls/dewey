@@ -1,7 +1,4 @@
-﻿using Dewey.Build.Events;
-using Dewey.Manifest.Component;
-using Dewey.Manifest.Repository;
-using Dewey.Messaging;
+﻿using Dewey.Manifest.Component;
 using System.Xml.Linq;
 
 namespace Dewey.Build
