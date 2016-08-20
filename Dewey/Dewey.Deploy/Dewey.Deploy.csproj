@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Web.Administration, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Administration.7.0.0.0\lib\net20\Microsoft.Web.Administration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,9 +46,30 @@
   <ItemGroup>
     <Compile Include="DeployCommand.cs" />
     <Compile Include="DeployCommandHandler.cs" />
+    <Compile Include="DeploymentActionFactory.cs" />
+    <Compile Include="Events\ComponentNotFoundResult.cs" />
+    <Compile Include="Events\DeployCommandEvent.cs" />
+    <Compile Include="Events\DeployCommandStarted.cs" />
+    <Compile Include="Events\DeploymentActionContentNotFoundResult.cs" />
+    <Compile Include="Events\DeploymentActionErrorResult.cs" />
+    <Compile Include="Events\DeploymentActionEvent.cs" />
+    <Compile Include="Events\DeploymentActionOutputMessage.cs" />
+    <Compile Include="Events\DeploymentActionCompletedResult.cs" />
+    <Compile Include="Events\DeploymentActionStarted.cs" />
+    <Compile Include="Events\DeploymentElementInvalidAttributeResult.cs" />
+    <Compile Include="Events\DeploymentElementMissingAttributeResult.cs" />
+    <Compile Include="Events\DeploymentElementMissingTypeAttributeResult.cs" />
+    <Compile Include="Events\DeploymentElementResult.cs" />
+    <Compile Include="Events\NoDeploymentElementsFoundResult.cs" />
+    <Compile Include="IDeploymentAction.cs" />
+    <Compile Include="IISDeployment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Dewey.File\Dewey.File.csproj">
+      <Project>{9078b56e-2979-4bd4-abf7-34eed2662e29}</Project>
+      <Name>Dewey.File</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Dewey.Messaging\Dewey.Messaging.csproj">
       <Project>{a3986e8a-3009-41b1-8636-0c431305255c}</Project>
       <Name>Dewey.Messaging</Name>
@@ -55,7 +80,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Events\" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

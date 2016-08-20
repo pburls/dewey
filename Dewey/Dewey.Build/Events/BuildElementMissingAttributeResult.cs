@@ -11,6 +11,7 @@ namespace Dewey.Build.Events
 
         public BuildElementMissingAttributeResult(ComponentManifest componentManifest, string buildType, XElement buildElement, string attributeName) : base(componentManifest, buildType)
         {
+            BuildElement = buildElement;
             AttributeName = attributeName;
         }
     }

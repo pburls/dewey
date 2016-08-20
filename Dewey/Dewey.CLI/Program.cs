@@ -1,5 +1,4 @@
 ﻿using Dewey.Build;
-using Dewey.CLI.Deployments;
 using Dewey.Deploy;
 using Dewey.ListItems;
 using Dewey.Manifest;
@@ -22,7 +21,8 @@ namespace Dewey.CLI
         {
             var eventAggregator = new EventAggregator();
             var manifestLoadResultErrorWriter = new LoadManifestFilesWriter(eventAggregator);
-            var buildCommandResultWriter = new BuildCommandWriter(eventAggregator);
+            var buildCommandWriter = new BuildCommandWriter(eventAggregator);
+            var deployCommandWriter = new DeployCommandWriter(eventAggregator);
 
             var commandProcessor = new CommandProcessor(eventAggregator);
             commandProcessor.RegisterHandler<LoadManifestFiles, ManifestLoadHandler>();
@@ -65,41 +65,6 @@ namespace Dewey.CLI
             Console.ResetColor();
             Console.WriteLine("Continue...");
             Console.ReadLine();
-        }
-
-        private static void DeployComponent(ComponentItem repoComponent, ComponentManifest componentManifest, XElement componentElement)
-        {
-            Output("**Deploy**");
-            var deploymentsElement = componentElement.Elements().FirstOrDefault(x => x.Name.LocalName == "deployments");
-            if (deploymentsElement == null || !deploymentsElement.Elements().Any(x => x.Name.LocalName == "deployment"))
-            {
-                Console.WriteLine("No deployments found for component '{0}'.", componentManifest.Name);
-            }
-            else
-            {
-                var deploymentElements = deploymentsElement.Elements().Where(x => x.Name.LocalName == "deployment").ToList();
-                Console.WriteLine("Found {0} deployment for component '{1}'.", deploymentElements.Count, componentManifest.Name);
-
-                foreach (var deploymentElement in deploymentElements)
-                {
-                    var deploymentTypeAtt = deploymentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "type");
-                    if (deploymentTypeAtt == null || string.IsNullOrWhiteSpace(deploymentTypeAtt.Value))
-                    {
-                        Console.WriteLine("Skipping deployment element without a valid type: {0}", deploymentElement.ToString());
-                        continue;
-                    }
-
-                    try
-                    {
-                        var deploymentAction = DeploymentActionFactory.CreateDeploymentAction(deploymentTypeAtt.Value);
-                        deploymentAction.Deploy(repoComponent, componentManifest, deploymentElement);
-                    }
-                    catch (Exception ex)
-                    {
-                        Output(ex);
-                    }
-                }
-            }
         }
 
         private static void Output(Exception ex)
