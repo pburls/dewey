@@ -9,8 +9,8 @@ namespace Dewey.Build
         {
             switch (buildType)
             {
-                case MSBuild.BUILD_TYPE:
-                    return new MSBuild(eventAggregator);
+                //case MSBuild.BUILD_TYPE:
+                //    return new MSBuild(eventAggregator);
                 default:
                     throw new ArgumentOutOfRangeException("buildType", buildType, string.Format("Unknown build type {0}.", buildType));
             }

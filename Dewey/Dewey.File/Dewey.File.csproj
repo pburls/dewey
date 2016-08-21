@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentManifestFileReader.cs" />
+    <Compile Include="FileService.cs" />
+    <Compile Include="IFileService.cs" />
     <Compile Include="IManifestFileReader.cs" />
     <Compile Include="ManifestFileReader.cs" />
     <Compile Include="ManifestFileReaderService.cs" />

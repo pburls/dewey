@@ -43,43 +43,63 @@ namespace Dewey.CLI
         public void Handle(NoBuildElementsFoundResult noBuildElementsFoundResult)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(string.Format("No builds found for component '{0}' in manifest: {1}", noBuildElementsFoundResult.ComponentName, noBuildElementsFoundResult.ComponentElement.ToString()));
+            Console.WriteLine(string.Format("No builds found for component '{0}' in manifest: {1}", 
+                noBuildElementsFoundResult.ComponentName, 
+                noBuildElementsFoundResult.ComponentElement.ToString()));
         }
 
         public void Handle(BuildElementMissingTypeAttributeResult buildElementMissingTypeAttributeResult)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(string.Format("Skipping build element of component '{0}' without a valid type: {1}", buildElementMissingTypeAttributeResult.ComponentName, buildElementMissingTypeAttributeResult.BuildElement.ToString()));
+            Console.WriteLine(string.Format("Skipping build element of component '{0}' without a valid type: {1}", 
+                buildElementMissingTypeAttributeResult.ComponentName, 
+                buildElementMissingTypeAttributeResult.BuildElement.ToString()));
         }
 
         public void Handle(BuildElementMissingAttributeResult buildElementMissingAttributeResult)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(string.Format("Skipping build element of component '{0}' with invalid attribute '{1}' requied for action {2}: {3}", buildElementMissingAttributeResult.ComponentManifest.Name, buildElementMissingAttributeResult.AttributeName, buildElementMissingAttributeResult.BuildType, buildElementMissingAttributeResult.BuildElement.ToString()));
+            Console.WriteLine(string.Format("Skipping build element of component '{0}' with missing attributes '{1}' requied for action {2}: {3}", 
+                buildElementMissingAttributeResult.ComponentManifest.Name, 
+                buildElementMissingAttributeResult.AttributeName, 
+                buildElementMissingAttributeResult.BuildType, 
+                buildElementMissingAttributeResult.BuildElement.ToString()));
         }
 
         public void Handle(BuildActionTargetNotFoundResult buildTargetNotFoundResult)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(string.Format("Target file '{0}' not found for '{1}' action of component '{2}'.", buildTargetNotFoundResult.FileName, buildTargetNotFoundResult.BuildType, buildTargetNotFoundResult.ComponentManifest.Name));
+            Console.WriteLine(string.Format("Target file '{0}' not found for '{1}' action of component '{2}'.", 
+                buildTargetNotFoundResult.Target, 
+                buildTargetNotFoundResult.BuildType, 
+                buildTargetNotFoundResult.ComponentManifest.Name));
         }
 
         public void Handle(BuildActionStarted buildActionStartedResult)
         {
             Console.ResetColor();
-            Console.WriteLine(string.Format("Build action '{0}' of component '{1}' started with target: {2}", buildActionStartedResult.BuildType, buildActionStartedResult.ComponentManifest.Name, buildActionStartedResult.Target));
+            Console.WriteLine(string.Format("Build action '{0}' of component '{1}' started with args: {2}", 
+                buildActionStartedResult.BuildType, 
+                buildActionStartedResult.ComponentManifest.Name, 
+                buildActionStartedResult.Arguments));
         }
 
         public void Handle(BuildActionCompletedResult buildActionCompletedResult)
         {
             Console.ResetColor();
-            Console.WriteLine(string.Format("Build action '{0}' of component '{1}' completed with target: {2}", buildActionCompletedResult.BuildType, buildActionCompletedResult.ComponentManifest.Name, buildActionCompletedResult.Target));
+            Console.WriteLine(string.Format("Build action '{0}' of component '{1}' completed with args: {2}", 
+                buildActionCompletedResult.BuildType, 
+                buildActionCompletedResult.ComponentManifest.Name, 
+                buildActionCompletedResult.Arguments));
         }
 
         public void Handle(BuildActionErrorResult buildActionErrorResult)
         {
             Console.ResetColor();
-            Console.WriteLine(string.Format("Build action '{0}' of component '{1}' threw exception: {2}", buildActionErrorResult.BuildType, buildActionErrorResult.ComponentManifest.Name, buildActionErrorResult.Exception));
+            Console.WriteLine(string.Format("Build action '{0}' of component '{1}' threw exception: {2}", 
+                buildActionErrorResult.BuildType, 
+                buildActionErrorResult.ComponentManifest.Name, 
+                buildActionErrorResult.Exception));
         }
     }
 }

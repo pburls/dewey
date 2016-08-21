@@ -4,6 +4,7 @@ using Dewey.Manifest.Component;
 using Dewey.Messaging;
 using System.Linq;
 using System;
+using System.Xml.Linq;
 
 namespace Dewey.Build
 {
@@ -41,7 +42,7 @@ namespace Dewey.Build
                 return;
             }
 
-            LoadBuildActionsFromComponentMandifest();
+            BuildElementResult.LoadBuildElementsFromComponentManifest(command, _componentMandifestLoadResult.ComponentElement, _eventAggregator);
         }
 
         public void Handle(ComponentManifestLoadResult componentManifestLoadResult)
@@ -65,37 +66,6 @@ namespace Dewey.Build
             catch (Exception ex)
             {
                 _eventAggregator.PublishEvent(new BuildActionErrorResult(_componentMandifestLoadResult.ComponentManifest, buildElementResult.BuildType, ex));
-            }
-        }
-
-        private void LoadBuildActionsFromComponentMandifest()
-        {
-            var componentElement = _componentMandifestLoadResult.ComponentElement;
-
-            var buildsElement = componentElement.Elements().FirstOrDefault(x => x.Name.LocalName == "builds");
-            if (buildsElement == null)
-            {
-                _eventAggregator.PublishEvent(new NoBuildElementsFoundResult(_command, componentElement));
-                return;
-            }
-
-            var buildElements = buildsElement.Elements().Where(x => x.Name.LocalName == "build").ToList();
-            if (buildElements.Count == 0)
-            {
-                _eventAggregator.PublishEvent(new NoBuildElementsFoundResult(_command, componentElement));
-                return;
-            }
-
-            foreach (var buildElement in buildElements)
-            {
-                var buildTypeAtt = buildElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "type");
-                if (buildTypeAtt == null || string.IsNullOrWhiteSpace(buildTypeAtt.Value))
-                {
-                    _eventAggregator.PublishEvent(new BuildElementMissingTypeAttributeResult(_command, buildElement));
-                    continue;
-                }
-
-                _eventAggregator.PublishEvent(new BuildElementResult(_command, buildElement, buildTypeAtt.Value));
             }
         }
     }

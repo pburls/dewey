@@ -16,7 +16,7 @@ namespace Dewey.Manifest.Component
 
         public IManifestFileReader File { get; private set; }
 
-        private ComponentManifest(string name, string type, IManifestFileReader file)
+        public ComponentManifest(string name, string type, IManifestFileReader file)
         {
             Name = name;
             Type = type;
