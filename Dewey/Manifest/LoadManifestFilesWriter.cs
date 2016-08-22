@@ -1,5 +1,4 @@
-﻿using Dewey.Manifest;
-using Dewey.Manifest.Component;
+﻿using Dewey.Manifest.Component;
 using Dewey.Manifest.Repositories;
 using Dewey.Manifest.Repository;
 using Dewey.Messaging;
@@ -7,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Dewey.CLI
+namespace Dewey.Manifest
 {
-    class LoadManifestFilesWriter : 
+    class LoadManifestFilesWriter :
         IEventHandler<RepositoriesManifestLoadResult>, 
         IEventHandler<RepositoryManifestLoadResult>, 
         IEventHandler<ComponentManifestLoadResult>,

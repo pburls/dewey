@@ -2,7 +2,7 @@
 using Dewey.Messaging;
 using System;
 
-namespace Dewey.CLI
+namespace Dewey.Build
 {
     class BuildCommandWriter : 
         IEventHandler<BuildCommandStarted>, 

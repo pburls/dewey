@@ -1,67 +1,49 @@
-﻿using Dewey.Build;
-using Dewey.Deploy;
-using Dewey.ListItems;
-using Dewey.Manifest;
-using Dewey.Manifest.Component;
-using Dewey.Manifest.Repository;
-using Dewey.Messaging;
+﻿using Dewey.Messaging;
+using SimpleInjector;
 using System;
-using System.Linq;
-using System.Xml.Linq;
 
 namespace Dewey.CLI
 {
-    delegate void ComponentAction(ComponentItem repoComponent, ComponentManifest componentManifest, XElement componentElement);
-
     class Program
     {
         private static ICommand command;
 
         static void Main(string[] args)
         {
-            var eventAggregator = new EventAggregator();
-            var manifestLoadResultErrorWriter = new LoadManifestFilesWriter(eventAggregator);
-            var buildCommandWriter = new BuildCommandWriter(eventAggregator);
-            var deployCommandWriter = new DeployCommandWriter(eventAggregator);
+            var container = new Container();
 
-            var commandProcessor = new CommandProcessor(eventAggregator);
-            commandProcessor.RegisterHandler<LoadManifestFiles, ManifestLoadHandler>();
-            commandProcessor.RegisterHandler<ListItemsCommand, ListItemsCommandHandler>();
-            commandProcessor.RegisterHandler<BuildCommand, BuildCommandHandler>();
-            commandProcessor.RegisterHandler<DeployCommand, DeployCommandHandler>();
+            Bootstrapper.RegisterTypes(container);
+
+            var commandManager = container.GetInstance<CLICommandManager>();
+
+            var moduleCataloge = container.GetInstance<ModuleCatalogue>();
+            moduleCataloge.Load<Manifest.Module>();
+            moduleCataloge.Load<ListItems.Module>();
+            moduleCataloge.Load<Build.Module>();
+            moduleCataloge.Load<Deploy.Module>();
 
             if (args.Length < 1)
             {
-                Console.WriteLine("No action paramerter specified.");
+                Console.WriteLine("No command paramerter specified.");
                 return;
             }
 
-            switch (args[0])
-            {
-                case BuildCommand.COMMAND_TEXT:
-                    command = BuildCommand.Create(args);
-                    break;
-                case DeployCommand.COMMAND_TEXT:
-                    command = DeployCommand.Create(args);
-                    break;
-                case ListItemsCommand.COMMAND_TEXT:
-                    command = ListItemsCommand.Create(args);
-                    break;
-                default:
-                    Console.WriteLine("Unknown command.");
-                    return;
-            }
+            command = commandManager.CreateCommandForArgs(args);
 
             if (command == null)
-                goto done;
-
-            var commandHandler = commandProcessor.Execute(command);
-            if (commandHandler == null)
             {
-                Console.WriteLine("No command handler registered for command.");
+                Console.WriteLine("Unknown command.");
             }
-
-            done:
+            else
+            {
+                var commandProcessor = container.GetInstance<ICommandProcessor>();
+                var commandHandler = commandProcessor.Execute(command);
+                if (commandHandler == null)
+                {
+                    Console.WriteLine("No command handler registered for command.");
+                }
+            }
+            
             Console.ResetColor();
             Console.WriteLine("Continue...");
             Console.ReadLine();

@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SimpleInjector, Version=3.2.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleInjector.3.2.0\lib\net45\SimpleInjector.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,9 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BuildCommandWriter.cs" />
-    <Compile Include="DeployCommandWriter.cs" />
-    <Compile Include="LoadManifestFilesWriter.cs" />
+    <Compile Include="CLICommandManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -61,10 +63,6 @@
     <ProjectReference Include="..\Dewey.Deploy\Dewey.Deploy.csproj">
       <Project>{c6f16c2b-a471-408d-a22f-bc75bfd11699}</Project>
       <Name>Dewey.Deploy</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Dewey.File\Dewey.File.csproj">
-      <Project>{9078b56e-2979-4bd4-abf7-34eed2662e29}</Project>
-      <Name>Dewey.File</Name>
     </ProjectReference>
     <ProjectReference Include="..\Dewey.ListItems\Dewey.ListItems.csproj">
       <Project>{b2561b13-71ef-45cc-bdea-615556c22283}</Project>
