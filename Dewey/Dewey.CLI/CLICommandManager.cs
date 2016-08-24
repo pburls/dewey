@@ -12,6 +12,8 @@ namespace Dewey.CLI
     {
         readonly Dictionary<string, ICLICommandProvider> _commandDictionary;
 
+        public IEnumerable<string> CommandWords { get { return _commandDictionary.Keys; } }
+
         public CLICommandManager(IEventAggregator eventAggregator)
         {
             _commandDictionary = new Dictionary<string, ICLICommandProvider>();
@@ -48,7 +50,6 @@ namespace Dewey.CLI
 
                 foreach (var commandWord in commandProvider.CommandWords)
                 {
-                    Console.WriteLine("Command word '{1}' provided by type '{0}' ", commandProviderType.FullName, commandWord);
                     _commandDictionary.Add(commandWord, commandProvider);
                 }
             }

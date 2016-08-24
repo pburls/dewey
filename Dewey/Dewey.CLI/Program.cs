@@ -24,7 +24,12 @@ namespace Dewey.CLI
 
             if (args.Length < 1)
             {
-                Console.WriteLine("No command paramerter specified.");
+                Console.WriteLine("Usage: dewey <command>");
+                Console.WriteLine("Commands:");
+                foreach (var commandWord in commandManager.CommandWords)
+                {
+                    Console.WriteLine(" - {0}", commandWord);
+                }
                 return;
             }
 
@@ -43,10 +48,11 @@ namespace Dewey.CLI
                     Console.WriteLine("No command handler registered for command.");
                 }
             }
-            
+#if DEBUG
             Console.ResetColor();
             Console.WriteLine("Continue...");
             Console.ReadLine();
+#endif
         }
 
         private static void Output(Exception ex)
