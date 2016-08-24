@@ -18,7 +18,7 @@ namespace Dewey.Deploy
         {
             if (args.Length < 2)
             {
-                Console.WriteLine("Not enough build action parameters.");
+                Console.WriteLine("Usage: dewey deploy <componentName>");
                 return null;
             }
 

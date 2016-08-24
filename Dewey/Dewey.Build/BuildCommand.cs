@@ -18,7 +18,7 @@ namespace Dewey.Build
         {
             if (args.Length < 2)
             {
-                Console.WriteLine("Not enough build action parameters.");
+                Console.WriteLine("Usage: dewey build <componentName>");
                 return null;
             }
 

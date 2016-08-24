@@ -48,6 +48,7 @@ namespace Dewey.CLI
                     Console.WriteLine("No command handler registered for command.");
                 }
             }
+
 #if DEBUG
             Console.ResetColor();
             Console.WriteLine("Continue...");
