@@ -11,9 +11,12 @@ namespace Dewey.ListItems
     {
         public string Name { get; private set; }
 
+        public string Type { get; private set; }
+
         public Component(ComponentManifest component)
         {
             Name = component.Name;
+            Type = component.Type;
         }
 
         public void Write(Stack<ItemColor> offsets)
@@ -21,7 +24,7 @@ namespace Dewey.ListItems
             offsets.WriteOffsets();
 
             Console.ForegroundColor = (ConsoleColor)ItemColor.ComponentItem;
-            Console.WriteLine("├ {0}", Name);
+            Console.WriteLine("├ {0} ({1})", Name, Type);
         }
     }
 }
