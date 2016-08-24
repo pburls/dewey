@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Dewey.Messaging
 {
-    public class CommandProcessor : ICommandProcessor
+    class CommandProcessor : ICommandProcessor
     {
         private IEventAggregator _eventAggregator;
         private Dictionary<Type, Type> _commandHandlers = new Dictionary<Type, Type>();

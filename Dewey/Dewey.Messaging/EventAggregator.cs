@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Dewey.Messaging
 {
-    public class EventAggregator : IEventAggregator
+    class EventAggregator : IEventAggregator
     {
         private Dictionary<Type, object> _eventHandlers = new Dictionary<Type, object>();
 

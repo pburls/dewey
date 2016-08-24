@@ -14,7 +14,7 @@ namespace Dewey.Manifest
         IEventHandler<ComponentManifestLoadResult>,
         IEventHandler<LoadManifestFilesStarted>
     {
-        public LoadManifestFilesWriter(EventAggregator eventAggregator)
+        public LoadManifestFilesWriter(IEventAggregator eventAggregator)
         {
             eventAggregator.Subscribe<RepositoriesManifestLoadResult>(this);
             eventAggregator.Subscribe<RepositoryManifestLoadResult>(this);
