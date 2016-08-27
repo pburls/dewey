@@ -1,6 +1,7 @@
 ﻿using Dewey.Messaging;
 using SimpleInjector;
 using System;
+using System.Diagnostics;
 
 namespace Dewey.CLI
 {
@@ -26,6 +27,10 @@ namespace Dewey.CLI
 
             if (args.Length < 1)
             {
+                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                var fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+                string version = fvi.FileVersion;
+                Console.WriteLine("Dewey Development Tool. v{0}", version);
                 Console.WriteLine("Usage: dewey <command>");
                 Console.WriteLine("Commands:");
                 foreach (var commandWord in commandManager.CommandWords)
@@ -56,21 +61,6 @@ namespace Dewey.CLI
             Console.WriteLine("Continue...");
             Console.ReadLine();
 #endif
-        }
-
-        private static void Output(Exception ex)
-        {
-            Output(ex.Message);
-        }
-
-        private static void Output(string message)
-        {
-            Output(message, null);
-        }
-
-        private static void Output(string format, params object[] arg)
-        {
-            Console.WriteLine(format, arg);
         }
     }
 }

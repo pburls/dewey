@@ -15,7 +15,8 @@ namespace Dewey.Deploy
         IEventHandler<DeploymentActionContentNotFoundResult>,
         IEventHandler<DeploymentActionStarted>,
         IEventHandler<DeploymentActionOutputMessage>,
-        IEventHandler<DeploymentActionCompletedResult>
+        IEventHandler<DeploymentActionCompletedResult>,
+        IEventHandler<DeploymentActionFailed>
     {
         public DeployCommandWriter(IEventAggregator eventAggregator)
         {
@@ -30,6 +31,7 @@ namespace Dewey.Deploy
             eventAggregator.Subscribe<DeploymentActionStarted>(this);
             eventAggregator.Subscribe<DeploymentActionOutputMessage>(this);
             eventAggregator.Subscribe<DeploymentActionCompletedResult>(this);
+            eventAggregator.Subscribe<DeploymentActionFailed>(this);
         }
 
         public void Handle(DeployCommandStarted deployCommandStarted)
@@ -103,6 +105,15 @@ namespace Dewey.Deploy
                 deploymentActionStarted.DeploymentType,
                 deploymentActionStarted.ComponentManifest.Name,
                 deploymentActionStarted.DeploymentArgs.ToString()));
+        }
+
+        public void Handle(DeploymentActionFailed deploymentActionFailed)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(string.Format("Deployment action '{0}' of component '{1}' failed with reason: {2}",
+                deploymentActionFailed.DeploymentType,
+                deploymentActionFailed.ComponentManifest.Name,
+                deploymentActionFailed.Reason));
         }
 
         public void Handle(DeploymentActionOutputMessage deploymentActionOutputMessage)

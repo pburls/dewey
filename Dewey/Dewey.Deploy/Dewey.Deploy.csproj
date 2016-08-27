@@ -59,6 +59,7 @@
     <Compile Include="Events\DeploymentActionContentNotFoundResult.cs" />
     <Compile Include="Events\DeploymentActionErrorResult.cs" />
     <Compile Include="Events\DeploymentActionEvent.cs" />
+    <Compile Include="Events\DeploymentActionFailed.cs" />
     <Compile Include="Events\DeploymentActionOutputMessage.cs" />
     <Compile Include="Events\DeploymentActionCompletedResult.cs" />
     <Compile Include="Events\DeploymentActionStarted.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="Events\DeploymentElementResult.cs" />
     <Compile Include="Events\NoDeploymentElementsFoundResult.cs" />
     <Compile Include="IDeploymentAction.cs" />
+    <Compile Include="IISDeploumentArgs.cs" />
     <Compile Include="IISDeployment.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
