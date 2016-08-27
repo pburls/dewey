@@ -13,6 +13,8 @@ namespace Dewey.CLI
             var container = new Container();
 
             Bootstrapper.RegisterTypes(container);
+            File.Bootstrapper.RegisterTypes(container);
+            Build.Bootstrapper.RegisterTypes(container);
 
             var commandManager = container.GetInstance<CLICommandManager>();
 

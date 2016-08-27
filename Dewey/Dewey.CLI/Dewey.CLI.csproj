@@ -64,6 +64,10 @@
       <Project>{c6f16c2b-a471-408d-a22f-bc75bfd11699}</Project>
       <Name>Dewey.Deploy</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Dewey.File\Dewey.File.csproj">
+      <Project>{9078b56e-2979-4bd4-abf7-34eed2662e29}</Project>
+      <Name>Dewey.File</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Dewey.ListItems\Dewey.ListItems.csproj">
       <Project>{b2561b13-71ef-45cc-bdea-615556c22283}</Project>
       <Name>Dewey.ListItems</Name>

@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bootstrapper.cs" />
     <Compile Include="BuildActionFactory.cs" />
     <Compile Include="BuildCommand.cs" />
     <Compile Include="BuildCommandHandler.cs" />

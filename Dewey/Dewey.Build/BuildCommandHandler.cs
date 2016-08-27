@@ -2,9 +2,8 @@
 using Dewey.Manifest;
 using Dewey.Manifest.Component;
 using Dewey.Messaging;
-using System.Linq;
+using SimpleInjector;
 using System;
-using System.Xml.Linq;
 
 namespace Dewey.Build
 {
@@ -13,14 +12,16 @@ namespace Dewey.Build
         IEventHandler<ComponentManifestLoadResult>,
         IEventHandler<BuildElementResult>
     {
+        readonly Container _container;
         readonly ICommandProcessor _commandProcessor;
         readonly IEventAggregator _eventAggregator;
 
         BuildCommand _command;
         ComponentManifestLoadResult _componentMandifestLoadResult;
 
-        public BuildCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator)
+        public BuildCommandHandler(Container container, ICommandProcessor commandProcessor, IEventAggregator eventAggregator)
         {
+            _container = container;
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
 
@@ -60,7 +61,7 @@ namespace Dewey.Build
         {
             try
             {
-                var buildAction = BuildActionFactory.CreateBuildAction(buildElementResult.BuildType, _eventAggregator);
+                var buildAction = BuildActionFactory.CreateBuildAction(buildElementResult.BuildType, _container);
                 buildAction.Build(_componentMandifestLoadResult.ComponentManifest, buildElementResult.BuildElement);
             }
             catch (Exception ex)

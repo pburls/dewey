@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleInjector;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -6,12 +7,16 @@ namespace Dewey.Messaging
 {
     class CommandProcessor : ICommandProcessor
     {
-        private IEventAggregator _eventAggregator;
-        private Dictionary<Type, Type> _commandHandlers = new Dictionary<Type, Type>();
+        readonly Container _container;
+        readonly IEventAggregator _eventAggregator;
+        readonly Dictionary<Type, Type> _commandHandlers;
 
-        public CommandProcessor(IEventAggregator eventAggregator)
+        public CommandProcessor(Container container, IEventAggregator eventAggregator)
         {
+            _container = container;
             _eventAggregator = eventAggregator;
+
+            _commandHandlers = new Dictionary<Type, Type>();
         }
 
         public void RegisterHandler<TCommand, TCommandHandler>()
@@ -32,7 +37,8 @@ namespace Dewey.Messaging
 
             if (_commandHandlers.TryGetValue(commandType, out commandHandlerType))
             {
-                commandProcessor = Activator.CreateInstance(commandHandlerType, this, _eventAggregator);
+                //commandProcessor = Activator.CreateInstance(commandHandlerType, this, _eventAggregator);
+                commandProcessor = _container.GetInstance(commandHandlerType);
 
                 MethodInfo executeMethod = commandHandlerType.GetMethod("Execute");
                 executeMethod.Invoke(commandProcessor, new[] { command });
