@@ -5,6 +5,7 @@ using Dewey.Messaging;
 using System.Diagnostics;
 using System.Linq;
 using System.Xml.Linq;
+using System;
 
 namespace Dewey.Build
 {
@@ -15,6 +16,14 @@ namespace Dewey.Build
         readonly IMSBuildProcess _msBuildProcess;
 
         public const string BUILD_TYPE = "msbuild";
+
+        public string BuildType
+        {
+            get
+            {
+                return BUILD_TYPE;
+            }
+        }
 
         public MSBuild(IEventAggregator eventAggregator, IFileService fileService, IMSBuildProcess msBuildProcess)
         {

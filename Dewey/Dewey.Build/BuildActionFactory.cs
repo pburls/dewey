@@ -1,6 +1,6 @@
-﻿using Dewey.Messaging;
-using SimpleInjector;
+﻿using SimpleInjector;
 using System;
+using System.Linq;
 
 namespace Dewey.Build
 {
@@ -8,13 +8,15 @@ namespace Dewey.Build
     {
         public static IBuildAction CreateBuildAction(string buildType, Container container)
         {
-            switch (buildType)
+            var buildActions = container.GetAllInstances<IBuildAction>().ToDictionary(x => x.BuildType);
+
+            IBuildAction buildAction;
+            if(!buildActions.TryGetValue(buildType, out buildAction))
             {
-                case MSBuild.BUILD_TYPE:
-                    return container.GetInstance<MSBuild>();
-                default:
-                    throw new ArgumentOutOfRangeException("buildType", buildType, string.Format("Unknown build type {0}.", buildType));
+                throw new ArgumentOutOfRangeException("buildType", buildType, string.Format("Unknown build type {0}.", buildType));
             }
+
+            return buildAction;
         }
     }
 }

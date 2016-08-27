@@ -37,7 +37,6 @@ namespace Dewey.Messaging
 
             if (_commandHandlers.TryGetValue(commandType, out commandHandlerType))
             {
-                //commandProcessor = Activator.CreateInstance(commandHandlerType, this, _eventAggregator);
                 commandProcessor = _container.GetInstance(commandHandlerType);
 
                 MethodInfo executeMethod = commandHandlerType.GetMethod("Execute");
