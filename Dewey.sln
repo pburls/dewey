@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dewey.CLI", "Dewey.CLI\Dewey.CLI.csproj", "{16B953D3-5F0C-4847-977D-F508A257C982}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dewey.Manifest", "Manifest\Dewey.Manifest.csproj", "{00EA83DA-674D-4FFC-8E63-4C3A37A79CF9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dewey.Manifest", "Dewey.Manifest\Dewey.Manifest.csproj", "{00EA83DA-674D-4FFC-8E63-4C3A37A79CF9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dewey.Test", "Dewey.Test\Dewey.Test.csproj", "{8F96AC59-2297-4885-B5A7-8D286CE8DAB6}"
 EndProject

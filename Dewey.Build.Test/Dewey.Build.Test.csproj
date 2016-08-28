@@ -89,7 +89,7 @@
       <Project>{8f96ac59-2297-4885-b5a7-8d286ce8dab6}</Project>
       <Name>Dewey.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Manifest\Dewey.Manifest.csproj">
+    <ProjectReference Include="..\Dewey.Manifest\Dewey.Manifest.csproj">
       <Project>{00ea83da-674d-4ffc-8e63-4c3a37a79cf9}</Project>
       <Name>Dewey.Manifest</Name>
     </ProjectReference>
