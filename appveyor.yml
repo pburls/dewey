@@ -12,8 +12,6 @@ build:
   verbosity: minimal
 after_build:
 - ps: >-
-    Set-Location -Path Dewey.CLI\bin\$(configuration)\
-
+    Set-Location -Path .\Dewey.CLI\bin\$env:CONFIGURATION
     cpack -version $env:APPVEYOR_BUILD_VERSION
-
     Get-ChildItem .\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
