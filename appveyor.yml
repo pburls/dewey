@@ -10,3 +10,10 @@ before_build:
   - nuget restore
 build:
   verbosity: minimal
+after_build:
+- ps: >-
+    Set-Location -Path Dewey.CLI\bin\$(configuration)\
+
+    cpack -version $env:APPVEYOR_BUILD_VERSION
+
+    Get-ChildItem .\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
