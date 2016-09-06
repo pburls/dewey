@@ -46,9 +46,10 @@
   <ItemGroup>
     <Compile Include="Component\ComponentManifest.cs" />
     <Compile Include="Component\ComponentManifestLoadResult.cs" />
+    <Compile Include="Events\ManifestFilesFound.cs" />
     <Compile Include="Events\NoManifestFileFoundResult.cs" />
     <Compile Include="LoadManifestFiles.cs" />
-    <Compile Include="LoadManifestFilesStarted.cs" />
+    <Compile Include="Events\LoadManifestFilesStarted.cs" />
     <Compile Include="LoadManifestFilesWriter.cs" />
     <Compile Include="ManifestLoadHandler.cs" />
     <Compile Include="Module.cs" />

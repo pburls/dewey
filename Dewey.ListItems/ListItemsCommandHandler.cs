@@ -79,7 +79,7 @@ namespace Dewey.ListItems
                 Repository repository = null;
                 if (!_repositoryDictionary.TryGetValue(repositoryManifestLoadResult.RepositoryManifest.Name, out repository))
                 {
-                    repository = new Repository(repositoryManifestLoadResult.RepositoryManifest.Name, repositoryManifestLoadResult.RepositoryManifest.FileName);
+                    repository = new Repository(repositoryManifestLoadResult.RepositoryManifest);
                     _repositoryDictionary.Add(repository.Name, repository);
                 }
 
@@ -113,7 +113,7 @@ namespace Dewey.ListItems
                     Repository repository = null;
                     if (!_repositoryDictionary.TryGetValue(componentManifestLoadedEvent.RepositoryManifest.Name, out repository))
                     {
-                        repository = new Repository(componentManifestLoadedEvent.RepositoryManifest.Name, componentManifestLoadedEvent.RepositoryManifest.FileName);
+                        repository = new Repository(componentManifestLoadedEvent.RepositoryManifest);
                         _repositoryDictionary.Add(repository.Name, repository);
                     }
 

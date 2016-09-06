@@ -1,5 +1,6 @@
 ﻿using Dewey.File;
 using System.Xml.Linq;
+using System;
 
 namespace Dewey.Test
 {
@@ -10,6 +11,11 @@ namespace Dewey.Test
         public MockManifestFileReaderService(IManifestFileReader mockManifestFileReader)
         {
             _mockManifestFileReader = mockManifestFileReader;
+        }
+
+        public IManifestFileReader FindManifestFileInCurrentDirectory()
+        {
+            throw new NotImplementedException();
         }
 
         public IManifestFileReader ReadComponentManifestFile(params string[] paths)
@@ -41,6 +47,14 @@ namespace Dewey.Test
         public string ScenarioName { get; set; }
 
         public string XmlText { get; set; }
+
+        public ManifestFileType MandifestFileType
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public MockManifestFileReader()
         {

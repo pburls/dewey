@@ -13,19 +13,15 @@ namespace Dewey.ListItems
 
         public string Type { get; private set; }
 
-        public string FileName { get; private set; }
-
         public Component(ComponentManifest component)
         {
             Name = component.Name;
             Type = component.Type;
-            FileName = component.File.FileName;
         }
 
         public void Write()
         {
             Console.ForegroundColor = (ConsoleColor)ItemColor.ComponentItem;
-            Console.WriteLine(FileName);
             Console.WriteLine("{0} ({1})", Name, Type);
         }
 

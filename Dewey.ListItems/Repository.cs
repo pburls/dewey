@@ -1,4 +1,5 @@
 ﻿using Dewey.Manifest.Component;
+using Dewey.Manifest.Repository;
 using System;
 using System.Collections.Generic;
 
@@ -11,12 +12,10 @@ namespace Dewey.ListItems
         public IEnumerable<Component> Components { get { return _componentList; } }
 
         public string Name { get; private set; }
-        public string FileName { get; private set; }
 
-        public Repository(string name, string fileName)
+        public Repository(RepositoryManifest manifest)
         {
-            Name = name;
-            FileName = fileName;
+            Name = manifest.Name;
             _componentList = new List<Component>();
         }
 
@@ -28,7 +27,6 @@ namespace Dewey.ListItems
         public void Write()
         {
             Console.ForegroundColor = (ConsoleColor)ItemColor.RepositoryItem;
-            Console.WriteLine(FileName);
             Console.WriteLine(Name);
 
             var offsets = new Stack<ItemColor>();

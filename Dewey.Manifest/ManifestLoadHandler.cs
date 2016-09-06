@@ -34,6 +34,8 @@ namespace Dewey.Manifest
                 return;
             }
 
+            _eventAggregator.PublishEvent(new ManifestFilesFound(manifestFile.FileName));
+
             switch (manifestFile.MandifestFileType)
             {
                 case ManifestFileType.Component:

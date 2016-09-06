@@ -10,11 +10,12 @@ using System.Linq;
 namespace Dewey.Manifest
 {
     class LoadManifestFilesWriter :
-        IEventHandler<RepositoriesManifestLoadResult>, 
-        IEventHandler<RepositoryManifestLoadResult>, 
+        IEventHandler<RepositoriesManifestLoadResult>,
+        IEventHandler<RepositoryManifestLoadResult>,
         IEventHandler<ComponentManifestLoadResult>,
         IEventHandler<LoadManifestFilesStarted>,
-        IEventHandler<NoManifestFileFoundResult>
+        IEventHandler<NoManifestFileFoundResult>,
+        IEventHandler<ManifestFilesFound>
     {
         public LoadManifestFilesWriter(IEventAggregator eventAggregator)
         {
@@ -23,6 +24,7 @@ namespace Dewey.Manifest
             eventAggregator.Subscribe<ComponentManifestLoadResult>(this);
             eventAggregator.Subscribe<LoadManifestFilesStarted>(this);
             eventAggregator.Subscribe<NoManifestFileFoundResult>(this);
+            eventAggregator.Subscribe<ManifestFilesFound>(this);
         }
 
         public void Handle(LoadManifestFilesStarted @event)
@@ -35,6 +37,12 @@ namespace Dewey.Manifest
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Unable to find any manifest file in the current working directory.");
+        }
+
+        public void Handle(ManifestFilesFound @event)
+        {
+            Console.ResetColor();
+            Console.WriteLine("Found manifest file: {0}", @event.FileName);
         }
 
         public void Handle(RepositoriesManifestLoadResult @event)
