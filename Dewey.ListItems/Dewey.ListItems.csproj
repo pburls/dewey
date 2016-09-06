@@ -55,6 +55,10 @@
     <Compile Include="Repository.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Dewey.File\Dewey.File.csproj">
+      <Project>{9078B56E-2979-4BD4-ABF7-34EED2662E29}</Project>
+      <Name>Dewey.File</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Dewey.Messaging\Dewey.Messaging.csproj">
       <Project>{a3986e8a-3009-41b1-8636-0c431305255c}</Project>
       <Name>Dewey.Messaging</Name>
