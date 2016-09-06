@@ -4,7 +4,15 @@ namespace Dewey.File
 {
     class RepositoriesManifestFileReader : ManifestFileReader
     {
-        const string DEFAULT_REPOSITORIES_FILE_NAME = "repositories.xml";
+        public const string DEFAULT_REPOSITORIES_FILE_NAME = "repositories.xml";
+
+        public override ManifestFileType MandifestFileType
+        {
+            get
+            {
+                return ManifestFileType.Repositories;
+            }
+        }
 
         public RepositoriesManifestFileReader()
         {

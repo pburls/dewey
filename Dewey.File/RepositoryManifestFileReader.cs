@@ -6,9 +6,18 @@ namespace Dewey.File
     {
         public const string DEFAULT_REPOSITORY_FILE_NAME = "repository.xml";
 
+        public override ManifestFileType MandifestFileType
+        {
+            get
+            {
+                return ManifestFileType.Repository;
+            }
+        }
+
         public RepositoryManifestFileReader(params string[] paths)
         {
-            var directoryInfo = new DirectoryInfo(Path.Combine(paths));
+            var directoryPath = paths.Length == 0 ? "." : Path.Combine(paths);
+            var directoryInfo = new DirectoryInfo(directoryPath);
             SetDirectoryInfo(directoryInfo);
 
             if (directoryInfo.Exists)

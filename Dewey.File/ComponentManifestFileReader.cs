@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Dewey.File
 {
@@ -6,9 +7,18 @@ namespace Dewey.File
     {
         public const string DEFAULT_COMPONENT_FILE_NAME = "component.xml";
 
+        public override ManifestFileType MandifestFileType
+        {
+            get
+            {
+                return ManifestFileType.Component;
+            }
+        }
+
         public ComponentManifestFileReader(params string[] paths)
         {
-            var directoryInfo = new DirectoryInfo(Path.Combine(paths));
+            var directoryPath = paths.Length == 0 ? "." : Path.Combine(paths);
+            var directoryInfo = new DirectoryInfo(directoryPath);
             SetDirectoryInfo(directoryInfo);
 
             if (directoryInfo.Exists)

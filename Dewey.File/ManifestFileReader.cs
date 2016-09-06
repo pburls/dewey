@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Xml.Linq;
 
 namespace Dewey.File
@@ -12,6 +13,8 @@ namespace Dewey.File
         public bool FileExists { get; protected set; }
 
         public string FileName { get; protected set; }
+
+        public abstract ManifestFileType MandifestFileType { get; }
 
         protected void SetDirectoryInfo(DirectoryInfo directoryInfo)
         {

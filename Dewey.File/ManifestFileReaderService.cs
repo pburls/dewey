@@ -16,5 +16,25 @@
         {
             return new RepositoryManifestFileReader(paths);
         }
+
+        public IManifestFileReader FindManifestFileInCurrentDirectory()
+        {
+            if (System.IO.File.Exists(RepositoriesManifestFileReader.DEFAULT_REPOSITORIES_FILE_NAME))
+            {
+                return new RepositoriesManifestFileReader();
+            }
+
+            if (System.IO.File.Exists(RepositoryManifestFileReader.DEFAULT_REPOSITORY_FILE_NAME))
+            {
+                return new RepositoryManifestFileReader();
+            }
+
+            if (System.IO.File.Exists(ComponentManifestFileReader.DEFAULT_COMPONENT_FILE_NAME))
+            {
+                return new ComponentManifestFileReader();
+            }
+
+            return null;
+        }
     }
 }

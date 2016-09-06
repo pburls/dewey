@@ -2,15 +2,18 @@
 
 namespace Dewey.File
 {
-    public interface IManifestFileReaderService
+    public enum ManifestFileType
     {
-        IManifestFileReader ReadRepositoriesManifestFile();
-        IManifestFileReader ReadRepositoryManifestFile(params string[] paths);
-        IManifestFileReader ReadComponentManifestFile(params string[] paths);
+        Unknown,
+        Component,
+        Repository,
+        Repositories
     }
 
     public interface IManifestFileReader
     {
+        ManifestFileType MandifestFileType { get; }
+
         bool DirectoryExists { get; }
         string DirectoryName { get; }
         bool FileExists { get; }
