@@ -16,4 +16,9 @@
     <summary>Dewey command line tool</summary>
     <description>A simple command line application for reading standardised software manifests and performing simple actions described by them. Such as building and deploying.</description>
   </metadata>
+  <files>
+    <file src="*.dll" />
+    <file src="*.exe" />
+    <file src="*.exe.config" />
+  </files>
 </package>
