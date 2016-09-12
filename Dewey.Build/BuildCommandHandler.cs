@@ -4,20 +4,25 @@ using Dewey.Manifest.Component;
 using Dewey.Messaging;
 using SimpleInjector;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Dewey.Build
 {
     public class BuildCommandHandler : 
         ICommandHandler<BuildCommand>,
         IEventHandler<ComponentManifestLoadResult>,
-        IEventHandler<BuildElementResult>
+        IEventHandler<BuildElementResult>,
+        IEventHandler<DependencyElementResult>
     {
         readonly Container _container;
         readonly ICommandProcessor _commandProcessor;
         readonly IEventAggregator _eventAggregator;
+        readonly List<DependencyElementResult> _dependencies;
 
         BuildCommand _command;
         ComponentManifestLoadResult _componentMandifestLoadResult;
+        BuildElementResult _buildElementResult;
 
         public BuildCommandHandler(Container container, ICommandProcessor commandProcessor, IEventAggregator eventAggregator)
         {
@@ -25,8 +30,11 @@ namespace Dewey.Build
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
 
+            _dependencies = new List<DependencyElementResult>();
+
             eventAggregator.Subscribe<ComponentManifestLoadResult>(this);
             eventAggregator.Subscribe<BuildElementResult>(this);
+            eventAggregator.Subscribe<DependencyElementResult>(this);
         }
 
         public void Execute(BuildCommand command)
@@ -44,6 +52,28 @@ namespace Dewey.Build
             }
 
             BuildElementResult.LoadBuildElementsFromComponentManifest(command, _componentMandifestLoadResult.ComponentElement, _eventAggregator);
+
+            if (_buildElementResult == null)
+            {
+                return;
+            }
+
+            DependencyLoader.LoadDependencies(_componentMandifestLoadResult.ComponentElement, _eventAggregator);
+
+            if (_dependencies.Any())
+            {
+                //build the dependencies first?
+            }
+
+            try
+            {
+                var buildAction = BuildActionFactory.CreateBuildAction(_buildElementResult.BuildType, _container);
+                buildAction.Build(_componentMandifestLoadResult.ComponentManifest, _buildElementResult.BuildElement);
+            }
+            catch (Exception ex)
+            {
+                _eventAggregator.PublishEvent(new BuildActionErrorResult(_componentMandifestLoadResult.ComponentManifest, _buildElementResult.BuildType, ex));
+            }
         }
 
         public void Handle(ComponentManifestLoadResult componentManifestLoadResult)
@@ -59,15 +89,12 @@ namespace Dewey.Build
 
         public void Handle(BuildElementResult buildElementResult)
         {
-            try
-            {
-                var buildAction = BuildActionFactory.CreateBuildAction(buildElementResult.BuildType, _container);
-                buildAction.Build(_componentMandifestLoadResult.ComponentManifest, buildElementResult.BuildElement);
-            }
-            catch (Exception ex)
-            {
-                _eventAggregator.PublishEvent(new BuildActionErrorResult(_componentMandifestLoadResult.ComponentManifest, buildElementResult.BuildType, ex));
-            }
+            _buildElementResult = buildElementResult;
+        }
+
+        public void Handle(DependencyElementResult dependencyElementResult)
+        {
+            _dependencies.Add(dependencyElementResult);
         }
     }
 }

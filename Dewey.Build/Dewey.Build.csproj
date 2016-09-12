@@ -50,6 +50,7 @@
     <Compile Include="BuildCommandHandler.cs" />
     <Compile Include="BuildCommandWriter.cs" />
     <Compile Include="CLICommandProvider.cs" />
+    <Compile Include="DependencyLoader.cs" />
     <Compile Include="Events\BuildActionCompletedResult.cs" />
     <Compile Include="Events\BuildActionEvent.cs" />
     <Compile Include="Events\BuildActionErrorResult.cs" />
@@ -61,6 +62,11 @@
     <Compile Include="Events\BuildElementResult.cs" />
     <Compile Include="Events\ComponentNotFoundResult.cs" />
     <Compile Include="Events\BuildActionTargetNotFoundResult.cs" />
+    <Compile Include="Events\DependenciesElementNotFoundResult.cs" />
+    <Compile Include="Events\DependencyElementEvent.cs" />
+    <Compile Include="Events\DependencyElementMissingAttributesResult.cs" />
+    <Compile Include="Events\DependencyElementResult.cs" />
+    <Compile Include="Events\DependencyElementsNotFoundResult.cs" />
     <Compile Include="Events\NoBuildElementsFoundResult.cs" />
     <Compile Include="IBuildAction.cs" />
     <Compile Include="IMSBuildProcess.cs" />
