@@ -4,6 +4,8 @@ namespace Dewey.Build.Events
 {
     public class DependencyElementResult : DependencyElementEvent
     {
+        public const string COMPONENT_DEPENDENCY_TYPE = "component";
+
         public XElement DependencyElement { get; private set; }
         public string Type { get; private set; }
         public string Name { get; private set; }

@@ -63,6 +63,13 @@ namespace Dewey.Build
             if (_dependencies.Any())
             {
                 //build the dependencies first?
+                foreach (var dependency in _dependencies)
+                {
+                    if (dependency.Type == DependencyElementResult.COMPONENT_DEPENDENCY_TYPE)
+                    {
+                        _commandProcessor.Execute(BuildCommand.Create(dependency.Name));
+                    }
+                }
             }
 
             try
@@ -87,14 +94,17 @@ namespace Dewey.Build
             }
         }
 
-        public void Handle(BuildElementResult buildElementResult)
-        {
-            _buildElementResult = buildElementResult;
-        }
-
         public void Handle(DependencyElementResult dependencyElementResult)
         {
             _dependencies.Add(dependencyElementResult);
+        }
+
+        public void Handle(BuildElementResult buildElementResult)
+        {
+            if (buildElementResult.ComponentName == _command.ComponentName)
+            {
+                _buildElementResult = buildElementResult;
+            }
         }
     }
 }

@@ -24,5 +24,10 @@ namespace Dewey.Build
 
             return new BuildCommand() { ComponentName = args[1] };
         }
+
+        public static BuildCommand Create(string componentName)
+        {
+            return new BuildCommand() { ComponentName = componentName };
+        }
     }
 }
