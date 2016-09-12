@@ -1,4 +1,5 @@
 ﻿using Dewey.Manifest.Component;
+using Dewey.Manifest.Events;
 using Dewey.Manifest.Repositories;
 using Dewey.Manifest.Repository;
 using Dewey.Messaging;
@@ -9,10 +10,12 @@ using System.Linq;
 namespace Dewey.Manifest
 {
     class LoadManifestFilesWriter :
-        IEventHandler<RepositoriesManifestLoadResult>, 
-        IEventHandler<RepositoryManifestLoadResult>, 
+        IEventHandler<RepositoriesManifestLoadResult>,
+        IEventHandler<RepositoryManifestLoadResult>,
         IEventHandler<ComponentManifestLoadResult>,
-        IEventHandler<LoadManifestFilesStarted>
+        IEventHandler<LoadManifestFilesStarted>,
+        IEventHandler<NoManifestFileFoundResult>,
+        IEventHandler<ManifestFilesFound>
     {
         public LoadManifestFilesWriter(IEventAggregator eventAggregator)
         {
@@ -20,12 +23,26 @@ namespace Dewey.Manifest
             eventAggregator.Subscribe<RepositoryManifestLoadResult>(this);
             eventAggregator.Subscribe<ComponentManifestLoadResult>(this);
             eventAggregator.Subscribe<LoadManifestFilesStarted>(this);
+            eventAggregator.Subscribe<NoManifestFileFoundResult>(this);
+            eventAggregator.Subscribe<ManifestFilesFound>(this);
         }
 
         public void Handle(LoadManifestFilesStarted @event)
         {
             Console.ResetColor();
-            Console.WriteLine("Reading repositories.xml manifest file.");
+            Console.WriteLine("Looking for a manifest file in the current working directory.");
+        }
+
+        public void Handle(NoManifestFileFoundResult @event)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Unable to find any manifest file in the current working directory.");
+        }
+
+        public void Handle(ManifestFilesFound @event)
+        {
+            Console.ResetColor();
+            Console.WriteLine("Found manifest file: {0}", @event.FileName);
         }
 
         public void Handle(RepositoriesManifestLoadResult @event)

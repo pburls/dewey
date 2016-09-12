@@ -37,6 +37,8 @@ The following xml manifests files can be used to catalogue the components that f
 
 ## Examples
 ### Repositories
+A 'repositories.xml' file can be placed in a directory that is a common ancestor to the repositories it references.
+As shown in the example below, the name and location of each required repository can be listed in the xml manifest file as a 'repository' xml element.
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <repositories>
@@ -45,6 +47,8 @@ The following xml manifests files can be used to catalogue the components that f
 </repositories>
 ```
 ### Repository
+A 'repository.xml' file can be placed in the root directory of a repository.
+As shown in the example below, the name and location of each component stored in the repository can be listed in the xml manifest file as a 'component' xml element.
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <repository name="repo1">
@@ -55,6 +59,11 @@ The following xml manifests files can be used to catalogue the components that f
 </repository>
 ```
 ### Component
+A 'component.xml' file can be placed in the root directory of a component.
+An example manifest is shown below.
+- The name and type of the component is set as attributes of the root 'componentManifest' element.
+- Build actions for the component can be described using 'build' elements.
+- Deployment actions for the component can be descibed using 'deployment' elements.
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <componentManifest name="ExampleComp1" type="web">

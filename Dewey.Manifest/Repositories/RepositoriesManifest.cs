@@ -18,10 +18,8 @@ namespace Dewey.Manifest.Repositories
             FileName = fileName;
         }
 
-        public static RepositoriesManifestLoadResult LoadRepositoriesManifestFile(IManifestFileReaderService manifestFileReaderService)
+        public static RepositoriesManifestLoadResult LoadRepositoriesManifestFile(IManifestFileReader repositoriesManifestFile)
         {
-            var repositoriesManifestFile = manifestFileReaderService.ReadRepositoriesManifestFile();
-
             if (!repositoriesManifestFile.FileExists) return RepositoriesManifestLoadResult.CreateFileNotFoundResult(repositoriesManifestFile);
 
             var repositories = repositoriesManifestFile.Load();

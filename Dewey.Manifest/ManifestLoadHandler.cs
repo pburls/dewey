@@ -1,5 +1,6 @@
 ﻿using Dewey.File;
 using Dewey.Manifest.Component;
+using Dewey.Manifest.Events;
 using Dewey.Manifest.Repositories;
 using Dewey.Manifest.Repository;
 using Dewey.Messaging;
@@ -12,7 +13,7 @@ namespace Dewey.Manifest
         private readonly IEventAggregator _eventAggregator;
         private readonly IManifestFileReaderService _manifestFileReaderService;
 
-        public ManifestLoadHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator)
+        public ManifestLoadHandler(IEventAggregator eventAggregator)
         {
             _eventAggregator = eventAggregator;
             _manifestFileReaderService = new ManifestFileReaderService();
@@ -26,8 +27,33 @@ namespace Dewey.Manifest
         {
             _eventAggregator.PublishEvent(new LoadManifestFilesStarted());
 
-            var loadRepositoriesManifestFileResult = RepositoriesManifest.LoadRepositoriesManifestFile(_manifestFileReaderService);
-            _eventAggregator.PublishEvent(loadRepositoriesManifestFileResult);
+            var manifestFile = _manifestFileReaderService.FindManifestFileInCurrentDirectory();
+            if (manifestFile == null)
+            {
+                _eventAggregator.PublishEvent(new NoManifestFileFoundResult());
+                return;
+            }
+
+            _eventAggregator.PublishEvent(new ManifestFilesFound(manifestFile.FileName));
+
+            switch (manifestFile.MandifestFileType)
+            {
+                case ManifestFileType.Component:
+                    var loadComponentManifestFileResult = ComponentManifest.LoadComponentManifestFile(manifestFile, null);
+                    _eventAggregator.PublishEvent(loadComponentManifestFileResult);
+                    break;
+                case ManifestFileType.Repository:
+                    var loadRepositoryManifestFileResult = RepositoryManifest.LoadRepositoryManifestFile(manifestFile, null);
+                    _eventAggregator.PublishEvent(loadRepositoryManifestFileResult);
+                    break;
+                case ManifestFileType.Repositories:
+                    var loadRepositoriesManifestFileResult = RepositoriesManifest.LoadRepositoriesManifestFile(manifestFile);
+                    _eventAggregator.PublishEvent(loadRepositoriesManifestFileResult);
+                    break;
+                case ManifestFileType.Unknown:
+                default:
+                    break;
+            }
         }
 
         public void Handle(RepositoriesManifestLoadResult @event)

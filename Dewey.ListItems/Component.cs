@@ -19,6 +19,12 @@ namespace Dewey.ListItems
             Type = component.Type;
         }
 
+        public void Write()
+        {
+            Console.ForegroundColor = (ConsoleColor)ItemColor.ComponentItem;
+            Console.WriteLine("{0} ({1})", Name, Type);
+        }
+
         public void Write(Stack<ItemColor> offsets)
         {
             offsets.WriteOffsets();
