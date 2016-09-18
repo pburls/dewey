@@ -1,52 +1,34 @@
-﻿using Dewey.Manifest.Component;
-using Dewey.Manifest.Repository;
+﻿using Dewey.State;
 using System;
 using System.Collections.Generic;
 
 namespace Dewey.ListItems
 {
-    class Repository
+    static class RepositoryExtensions
     {
-        private List<Component> _componentList;
-
-        public IEnumerable<Component> Components { get { return _componentList; } }
-
-        public string Name { get; private set; }
-
-        public Repository(RepositoryManifest manifest)
-        {
-            Name = manifest.Name;
-            _componentList = new List<Component>();
-        }
-
-        public void AddComponent(Component component)
-        {
-            _componentList.Add(component);
-        }
-
-        public void Write()
+        public static void Write(this Repository repository)
         {
             Console.ForegroundColor = (ConsoleColor)ItemColor.RepositoryItem;
-            Console.WriteLine(Name);
+            Console.WriteLine(repository.Name);
 
             var offsets = new Stack<ItemColor>();
 
-            foreach (var component in Components)
+            foreach (var component in repository.Components)
             {
                 component.Write(offsets);
             }
         }
 
-        public void Write(Stack<ItemColor> offsets)
+        public static void Write(this Repository repository, Stack<ItemColor> offsets)
         {
             offsets.WriteOffsets();
 
             Console.ForegroundColor = (ConsoleColor)ItemColor.RepositoryItem;
-            Console.WriteLine("├ {0}", Name);
+            Console.WriteLine("├ {0}", repository.Name);
 
             offsets.Push(ItemColor.RepositoryItem);
 
-            foreach (var component in Components)
+            foreach (var component in repository.Components)
             {
                 component.Write(offsets);
             }

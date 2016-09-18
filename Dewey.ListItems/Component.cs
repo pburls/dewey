@@ -1,36 +1,23 @@
-﻿using Dewey.Manifest.Component;
+﻿using Dewey.State;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Dewey.ListItems
 {
-    class Component
+    static class ComponentExtensions
     {
-        public string Name { get; private set; }
-
-        public string Type { get; private set; }
-
-        public Component(ComponentManifest component)
-        {
-            Name = component.Name;
-            Type = component.Type;
-        }
-
-        public void Write()
+        public static void Write(this Component component)
         {
             Console.ForegroundColor = (ConsoleColor)ItemColor.ComponentItem;
-            Console.WriteLine("{0} ({1})", Name, Type);
+            Console.WriteLine("{0} ({1})", component.Name, component.Type);
         }
 
-        public void Write(Stack<ItemColor> offsets)
+        public static void Write(this Component component, Stack<ItemColor> offsets)
         {
             offsets.WriteOffsets();
 
             Console.ForegroundColor = (ConsoleColor)ItemColor.ComponentItem;
-            Console.WriteLine("├ {0} ({1})", Name, Type);
+            Console.WriteLine("├ {0} ({1})", component.Name, component.Type);
         }
     }
 }

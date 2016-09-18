@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{16B953D3-5F0C-4847-977D-F508A257C982}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{972C3E2D-B209-4C63-97DA-FA4C16822E21}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Dewey.CLI</RootNamespace>
-    <AssemblyName>dewey</AssemblyName>
+    <RootNamespace>Dewey.State</RootNamespace>
+    <AssemblyName>Dewey.State</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -47,48 +44,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CLICommandManager.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Component.cs" />
+    <Compile Include="Messages\GetComponents.cs" />
+    <Compile Include="Messages\GetRepositories.cs" />
+    <Compile Include="Messages\GetRepositoriesFiles.cs" />
+    <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RepositoriesFile.cs" />
+    <Compile Include="Repository.cs" />
+    <Compile Include="Store.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="dewey.nuspec">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Dewey.Build\Dewey.Build.csproj">
-      <Project>{b1e2a5fd-e29c-4f59-a169-8d5896aa8840}</Project>
-      <Name>Dewey.Build</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Dewey.Deploy\Dewey.Deploy.csproj">
-      <Project>{c6f16c2b-a471-408d-a22f-bc75bfd11699}</Project>
-      <Name>Dewey.Deploy</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Dewey.File\Dewey.File.csproj">
-      <Project>{9078b56e-2979-4bd4-abf7-34eed2662e29}</Project>
-      <Name>Dewey.File</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Dewey.ListItems\Dewey.ListItems.csproj">
-      <Project>{b2561b13-71ef-45cc-bdea-615556c22283}</Project>
-      <Name>Dewey.ListItems</Name>
+    <ProjectReference Include="..\Dewey.Manifest\Dewey.Manifest.csproj">
+      <Project>{00ea83da-674d-4ffc-8e63-4c3a37a79cf9}</Project>
+      <Name>Dewey.Manifest</Name>
     </ProjectReference>
     <ProjectReference Include="..\Dewey.Messaging\Dewey.Messaging.csproj">
       <Project>{a3986e8a-3009-41b1-8636-0c431305255c}</Project>
       <Name>Dewey.Messaging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Dewey.Manifest\Dewey.Manifest.csproj">
-      <Project>{00ea83da-674d-4ffc-8e63-4c3a37a79cf9}</Project>
-      <Name>Dewey.Manifest</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Dewey.State\Dewey.State.csproj">
-      <Project>{972c3e2d-b209-4c63-97da-fa4c16822e21}</Project>
-      <Name>Dewey.State</Name>
-    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
