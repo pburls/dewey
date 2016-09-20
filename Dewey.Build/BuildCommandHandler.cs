@@ -1,7 +1,7 @@
 ﻿using Dewey.Build.Events;
-using Dewey.Manifest;
-using Dewey.Manifest.Component;
 using Dewey.Messaging;
+using Dewey.State;
+using Dewey.State.Messages;
 using SimpleInjector;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ namespace Dewey.Build
 {
     public class BuildCommandHandler : 
         ICommandHandler<BuildCommand>,
-        IEventHandler<ComponentManifestLoadResult>,
+        IEventHandler<GetComponentResult>,
         IEventHandler<BuildElementResult>,
         IEventHandler<DependencyElementResult>
     {
@@ -21,8 +21,8 @@ namespace Dewey.Build
         readonly List<DependencyElementResult> _dependencies;
 
         BuildCommand _command;
-        ComponentManifestLoadResult _componentMandifestLoadResult;
         BuildElementResult _buildElementResult;
+        Component _component;
 
         public BuildCommandHandler(Container container, ICommandProcessor commandProcessor, IEventAggregator eventAggregator)
         {
@@ -31,8 +31,8 @@ namespace Dewey.Build
             _eventAggregator = eventAggregator;
 
             _dependencies = new List<DependencyElementResult>();
-
-            eventAggregator.Subscribe<ComponentManifestLoadResult>(this);
+            
+            eventAggregator.Subscribe<GetComponentResult>(this);
             eventAggregator.Subscribe<BuildElementResult>(this);
             eventAggregator.Subscribe<DependencyElementResult>(this);
         }
@@ -41,24 +41,24 @@ namespace Dewey.Build
         {
             _command = command;
 
-            _commandProcessor.Execute(new LoadManifestFiles());
-
             _eventAggregator.PublishEvent(new BuildCommandStarted(command));
 
-            if (_componentMandifestLoadResult == null)
+            _commandProcessor.Execute(new GetComponent(command.ComponentName));
+
+            if (_component == null)
             {
                 _eventAggregator.PublishEvent(new ComponentNotFoundResult(command));
                 return;
             }
 
-            BuildElementResult.LoadBuildElementsFromComponentManifest(command, _componentMandifestLoadResult.ComponentElement, _eventAggregator);
+            BuildElementResult.LoadBuildElementsFromComponentManifest(command, _component.ComponentElement, _eventAggregator);
 
             if (_buildElementResult == null)
             {
                 return;
             }
 
-            DependencyLoader.LoadDependencies(_componentMandifestLoadResult.ComponentElement, _eventAggregator);
+            DependencyLoader.LoadDependencies(_component.ComponentElement, _eventAggregator);
 
             if (_dependencies.Any())
             {
@@ -75,22 +75,19 @@ namespace Dewey.Build
             try
             {
                 var buildAction = BuildActionFactory.CreateBuildAction(_buildElementResult.BuildType, _container);
-                buildAction.Build(_componentMandifestLoadResult.ComponentManifest, _buildElementResult.BuildElement);
+                buildAction.Build(_component.ComponentManifest, _buildElementResult.BuildElement);
             }
             catch (Exception ex)
             {
-                _eventAggregator.PublishEvent(new BuildActionErrorResult(_componentMandifestLoadResult.ComponentManifest, _buildElementResult.BuildType, ex));
+                _eventAggregator.PublishEvent(new BuildActionErrorResult(_component.ComponentManifest, _buildElementResult.BuildType, ex));
             }
         }
 
-        public void Handle(ComponentManifestLoadResult componentManifestLoadResult)
+        public void Handle(GetComponentResult getComponentResult)
         {
-            if (componentManifestLoadResult.IsSuccessful)
+            if (getComponentResult.Component != null && getComponentResult.Component.ComponentManifest.Name == _command.ComponentName)
             {
-                if (componentManifestLoadResult.ComponentManifest.Name == _command.ComponentName)
-                {
-                    _componentMandifestLoadResult = componentManifestLoadResult;
-                }
+                _component = getComponentResult.Component;
             }
         }
 

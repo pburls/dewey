@@ -14,7 +14,8 @@ namespace Dewey.State
         IEventHandler<ComponentManifestLoadResult>,
         ICommandHandler<GetRepositoriesFiles>,
         ICommandHandler<GetRepositories>,
-        ICommandHandler<GetComponents>
+        ICommandHandler<GetComponents>,
+        ICommandHandler<GetComponent>
     {
         readonly IEventAggregator _eventAggregator;
 
@@ -22,12 +23,17 @@ namespace Dewey.State
         Dictionary<string, Repository> _repositoryDictionary { get; set; }
         Dictionary<string, Component> _componentsDictionary { get; set; }
 
-        public Store(IEventAggregator eventAggregator)
+        public Store(IEventAggregator eventAggregator, ICommandProcessor commandProcessor)
         {
             _eventAggregator = eventAggregator;
             _repositoriesDictionary = new Dictionary<string, RepositoriesFile>();
             _repositoryDictionary = new Dictionary<string, Repository>();
             _componentsDictionary = new Dictionary<string, Component>();
+
+            commandProcessor.RegisterHandler<GetRepositoriesFiles, Store>();
+            commandProcessor.RegisterHandler<GetRepositories, Store>();
+            commandProcessor.RegisterHandler<GetComponents, Store>();
+            commandProcessor.RegisterHandler<GetComponent, Store>();
 
             eventAggregator.Subscribe<RepositoriesManifestLoadResult>(this);
             eventAggregator.Subscribe<ComponentManifestLoadResult>(this);
@@ -79,8 +85,8 @@ namespace Dewey.State
                 Component component = null;
                 if (!_componentsDictionary.TryGetValue(componentManifestLoadedEvent.ComponentManifest.Name, out component))
                 {
-                    component = new Component(componentManifestLoadedEvent.ComponentManifest);
-                    _componentsDictionary.Add(component.Name, component);
+                    component = new Component(componentManifestLoadedEvent.ComponentManifest, componentManifestLoadedEvent.ComponentElement);
+                    _componentsDictionary.Add(component.ComponentManifest.Name, component);
                 }
 
                 if (componentManifestLoadedEvent.RepositoryManifest != null)
@@ -110,6 +116,14 @@ namespace Dewey.State
         public void Execute(GetComponents command)
         {
             _eventAggregator.PublishEvent(new GetComponentsResult(command, _componentsDictionary.Values));
+        }
+
+        public void Execute(GetComponent command)
+        {
+            Component component = null;
+            _componentsDictionary.TryGetValue(command.ComponentName, out component);
+
+            _eventAggregator.PublishEvent(new GetComponentResult(command, component));
         }
     }
 }

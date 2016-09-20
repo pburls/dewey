@@ -7,12 +7,9 @@ namespace Dewey.State
     {
         readonly Store _store;
 
-        public Module(Store store, ICommandProcessor commandProcessor)
+        public Module(Store store)
         {
             _store = store;
-            commandProcessor.RegisterHandler<GetRepositoriesFiles, Store>();
-            commandProcessor.RegisterHandler<GetRepositories, Store>();
-            commandProcessor.RegisterHandler<GetComponents, Store>();
         }
     }
 }

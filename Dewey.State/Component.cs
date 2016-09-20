@@ -1,17 +1,18 @@
 ﻿using Dewey.Manifest.Component;
+using System.Xml.Linq;
 
 namespace Dewey.State
 {
     public class Component
     {
-        public string Name { get; private set; }
+        public ComponentManifest ComponentManifest { get; private set; }
 
-        public string Type { get; private set; }
+        public XElement ComponentElement { get; private set; }
 
-        public Component(ComponentManifest component)
+        public Component(ComponentManifest componentManifest, XElement componentElement)
         {
-            Name = component.Name;
-            Type = component.Type;
+            ComponentManifest = componentManifest;
+            ComponentElement = componentElement;
         }
     }
 }

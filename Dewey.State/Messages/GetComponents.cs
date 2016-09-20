@@ -5,7 +5,10 @@ namespace Dewey.State.Messages
 {
     public class GetComponents : ICommand
     {
+        public GetComponents()
+        {
 
+        }
     }
 
     public class GetComponentsResult : IEvent

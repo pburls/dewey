@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Component.cs" />
+    <Compile Include="Messages\GetComponent.cs" />
     <Compile Include="Messages\GetComponents.cs" />
     <Compile Include="Messages\GetRepositories.cs" />
     <Compile Include="Messages\GetRepositoriesFiles.cs" />
