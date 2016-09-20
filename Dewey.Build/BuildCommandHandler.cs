@@ -59,15 +59,18 @@ namespace Dewey.Build
                 return;
             }
 
-            DependencyElementResult.LoadDependencies(_component.ComponentElement, _eventAggregator);
-
-            if (_dependencies.Any() && _command.BuildDependencies)
+            if (_command.BuildDependencies)
             {
-                foreach (var dependency in _dependencies)
+                DependencyElementResult.LoadDependencies(_component.ComponentElement, _eventAggregator);
+
+                if (_dependencies.Any())
                 {
-                    if (dependency.Type == DependencyElementResult.COMPONENT_DEPENDENCY_TYPE)
+                    foreach (var dependency in _dependencies)
                     {
-                        _commandProcessor.Execute(BuildCommand.Create(dependency.Name, _command.BuildDependencies));
+                        if (dependency.Type == DependencyElementResult.COMPONENT_DEPENDENCY_TYPE)
+                        {
+                            _commandProcessor.Execute(BuildCommand.Create(dependency.Name, _command.BuildDependencies));
+                        }
                     }
                 }
             }

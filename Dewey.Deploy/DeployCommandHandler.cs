@@ -3,16 +3,21 @@ using Dewey.Deploy.Events;
 using Dewey.Messaging;
 using Dewey.State.Messages;
 using Dewey.State;
+using Dewey.Manifest.Dependency;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Dewey.Deploy
 {
     public class DeployCommandHandler :
         ICommandHandler<DeployCommand>,
         IEventHandler<GetComponentResult>,
-        IEventHandler<DeploymentElementResult>
+        IEventHandler<DeploymentElementResult>,
+        IEventHandler<DependencyElementResult>
     {
         readonly ICommandProcessor _commandProcessor;
         readonly IEventAggregator _eventAggregator;
+        readonly List<DependencyElementResult> _dependencies;
 
         DeployCommand _command;
         Component _component;
@@ -23,8 +28,11 @@ namespace Dewey.Deploy
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
 
+            _dependencies = new List<DependencyElementResult>();
+
             eventAggregator.Subscribe<GetComponentResult>(this);
             eventAggregator.Subscribe<DeploymentElementResult>(this);
+            eventAggregator.Subscribe<DependencyElementResult>(this);
         }
 
         public void Execute(DeployCommand command)
@@ -43,6 +51,27 @@ namespace Dewey.Deploy
 
             DeploymentElementResult.LoadDeployActionsFromComponentMandifest(command, _component.ComponentElement, _eventAggregator);
 
+            if (_deploymentElementResult == null)
+            {
+                return;
+            }
+
+            if (_command.DeployDependencies)
+            {
+                DependencyElementResult.LoadDependencies(_component.ComponentElement, _eventAggregator);
+
+                if (_dependencies.Any())
+                {
+                    foreach (var dependency in _dependencies)
+                    {
+                        if (dependency.Type == DependencyElementResult.COMPONENT_DEPENDENCY_TYPE)
+                        {
+                            _commandProcessor.Execute(DeployCommand.Create(dependency.Name, _command.DeployDependencies));
+                        }
+                    }
+                }
+            }
+
             try
             {
                 var deploymentAction = DeploymentActionFactory.CreateDeploymentAction(_deploymentElementResult.DeploymentType, _eventAggregator);
@@ -60,6 +89,11 @@ namespace Dewey.Deploy
             {
                 _component = getComponentResult.Component;
             }
+        }
+
+        public void Handle(DependencyElementResult dependencyElementResult)
+        {
+            _dependencies.Add(dependencyElementResult);
         }
 
         public void Handle(DeploymentElementResult deploymentElementResult)
