@@ -1,9 +1,6 @@
 ﻿using System;
 using Dewey.Deploy.Events;
-using Dewey.Manifest;
-using Dewey.Manifest.Component;
 using Dewey.Messaging;
-using System.Linq;
 using Dewey.State.Messages;
 using Dewey.State;
 

@@ -1,4 +1,5 @@
 ﻿using Dewey.Build.Events;
+using Dewey.Manifest.Dependency;
 using Dewey.Messaging;
 using Dewey.State;
 using Dewey.State.Messages;
@@ -58,7 +59,7 @@ namespace Dewey.Build
                 return;
             }
 
-            DependencyLoader.LoadDependencies(_component.ComponentElement, _eventAggregator);
+            DependencyElementResult.LoadDependencies(_component.ComponentElement, _eventAggregator);
 
             if (_dependencies.Any() && _command.BuildDependencies)
             {

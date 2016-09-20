@@ -1,6 +1,6 @@
 ﻿using Dewey.Messaging;
 
-namespace Dewey.Build.Events
+namespace Dewey.Manifest.Dependency
 {
     public abstract class DependencyElementEvent : IEvent
     {

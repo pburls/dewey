@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace Dewey.Build.Events
+namespace Dewey.Manifest.Dependency
 {
     public class DependencyElementMissingAttributesResult : DependencyElementEvent
     {

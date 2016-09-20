@@ -1,7 +1,7 @@
 ﻿using Dewey.Messaging;
 using System.Xml.Linq;
 
-namespace Dewey.Build.Events
+namespace Dewey.Manifest.Dependency
 {
     public class DependenciesElementNotFoundResult : DependencyElementEvent
     {

@@ -1,13 +1,25 @@
-﻿using Dewey.Build.Events;
-using Dewey.Messaging;
+﻿using Dewey.Messaging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace Dewey.Build
+namespace Dewey.Manifest.Dependency
 {
-    public class DependencyLoader
+    public class DependencyElementResult : DependencyElementEvent
     {
+        public const string COMPONENT_DEPENDENCY_TYPE = "component";
+
+        public XElement DependencyElement { get; private set; }
+        public string Type { get; private set; }
+        public string Name { get; private set; }
+
+        public DependencyElementResult(XElement dependencyElement, string type, string name)
+        {
+            DependencyElement = dependencyElement;
+            Type = type;
+            Name = name;
+        }
+
         public static void LoadDependencies(XElement componentElement, IEventAggregator eventAggregator)
         {
             var dependenciesElement = componentElement.Elements().FirstOrDefault(x => x.Name.LocalName == "dependencies");
