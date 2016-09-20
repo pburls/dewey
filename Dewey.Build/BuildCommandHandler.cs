@@ -31,7 +31,7 @@ namespace Dewey.Build
             _eventAggregator = eventAggregator;
 
             _dependencies = new List<DependencyElementResult>();
-            
+
             eventAggregator.Subscribe<GetComponentResult>(this);
             eventAggregator.Subscribe<BuildElementResult>(this);
             eventAggregator.Subscribe<DependencyElementResult>(this);
@@ -60,14 +60,13 @@ namespace Dewey.Build
 
             DependencyLoader.LoadDependencies(_component.ComponentElement, _eventAggregator);
 
-            if (_dependencies.Any())
+            if (_dependencies.Any() && _command.BuildDependencies)
             {
-                //build the dependencies first?
                 foreach (var dependency in _dependencies)
                 {
                     if (dependency.Type == DependencyElementResult.COMPONENT_DEPENDENCY_TYPE)
                     {
-                        _commandProcessor.Execute(BuildCommand.Create(dependency.Name));
+                        _commandProcessor.Execute(BuildCommand.Create(dependency.Name, _command.BuildDependencies));
                     }
                 }
             }
