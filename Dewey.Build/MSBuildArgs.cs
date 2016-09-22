@@ -8,11 +8,14 @@ namespace Dewey.Build
     {
         public string BuildTarget { get; private set; }
 
+        public string MSBuildVersion { get; private set; }
+
         public IEnumerable<string> MissingAttributes { get; private set; }
 
-        public MSBuildArgs(string buildTarget, IEnumerable<string> missingAttributes)
+        public MSBuildArgs(string buildTarget, string msbuildVersion, IEnumerable<string> missingAttributes)
         {
             BuildTarget = buildTarget;
+            MSBuildVersion = msbuildVersion;
             MissingAttributes = missingAttributes;
         }
 
@@ -26,17 +29,23 @@ namespace Dewey.Build
                 missingAttList.Add("target");
             }
 
-            if (missingAttList.Any())
+            var versionAtt = buildElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "msbuildVersion");
+            if (versionAtt == null || string.IsNullOrWhiteSpace(versionAtt.Value))
             {
-                return new MSBuildArgs(null, missingAttList);
+                missingAttList.Add("msbuildVersion");
             }
 
-            return new MSBuildArgs(buildTargetAtt.Value, missingAttList);
+            if (missingAttList.Any())
+            {
+                return new MSBuildArgs(null, null, missingAttList);
+            }
+
+            return new MSBuildArgs(buildTargetAtt.Value, versionAtt.Value, missingAttList);
         }
 
         public override string ToString()
         {
-            return string.Format("MS Build Args. BuildTarget: {0}.", BuildTarget);
+            return string.Format("MS Build Args: BuildTarget: {0}, MSBuildVersion: {1}", BuildTarget, MSBuildVersion);
         }
 
         public override bool Equals(object obj)
@@ -52,12 +61,12 @@ namespace Dewey.Build
                 return false;
             }
 
-            return BuildTarget == other.BuildTarget;
+            return BuildTarget == other.BuildTarget && MSBuildVersion == other.MSBuildVersion;
         }
 
         public override int GetHashCode()
         {
-            return BuildTarget.GetHashCode();
+            return BuildTarget.GetHashCode() ^ MSBuildVersion.GetHashCode();
         }
 
         public static bool operator ==(MSBuildArgs a, MSBuildArgs b)
@@ -72,7 +81,7 @@ namespace Dewey.Build
                 return false;
             }
 
-            return a.BuildTarget == b.BuildTarget;
+            return a.BuildTarget == b.BuildTarget && a.MSBuildVersion == b.MSBuildVersion;
         }
 
         public static bool operator !=(MSBuildArgs a, MSBuildArgs b)
