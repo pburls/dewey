@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Dewey.Messaging
 {
-    class CommandProcessor : ICommandProcessor
+    public class CommandProcessor : ICommandProcessor
     {
         readonly Container _container;
         readonly IEventAggregator _eventAggregator;
