@@ -6,6 +6,7 @@ using Dewey.State.Messages;
 using SimpleInjector;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Dewey.Build
@@ -40,6 +41,7 @@ namespace Dewey.Build
 
         public void Execute(BuildCommand command)
         {
+            var stopwatch = Stopwatch.StartNew();
             _command = command;
 
             _eventAggregator.PublishEvent(new BuildCommandStarted(command));
@@ -75,15 +77,19 @@ namespace Dewey.Build
                 }
             }
 
+            var result = false;
             try
             {
                 var buildAction = BuildActionFactory.CreateBuildAction(_buildElementResult.BuildType, _container);
-                buildAction.Build(_component.ComponentManifest, _buildElementResult.BuildElement);
+                result = buildAction.Build(_component.ComponentManifest, _buildElementResult.BuildElement);
             }
             catch (Exception ex)
             {
                 _eventAggregator.PublishEvent(new BuildActionErrorResult(_component.ComponentManifest, _buildElementResult.BuildType, ex));
             }
+
+            stopwatch.Stop();
+            _eventAggregator.PublishEvent(new BuildCommandCompleted(command, result, stopwatch.Elapsed));
         }
 
         public void Handle(GetComponentResult getComponentResult)

@@ -30,28 +30,28 @@ namespace Dewey.Build
             _msBuildProcess = msBuildProcess;
         }
 
-        public void Build(ComponentManifest componentManifest, XElement buildElement)
+        public bool Build(ComponentManifest componentManifest, XElement buildElement)
         {
             var buildArgs = MSBuildArgs.ParseMSBuildElement(buildElement);
 
             if (buildArgs.MissingAttributes.Any())
             {
                 _eventAggregator.PublishEvent(new BuildElementMissingAttributeResult(componentManifest, BUILD_TYPE, buildElement, string.Join(", ", buildArgs.MissingAttributes)));
-                return;
+                return false;
             }
 
             string buildTargetPath = _fileService.CombinePaths(componentManifest.File.DirectoryName, buildArgs.BuildTarget);
             if (!_fileService.FileExists(buildTargetPath))
             {
                 _eventAggregator.PublishEvent(new BuildActionTargetNotFoundResult(componentManifest, BUILD_TYPE, buildTargetPath));
-                return;
+                return false;
             }
 
             string msbuildExecutablePath = _msBuildProcess.GetMSBuildExecutablePathForVersion(buildArgs.MSBuildVersion);
             if (string.IsNullOrEmpty(msbuildExecutablePath))
             {
                 _eventAggregator.PublishEvent(new MSBuildExecutableNotFoundResult(componentManifest, buildArgs.MSBuildVersion));
-                return;
+                return false;
             }
 
             _eventAggregator.PublishEvent(new BuildActionStarted(componentManifest, BUILD_TYPE, buildArgs));
@@ -59,6 +59,8 @@ namespace Dewey.Build
             _msBuildProcess.Execute(msbuildExecutablePath, buildTargetPath);
 
             _eventAggregator.PublishEvent(new BuildActionCompletedResult(componentManifest, BUILD_TYPE, buildArgs));
+
+            return true;
         }
     }
 }

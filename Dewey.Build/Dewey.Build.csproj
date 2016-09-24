@@ -62,6 +62,7 @@
     <Compile Include="Events\BuildActionEvent.cs" />
     <Compile Include="Events\BuildActionErrorResult.cs" />
     <Compile Include="Events\BuildActionStarted.cs" />
+    <Compile Include="Events\BuildCommandCompleted.cs" />
     <Compile Include="Events\BuildCommandEvent.cs" />
     <Compile Include="Events\BuildCommandStarted.cs" />
     <Compile Include="Events\BuildElementMissingAttributeResult.cs" />
