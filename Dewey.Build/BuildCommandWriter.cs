@@ -13,7 +13,8 @@ namespace Dewey.Build
         IEventHandler<BuildActionTargetNotFoundResult>,
         IEventHandler<BuildActionStarted>,
         IEventHandler<BuildActionCompletedResult>,
-        IEventHandler<BuildActionErrorResult>
+        IEventHandler<BuildActionErrorResult>,
+        IEventHandler<MSBuildExecutableNotFoundResult>
     {
         public BuildCommandWriter(IEventAggregator eventAggregator)
         {
@@ -25,7 +26,7 @@ namespace Dewey.Build
             eventAggregator.Subscribe<BuildActionTargetNotFoundResult>(this);
             eventAggregator.Subscribe<BuildActionStarted>(this);
             eventAggregator.Subscribe<BuildActionCompletedResult>(this);
-            eventAggregator.Subscribe<BuildActionErrorResult>(this);
+            eventAggregator.Subscribe<MSBuildExecutableNotFoundResult>(this);
         }
 
         public void Handle(BuildCommandStarted buildCommandStarted)
@@ -73,6 +74,14 @@ namespace Dewey.Build
                 buildTargetNotFoundResult.Target, 
                 buildTargetNotFoundResult.BuildType, 
                 buildTargetNotFoundResult.ComponentManifest.Name));
+        }
+
+        public void Handle(MSBuildExecutableNotFoundResult msbuildExecutableNotFoundResult)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(string.Format("Fail to build component '{0}' because no msbuild executable version '{1}' can be found on this system.",
+                msbuildExecutableNotFoundResult.ComponentManifest.Name,
+                msbuildExecutableNotFoundResult.MSBuildVersion));
         }
 
         public void Handle(BuildActionStarted buildActionStartedResult)

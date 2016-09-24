@@ -39,7 +39,7 @@ namespace Dewey.Build.Test
             //Given
             XElement buildElement = XElement.Parse("<build type=\"msbuild\" />");
 
-            var expectedResult = new BuildElementMissingAttributeResult(componentManifest, MSBuild.BUILD_TYPE, buildElement, "target");
+            var expectedResult = new BuildElementMissingAttributeResult(componentManifest, MSBuild.BUILD_TYPE, buildElement, "target, msbuildVersion");
 
             //When
             target.Build(componentManifest, buildElement);
@@ -52,7 +52,7 @@ namespace Dewey.Build.Test
         public void Build_publishes_a_BuildActionTargetNotFoundResult_for_target_path_that_does_not_exist()
         {
             //Given
-            XElement buildElement = XElement.Parse("<build type=\"msbuild\" target=\"targetfile\" />");
+            XElement buildElement = XElement.Parse("<build type=\"msbuild\" target=\"targetfile\" msbuildVersion=\"z\" />");
             fileServiceMock.FileExistsReturns = false;
 
             string expectedTargetPath = fileServiceMock.CombinePaths("test", "targetfile");
@@ -66,12 +66,30 @@ namespace Dewey.Build.Test
         }
 
         [Fact]
+        public void Build_publishes_a_MSBuildExecutableNotFoundResult_for_msbuild_version_that_does_not_exist()
+        {
+            //Given
+            XElement buildElement = XElement.Parse("<build type=\"msbuild\" target=\"targetfile\" msbuildVersion=\"xx.x\" />");
+            //msBuildProcessMock.Setup(x => x.GetMSBuildExecutablePathForVersion(It.IsAny<string>())).Returns((string)null);
+
+            string expectedTargetPath = fileServiceMock.CombinePaths("test", "targetfile");
+            var expectedResult = new MSBuildExecutableNotFoundResult(componentManifest, "xx.x");
+
+            //When
+            target.Build(componentManifest, buildElement);
+
+            //Then
+            eventAggregatorMock.Verify(x => x.PublishEvent(expectedResult), Times.Once);
+        }
+
+        [Fact]
         public void Build_publishes_a_BuildActionStarted_and_BuildActionCompletedResult_for_a_valid_build_element()
         {
             //Given
-            XElement buildElement = XElement.Parse("<build type=\"msbuild\" target=\"targetfile\" />");
+            XElement buildElement = XElement.Parse("<build type=\"msbuild\" target=\"targetfile\" msbuildVersion=\"zz.z\" />");
+            msBuildProcessMock.Setup(x => x.GetMSBuildExecutablePathForVersion(It.IsAny<string>())).Returns("testpath");
 
-            var expectedBuildArgs = new MSBuildArgs("targetfile", new List<string>());
+            var expectedBuildArgs = new MSBuildArgs("targetfile", "zz.z", new List<string>());
             var expectedResult1 = new BuildActionStarted(componentManifest, MSBuild.BUILD_TYPE, expectedBuildArgs);
             var expectedResult2 = new BuildActionCompletedResult(componentManifest, MSBuild.BUILD_TYPE, expectedBuildArgs);
 

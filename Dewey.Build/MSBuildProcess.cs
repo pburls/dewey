@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Build.Utilities;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Dewey.Build
 {
     public class MSBuildProcess : IMSBuildProcess
     {
-        const string MS_BUILD_PATH = @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe";
-
-        public void Execute(string arguments)
+        //const string MS_BUILD_PATH = @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe";
+        public string GetMSBuildExecutablePathForVersion(string version)
         {
-            //read msbuild version options from registry.
-            //choose version preference from app settings.
+            return ToolLocationHelper.GetPathToBuildToolsFile("msbuild.exe", version, DotNetFrameworkArchitecture.Current);
+        }
 
-            var msBuildStartInfo = new ProcessStartInfo(MS_BUILD_PATH, arguments);
+        public void Execute(string msbuildExecutablePath, string arguments)
+        {
+            var msBuildStartInfo = new ProcessStartInfo(msbuildExecutablePath, arguments);
             msBuildStartInfo.UseShellExecute = false;
             var msBuildProcess = Process.Start(msBuildStartInfo);
 
