@@ -1,4 +1,5 @@
-﻿using Dewey.Messaging;
+﻿using Dewey.Manifest;
+using Dewey.Messaging;
 using SimpleInjector;
 using System;
 using System.Diagnostics;
@@ -15,11 +16,13 @@ namespace Dewey.CLI
 
             Bootstrapper.RegisterTypes(container);
             File.Bootstrapper.RegisterTypes(container);
+            State.Bootstrapper.RegisterTypes(container);
             Build.Bootstrapper.RegisterTypes(container);
 
             var commandManager = container.GetInstance<CLICommandManager>();
 
             var moduleCataloge = container.GetInstance<ModuleCatalogue>();
+            moduleCataloge.Load<State.Module>();
             moduleCataloge.Load<Manifest.Module>();
             moduleCataloge.Load<ListItems.Module>();
             moduleCataloge.Load<Build.Module>();
@@ -49,6 +52,10 @@ namespace Dewey.CLI
             else
             {
                 var commandProcessor = container.GetInstance<ICommandProcessor>();
+
+                //Load Manifest Files first to create a store to use.
+                commandProcessor.Execute(new LoadManifestFiles());
+
                 var commandHandler = commandProcessor.Execute(command);
                 if (commandHandler == null)
                 {

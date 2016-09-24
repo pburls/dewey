@@ -2,10 +2,8 @@
 using Dewey.File;
 using Dewey.Manifest.Component;
 using Dewey.Messaging;
-using System.Diagnostics;
 using System.Linq;
 using System.Xml.Linq;
-using System;
 
 namespace Dewey.Build
 {
@@ -49,9 +47,16 @@ namespace Dewey.Build
                 return;
             }
 
+            string msbuildExecutablePath = _msBuildProcess.GetMSBuildExecutablePathForVersion(buildArgs.MSBuildVersion);
+            if (string.IsNullOrEmpty(msbuildExecutablePath))
+            {
+                _eventAggregator.PublishEvent(new MSBuildExecutableNotFoundResult(componentManifest, buildArgs.MSBuildVersion));
+                return;
+            }
+
             _eventAggregator.PublishEvent(new BuildActionStarted(componentManifest, BUILD_TYPE, buildArgs));
 
-            _msBuildProcess.Execute(buildTargetPath);
+            _msBuildProcess.Execute(msbuildExecutablePath, buildTargetPath);
 
             _eventAggregator.PublishEvent(new BuildActionCompletedResult(componentManifest, BUILD_TYPE, buildArgs));
         }

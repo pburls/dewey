@@ -4,5 +4,6 @@ namespace Dewey.Manifest
 {
     public class LoadManifestFiles : ICommand
     {
+
     }
 }

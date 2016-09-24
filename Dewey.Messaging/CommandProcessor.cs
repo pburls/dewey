@@ -39,7 +39,7 @@ namespace Dewey.Messaging
             {
                 commandProcessor = _container.GetInstance(commandHandlerType);
 
-                MethodInfo executeMethod = commandHandlerType.GetMethod("Execute");
+                MethodInfo executeMethod = commandHandlerType.GetMethod("Execute", new[] { commandType });
                 executeMethod.Invoke(commandProcessor, new[] { command });
             }
 

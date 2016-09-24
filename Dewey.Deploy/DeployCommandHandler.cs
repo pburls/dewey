@@ -1,101 +1,106 @@
 ﻿using System;
 using Dewey.Deploy.Events;
-using Dewey.Manifest;
-using Dewey.Manifest.Component;
 using Dewey.Messaging;
+using Dewey.State.Messages;
+using Dewey.State;
+using Dewey.Manifest.Dependency;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Dewey.Deploy
 {
     public class DeployCommandHandler :
         ICommandHandler<DeployCommand>,
-        IEventHandler<ComponentManifestLoadResult>,
-        IEventHandler<DeploymentElementResult>
+        IEventHandler<GetComponentResult>,
+        IEventHandler<DeploymentElementResult>,
+        IEventHandler<DependencyElementResult>
     {
         readonly ICommandProcessor _commandProcessor;
         readonly IEventAggregator _eventAggregator;
+        readonly List<DependencyElementResult> _dependencies;
 
         DeployCommand _command;
-        ComponentManifestLoadResult _componentMandifestLoadResult;
+        Component _component;
+        DeploymentElementResult _deploymentElementResult;
 
         public DeployCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator)
         {
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
 
-            eventAggregator.Subscribe<ComponentManifestLoadResult>(this);
+            _dependencies = new List<DependencyElementResult>();
+
+            eventAggregator.Subscribe<GetComponentResult>(this);
             eventAggregator.Subscribe<DeploymentElementResult>(this);
+            eventAggregator.Subscribe<DependencyElementResult>(this);
         }
 
         public void Execute(DeployCommand command)
         {
             _command = command;
 
-            _commandProcessor.Execute(new LoadManifestFiles());
-
             _eventAggregator.PublishEvent(new DeployCommandStarted(command));
 
-            if (_componentMandifestLoadResult == null)
+            _commandProcessor.Execute(new GetComponent(command.ComponentName));
+
+            if (_component == null)
             {
                 _eventAggregator.PublishEvent(new ComponentNotFoundResult(command));
                 return;
             }
 
-            LoadDeployActionsFromComponentMandifest();
-        }
+            DeploymentElementResult.LoadDeployActionsFromComponentMandifest(command, _component.ComponentElement, _eventAggregator);
 
-        public void Handle(ComponentManifestLoadResult componentManifestLoadResult)
-        {
-            if (componentManifestLoadResult.IsSuccessful)
+            if (_deploymentElementResult == null)
             {
-                if (componentManifestLoadResult.ComponentManifest.Name == _command.ComponentName)
+                return;
+            }
+
+            if (_command.DeployDependencies)
+            {
+                DependencyElementResult.LoadDependencies(_component.ComponentElement, _eventAggregator);
+
+                if (_dependencies.Any())
                 {
-                    _componentMandifestLoadResult = componentManifestLoadResult;
+                    foreach (var dependency in _dependencies)
+                    {
+                        if (dependency.Type == DependencyElementResult.COMPONENT_DEPENDENCY_TYPE)
+                        {
+                            _commandProcessor.Execute(DeployCommand.Create(dependency.Name, _command.DeployDependencies));
+                        }
+                    }
                 }
             }
+
+            try
+            {
+                var deploymentAction = DeploymentActionFactory.CreateDeploymentAction(_deploymentElementResult.DeploymentType, _eventAggregator);
+                deploymentAction.Deploy(_component.ComponentManifest, _deploymentElementResult.DeploymentElement);
+            }
+            catch (Exception ex)
+            {
+                _eventAggregator.PublishEvent(new DeploymentActionErrorResult(_component.ComponentManifest, _deploymentElementResult.DeploymentType, ex));
+            }
+        }
+
+        public void Handle(GetComponentResult getComponentResult)
+        {
+            if (getComponentResult.Component != null && getComponentResult.Component.ComponentManifest.Name == _command.ComponentName)
+            {
+                _component = getComponentResult.Component;
+            }
+        }
+
+        public void Handle(DependencyElementResult dependencyElementResult)
+        {
+            _dependencies.Add(dependencyElementResult);
         }
 
         public void Handle(DeploymentElementResult deploymentElementResult)
         {
-            try
+            if (deploymentElementResult.ComponentName == _command.ComponentName)
             {
-                var deploymentAction = DeploymentActionFactory.CreateDeploymentAction(deploymentElementResult.DeploymentType, _eventAggregator);
-                deploymentAction.Deploy(_componentMandifestLoadResult.ComponentManifest, deploymentElementResult.DeploymentElement);
-            }
-            catch (Exception ex)
-            {
-                _eventAggregator.PublishEvent(new DeploymentActionErrorResult(_componentMandifestLoadResult.ComponentManifest, deploymentElementResult.DeploymentType, ex));
-            }
-        }
-
-        private void LoadDeployActionsFromComponentMandifest()
-        {
-            var componentElement = _componentMandifestLoadResult.ComponentElement;
-
-            var deploymentsElements = componentElement.Elements().FirstOrDefault(x => x.Name.LocalName == "deployments");
-            if (deploymentsElements == null)
-            {
-                _eventAggregator.PublishEvent(new NoDeploymentElementsFoundResult(_command, componentElement));
-                return;
-            }
-
-            var deploymentElements = deploymentsElements.Elements().Where(x => x.Name.LocalName == "deployment").ToList();
-            if (deploymentElements.Count == 0)
-            {
-                _eventAggregator.PublishEvent(new NoDeploymentElementsFoundResult(_command, componentElement));
-                return;
-            }
-
-            foreach (var deploymentElement in deploymentElements)
-            {
-                var deploymentTypeAtt = deploymentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "type");
-                if (deploymentTypeAtt == null || string.IsNullOrWhiteSpace(deploymentTypeAtt.Value))
-                {
-                    _eventAggregator.PublishEvent(new DeploymentElementMissingTypeAttributeResult(_command, deploymentElement));
-                    continue;
-                }
-
-                _eventAggregator.PublishEvent(new DeploymentElementResult(_command, deploymentElement, deploymentTypeAtt.Value));
+                _deploymentElementResult = deploymentElementResult;
             }
         }
     }
