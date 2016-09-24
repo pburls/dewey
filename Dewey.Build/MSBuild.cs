@@ -2,10 +2,8 @@
 using Dewey.File;
 using Dewey.Manifest.Component;
 using Dewey.Messaging;
-using System.Diagnostics;
 using System.Linq;
 using System.Xml.Linq;
-using System;
 
 namespace Dewey.Build
 {

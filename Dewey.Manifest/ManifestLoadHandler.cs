@@ -8,7 +8,11 @@ using System.Linq;
 
 namespace Dewey.Manifest
 {
-    public class ManifestLoadHandler : IEventHandler<RepositoriesManifestLoadResult>, IEventHandler<RepositoryManifestLoadResult>, IEventHandler<ComponentManifestLoadResult>, ICommandHandler<LoadManifestFiles>
+    public class ManifestLoadHandler :
+        IEventHandler<RepositoriesManifestLoadResult>,
+        IEventHandler<RepositoryManifestLoadResult>,
+        IEventHandler<ComponentManifestLoadResult>,
+        ICommandHandler<LoadManifestFiles>
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IManifestFileReaderService _manifestFileReaderService;
@@ -54,6 +58,8 @@ namespace Dewey.Manifest
                 default:
                     break;
             }
+
+            _eventAggregator.PublishEvent(new LoadManifestFilesResult());
         }
 
         public void Handle(RepositoriesManifestLoadResult @event)
@@ -84,6 +90,7 @@ namespace Dewey.Manifest
 
         public void Handle(ComponentManifestLoadResult @event)
         {
+
         }
     }
 }

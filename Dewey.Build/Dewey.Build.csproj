@@ -75,13 +75,17 @@
       <Project>{9078b56e-2979-4bd4-abf7-34eed2662e29}</Project>
       <Name>Dewey.File</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Dewey.Manifest\Dewey.Manifest.csproj">
+      <Project>{00ea83da-674d-4ffc-8e63-4c3a37a79cf9}</Project>
+      <Name>Dewey.Manifest</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Dewey.Messaging\Dewey.Messaging.csproj">
       <Project>{a3986e8a-3009-41b1-8636-0c431305255c}</Project>
       <Name>Dewey.Messaging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Dewey.Manifest\Dewey.Manifest.csproj">
-      <Project>{00ea83da-674d-4ffc-8e63-4c3a37a79cf9}</Project>
-      <Name>Dewey.Manifest</Name>
+    <ProjectReference Include="..\Dewey.State\Dewey.State.csproj">
+      <Project>{972c3e2d-b209-4c63-97da-fa4c16822e21}</Project>
+      <Name>Dewey.State</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
