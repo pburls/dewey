@@ -63,15 +63,19 @@ A 'component.xml' file can be placed in the root directory of a component.
 An example manifest is shown below.
 - The name and type of the component is set as attributes of the root 'componentManifest' element.
 - Build actions for the component can be described using 'build' elements.
-- Deployment actions for the component can be descibed using 'deployment' elements.
+- Deployment actions for the component can be described using 'deployment' elements.
+- Dependencies on other components can be described using 'dependency' elements.
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <componentManifest name="ExampleComp1" type="web">
 	<builds>
-		<build type="msbuild" target="src/ExampleComp1.sln" />
+		<build type="msbuild" target="src/ExampleComp1/ExampleComp1.csproj" msbuildVersion="14.0" />
 	</builds>
 	<deployments>
 		<deployment type="iis" port="53971" siteName="ExampleApplication" appPool="ExampleApplication" content="src/ExampleApplication" />
 	</deployments>
+	<dependencies>
+		<dependency type="component" name="ExampleComp2" />
+	</dependencies>
 </componentManifest>
 ```
