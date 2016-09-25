@@ -11,13 +11,15 @@ namespace Dewey.Build
             return ToolLocationHelper.GetPathToBuildToolsFile("msbuild.exe", version, DotNetFrameworkArchitecture.Current);
         }
 
-        public void Execute(string msbuildExecutablePath, string arguments)
+        public bool Execute(string msbuildExecutablePath, string arguments)
         {
             var msBuildStartInfo = new ProcessStartInfo(msbuildExecutablePath, arguments);
             msBuildStartInfo.UseShellExecute = false;
             var msBuildProcess = Process.Start(msBuildStartInfo);
 
             msBuildProcess.WaitForExit();
+
+            return msBuildProcess.ExitCode == 0;
         }
     }
 }

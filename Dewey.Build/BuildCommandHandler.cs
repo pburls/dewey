@@ -41,24 +41,31 @@ namespace Dewey.Build
 
         public void Execute(BuildCommand command)
         {
-            var stopwatch = Stopwatch.StartNew();
             _command = command;
-
             _eventAggregator.PublishEvent(new BuildCommandStarted(command));
 
-            _commandProcessor.Execute(new GetComponent(command.ComponentName));
+            var stopwatch = Stopwatch.StartNew();
+            var result = Execute();
+            stopwatch.Stop();
+
+            _eventAggregator.PublishEvent(new BuildCommandCompleted(command, result, stopwatch.Elapsed));
+        }
+
+        private bool Execute()
+        {
+            _commandProcessor.Execute(new GetComponent(_command.ComponentName));
 
             if (_component == null)
             {
-                _eventAggregator.PublishEvent(new ComponentNotFoundResult(command));
-                return;
+                _eventAggregator.PublishEvent(new ComponentNotFoundResult(_command));
+                return false;
             }
 
-            BuildElementResult.LoadBuildElementsFromComponentManifest(command, _component.ComponentElement, _eventAggregator);
+            BuildElementResult.LoadBuildElementsFromComponentManifest(_command, _component.ComponentElement, _eventAggregator);
 
             if (_buildElementResult == null)
             {
-                return;
+                return false;
             }
 
             if (_command.BuildDependencies)
@@ -88,8 +95,7 @@ namespace Dewey.Build
                 _eventAggregator.PublishEvent(new BuildActionErrorResult(_component.ComponentManifest, _buildElementResult.BuildType, ex));
             }
 
-            stopwatch.Stop();
-            _eventAggregator.PublishEvent(new BuildCommandCompleted(command, result, stopwatch.Elapsed));
+            return result;
         }
 
         public void Handle(GetComponentResult getComponentResult)

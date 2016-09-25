@@ -65,6 +65,16 @@ namespace Dewey.CLI
                 }
             }
 
+
+            //if (_completedCommands.All(x => x.IsSuccessful))
+            //{
+            //    Environment.ExitCode = 0;
+            //}
+            //else
+            //{
+            //    Environment.ExitCode = 1;
+            //}
+
 #if DEBUG
             Console.ResetColor();
             Console.WriteLine("Continue...");

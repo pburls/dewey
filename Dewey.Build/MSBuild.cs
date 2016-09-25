@@ -56,11 +56,11 @@ namespace Dewey.Build
 
             _eventAggregator.PublishEvent(new BuildActionStarted(componentManifest, BUILD_TYPE, buildArgs));
 
-            _msBuildProcess.Execute(msbuildExecutablePath, buildTargetPath);
+            var result = _msBuildProcess.Execute(msbuildExecutablePath, buildTargetPath);
 
             _eventAggregator.PublishEvent(new BuildActionCompletedResult(componentManifest, BUILD_TYPE, buildArgs));
 
-            return true;
+            return result;
         }
     }
 }
