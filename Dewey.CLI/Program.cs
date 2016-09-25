@@ -52,6 +52,8 @@ namespace Dewey.CLI
             else
             {
                 var commandProcessor = container.GetInstance<ICommandProcessor>();
+                var eventAggregator = container.GetInstance<IEventAggregator>();
+                var commandReport = new CommandReport(command, eventAggregator);
 
                 //Load Manifest Files first to create a store to use.
                 commandProcessor.Execute(new LoadManifestFiles());

@@ -1,14 +1,17 @@
-﻿using System;
+﻿using Dewey.Messaging;
+using System;
 
 namespace Dewey.Build.Events
 {
-    public class BuildCommandCompleted : BuildCommandEvent, IEquatable<BuildCommandCompleted>
+    public class BuildCommandCompleted : BuildCommandEvent, IEquatable<BuildCommandCompleted>, ICommandCompleteEvent
     {
+        public ICommand Command { get; private set; }
         public bool IsSuccessful { get; private set; }
         public TimeSpan ElapsedTime { get; private set; }
 
         public BuildCommandCompleted(BuildCommand command, bool isSuccessful, TimeSpan elapsedTime) : base(command)
         {
+            Command = command;
             IsSuccessful = isSuccessful;
             ElapsedTime = elapsedTime;
         }
@@ -17,7 +20,8 @@ namespace Dewey.Build.Events
         {
             if (other == null) return false;
 
-            return base.Equals(other) 
+            return base.Equals(other)
+                && Command == other.Command
                 && IsSuccessful == other.IsSuccessful 
                 && ElapsedTime == other.ElapsedTime;
         }
@@ -47,7 +51,8 @@ namespace Dewey.Build.Events
                 return false;
             }
 
-            return a.ComponentName == b.ComponentName 
+            return a.ComponentName == b.ComponentName
+                && a.Command == b.Command
                 && a.IsSuccessful == b.IsSuccessful 
                 && a.ElapsedTime == b.ElapsedTime;
         }

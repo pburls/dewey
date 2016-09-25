@@ -1,6 +1,7 @@
 ﻿using System;
 using Dewey.Messaging;
 using System.Linq;
+using System.Text;
 
 namespace Dewey.Build
 {
@@ -38,6 +39,14 @@ namespace Dewey.Build
         public static BuildCommand Create(string componentName, bool buildDependencies)
         {
             return new BuildCommand() { ComponentName = componentName, BuildDependencies = buildDependencies };
+        }
+
+        public override string ToString()
+        {
+            var switchesBuilder = new StringBuilder();
+            if (BuildDependencies) switchesBuilder.Append(" -d");
+
+            return string.Format("{0} {1}{2}", COMMAND_TEXT, ComponentName, switchesBuilder.ToString());
         }
     }
 }
