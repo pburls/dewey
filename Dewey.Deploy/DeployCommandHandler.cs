@@ -6,6 +6,7 @@ using Dewey.State;
 using Dewey.Manifest.Dependency;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Dewey.Deploy
 {
@@ -38,22 +39,30 @@ namespace Dewey.Deploy
         public void Execute(DeployCommand command)
         {
             _command = command;
-
             _eventAggregator.PublishEvent(new DeployCommandStarted(command));
 
-            _commandProcessor.Execute(new GetComponent(command.ComponentName));
+            var stopwatch = Stopwatch.StartNew();
+            var result = Execute();
+            stopwatch.Stop();
+
+            _eventAggregator.PublishEvent(new DeployCommandCompleted(command, result, stopwatch.Elapsed));
+        }
+
+        private bool Execute()
+        {
+            _commandProcessor.Execute(new GetComponent(_command.ComponentName));
 
             if (_component == null)
             {
-                _eventAggregator.PublishEvent(new ComponentNotFoundResult(command));
-                return;
+                _eventAggregator.PublishEvent(new ComponentNotFoundResult(_command));
+                return false;
             }
 
-            DeploymentElementResult.LoadDeployActionsFromComponentMandifest(command, _component.ComponentElement, _eventAggregator);
+            DeploymentElementResult.LoadDeployActionsFromComponentMandifest(_command, _component.ComponentElement, _eventAggregator);
 
             if (_deploymentElementResult == null)
             {
-                return;
+                return false;
             }
 
             if (_command.DeployDependencies)
@@ -72,15 +81,18 @@ namespace Dewey.Deploy
                 }
             }
 
+            var result = false;
             try
             {
                 var deploymentAction = DeploymentActionFactory.CreateDeploymentAction(_deploymentElementResult.DeploymentType, _eventAggregator);
-                deploymentAction.Deploy(_component.ComponentManifest, _deploymentElementResult.DeploymentElement);
+                result = deploymentAction.Deploy(_component.ComponentManifest, _deploymentElementResult.DeploymentElement);
             }
             catch (Exception ex)
             {
                 _eventAggregator.PublishEvent(new DeploymentActionErrorResult(_component.ComponentManifest, _deploymentElementResult.DeploymentType, ex));
             }
+
+            return result;
         }
 
         public void Handle(GetComponentResult getComponentResult)

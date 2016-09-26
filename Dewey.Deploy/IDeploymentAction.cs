@@ -6,6 +6,6 @@ namespace Dewey.Deploy
 {
     interface IDeploymentAction
     {
-        void Deploy(ComponentManifest componentManifest, XElement deploymentElement);
+        bool Deploy(ComponentManifest componentManifest, XElement deploymentElement);
     }
 }
