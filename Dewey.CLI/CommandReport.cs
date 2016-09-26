@@ -10,6 +10,14 @@ namespace Dewey.CLI
         readonly List<ICommandCompleteEvent> _completedCommands = new List<ICommandCompleteEvent>();
         readonly ICommand _command;
 
+        public bool HasAnyFailed
+        {
+            get
+            {
+                return _completedCommands.Any(x => !x.IsSuccessful);
+            }
+        }
+
         public CommandReport(ICommand command, IEventAggregator eventAggregator)
         {
             _command = command;

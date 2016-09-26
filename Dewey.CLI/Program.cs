@@ -48,6 +48,7 @@ namespace Dewey.CLI
             if (command == null)
             {
                 Console.WriteLine("Unknown command.");
+                Environment.ExitCode = 1;
             }
             else
             {
@@ -62,18 +63,14 @@ namespace Dewey.CLI
                 if (commandHandler == null)
                 {
                     Console.WriteLine("No command handler registered for command.");
+                    Environment.ExitCode = 1;
+                }
+
+                if (commandReport.HasAnyFailed)
+                {
+                    Environment.ExitCode = 1;
                 }
             }
-
-
-            //if (_completedCommands.All(x => x.IsSuccessful))
-            //{
-            //    Environment.ExitCode = 0;
-            //}
-            //else
-            //{
-            //    Environment.ExitCode = 1;
-            //}
 
 #if DEBUG
             Console.ResetColor();
