@@ -9,8 +9,7 @@ g.addEdge('Apple', 'Tomato')
 g.addEdge('Apple', 'Mushroom')
 g.addEdge('Banana', 'Mushroom')
 
-const layouter = new Dracula.Layout.Spring(g)
+const layouter = new Dracula.Layout.Spring(g);
 
-const renderer = new Dracula.Renderer.Raphael('#canvas', g, width, height)
-
-renderer.draw()
+const renderer = new Dracula.Renderer.Raphael('#canvas', g, width, height);
+renderer.draw();
