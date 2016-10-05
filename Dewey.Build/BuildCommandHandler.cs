@@ -70,7 +70,7 @@ namespace Dewey.Build
 
             if (_command.BuildDependencies)
             {
-                DependencyElementResult.LoadDependencies(_component.ComponentElement, _eventAggregator);
+                DependencyElementResult.LoadDependencies(_component.ComponentElement, _component.ComponentManifest, _eventAggregator);
 
                 if (_dependencies.Any())
                 {
