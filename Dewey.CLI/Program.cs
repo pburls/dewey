@@ -1,5 +1,4 @@
-﻿using Dewey.Manifest;
-using Dewey.Messaging;
+﻿using Dewey.Messaging;
 using SimpleInjector;
 using System;
 using System.Diagnostics;
@@ -27,6 +26,7 @@ namespace Dewey.CLI
             moduleCataloge.Load<ListItems.Module>();
             moduleCataloge.Load<Build.Module>();
             moduleCataloge.Load<Deploy.Module>();
+            moduleCataloge.Load<Graph.Module>();
 
             if (args.Length < 1)
             {
@@ -57,7 +57,7 @@ namespace Dewey.CLI
                 var commandReport = new CommandReport(command, eventAggregator);
 
                 //Load Manifest Files first to create a store to use.
-                commandProcessor.Execute(new LoadManifestFiles());
+                commandProcessor.Execute(new Manifest.LoadManifestFiles());
 
                 var commandHandler = commandProcessor.Execute(command);
                 if (commandHandler == null)
