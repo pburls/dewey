@@ -3,7 +3,7 @@ const height = 400;
 
 const g = new Dracula.Graph
 
-g.addEdge('ExampleWebApiComp', 'ExampleWebApiComp6');
+$graphItems$
 
 const layouter = new Dracula.Layout.Spring(g);
 

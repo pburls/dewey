@@ -3,7 +3,9 @@ using Dewey.Messaging;
 using Dewey.State.Messages;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -45,11 +47,40 @@ namespace Dewey.Graph
             {
                 graphStringBuilder.AppendLine(string.Format("g.addEdge('{0}', '{1}');", dependecy.Parent.Name, dependecy.Name));
             }
+
+            WriteGraphFiles(graphStringBuilder.ToString());
         }
 
         public void Handle(DependencyElementResult dependencyElementResult)
         {
             _dependencies.Add(dependencyElementResult);
+        }
+
+        private void WriteGraphFiles(string graph)
+        {
+            string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+            UriBuilder uri = new UriBuilder(codeBase);
+            string path = Uri.UnescapeDataString(uri.Path);
+            var assemblyPath = Path.GetDirectoryName(path);
+            var webPath = Path.Combine(assemblyPath, "web");
+            var webDirectoryInfo = new DirectoryInfo(webPath);
+
+            var timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+            var graphDirectoryInfo = Directory.CreateDirectory(string.Format("Graph_{0}", timestamp));
+
+            foreach (var fileInfo in webDirectoryInfo.GetFiles())
+            {
+                var outputFileName = Path.Combine(graphDirectoryInfo.FullName, fileInfo.Name);
+                fileInfo.CopyTo(outputFileName, true);
+            }
+
+            var scriptFileName = Path.Combine(graphDirectoryInfo.FullName, "script.js");
+            string src = File.ReadAllText(scriptFileName);
+            src = src.Replace("$graphItems$", graph);
+            File.WriteAllText(scriptFileName, src);
+
+            var indexFileName = Path.Combine(graphDirectoryInfo.FullName, "index.html");
+            System.Diagnostics.Process.Start(indexFileName);
         }
     }
 }
