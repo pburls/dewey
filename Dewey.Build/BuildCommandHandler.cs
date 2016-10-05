@@ -6,6 +6,7 @@ using Dewey.State.Messages;
 using SimpleInjector;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Dewey.Build
@@ -41,22 +42,30 @@ namespace Dewey.Build
         public void Execute(BuildCommand command)
         {
             _command = command;
-
             _eventAggregator.PublishEvent(new BuildCommandStarted(command));
 
-            _commandProcessor.Execute(new GetComponent(command.ComponentName));
+            var stopwatch = Stopwatch.StartNew();
+            var result = Execute();
+            stopwatch.Stop();
+
+            _eventAggregator.PublishEvent(new BuildCommandCompleted(command, result, stopwatch.Elapsed));
+        }
+
+        private bool Execute()
+        {
+            _commandProcessor.Execute(new GetComponent(_command.ComponentName));
 
             if (_component == null)
             {
-                _eventAggregator.PublishEvent(new ComponentNotFoundResult(command));
-                return;
+                _eventAggregator.PublishEvent(new ComponentNotFoundResult(_command));
+                return false;
             }
 
-            BuildElementResult.LoadBuildElementsFromComponentManifest(command, _component.ComponentElement, _eventAggregator);
+            BuildElementResult.LoadBuildElementsFromComponentManifest(_command, _component.ComponentElement, _eventAggregator);
 
             if (_buildElementResult == null)
             {
-                return;
+                return false;
             }
 
             if (_command.BuildDependencies)
@@ -75,15 +84,18 @@ namespace Dewey.Build
                 }
             }
 
+            var result = false;
             try
             {
                 var buildAction = BuildActionFactory.CreateBuildAction(_buildElementResult.BuildType, _container);
-                buildAction.Build(_component.ComponentManifest, _buildElementResult.BuildElement);
+                result = buildAction.Build(_component.ComponentManifest, _buildElementResult.BuildElement);
             }
             catch (Exception ex)
             {
                 _eventAggregator.PublishEvent(new BuildActionErrorResult(_component.ComponentManifest, _buildElementResult.BuildType, ex));
             }
+
+            return result;
         }
 
         public void Handle(GetComponentResult getComponentResult)

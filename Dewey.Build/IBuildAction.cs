@@ -7,6 +7,6 @@ namespace Dewey.Build
     {
         string BuildType { get; }
 
-        void Build(ComponentManifest componentManifest, XElement buildElement);
+        bool Build(ComponentManifest componentManifest, XElement buildElement);
     }
 }

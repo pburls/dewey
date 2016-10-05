@@ -3,6 +3,6 @@
     public interface IMSBuildProcess
     {
         string GetMSBuildExecutablePathForVersion(string version);
-        void Execute(string msbuildExecutablePath, string arguments);
+        bool Execute(string msbuildExecutablePath, string arguments);
     }
 }

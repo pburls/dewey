@@ -54,6 +54,7 @@
     <Compile Include="DeployCommandWriter.cs" />
     <Compile Include="DeploymentActionFactory.cs" />
     <Compile Include="Events\ComponentNotFoundResult.cs" />
+    <Compile Include="Events\DeployCommandCompleted.cs" />
     <Compile Include="Events\DeployCommandEvent.cs" />
     <Compile Include="Events\DeployCommandStarted.cs" />
     <Compile Include="Events\DeploymentActionContentNotFoundResult.cs" />

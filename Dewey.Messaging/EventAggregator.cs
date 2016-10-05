@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Dewey.Messaging
 {
-    class EventAggregator : IEventAggregator
+    public class EventAggregator : IEventAggregator
     {
         private Dictionary<Type, object> _eventHandlers = new Dictionary<Type, object>();
 
@@ -30,9 +31,14 @@ namespace Dewey.Messaging
         {
             Type eventType = typeof(TEvent);
 
-            if (_eventHandlers.ContainsKey(eventType))
+            foreach (var type in _eventHandlers.Keys)
             {
-                ((EventHandlerCollection<TEvent>)_eventHandlers[eventType]).ExecuteAll(@event);
+                if (type.IsAssignableFrom(eventType))
+                {
+                    var eventHandlerCollection = _eventHandlers[type];
+                    MethodInfo executeAllMethod = eventHandlerCollection.GetType().GetMethod("ExecuteAll", new[] { type });
+                    executeAllMethod.Invoke(eventHandlerCollection, new object[] { @event });
+                }
             }
         }
 

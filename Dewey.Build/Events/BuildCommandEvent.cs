@@ -1,8 +1,9 @@
 ﻿using Dewey.Messaging;
+using System;
 
 namespace Dewey.Build.Events
 {
-    public abstract class BuildCommandEvent : IEvent
+    public abstract class BuildCommandEvent : IEvent, IEquatable<BuildCommandEvent>
     {
         public string ComponentName { get; protected set; }
 
@@ -11,20 +12,19 @@ namespace Dewey.Build.Events
             ComponentName = command.ComponentName;
         }
 
+        public bool Equals(BuildCommandEvent other)
+        {
+            if (other == null) return false;
+
+            return ComponentName == other.ComponentName;
+        }
+
         public override bool Equals(object obj)
         {
-            if (obj == null)
-            {
-                return false;
-            }
-            
+            if (obj == null) return false;
+
             BuildCommandEvent other = obj as BuildCommandEvent;
-            if (other == null)
-            {
-                return false;
-            }
-            
-            return ComponentName == other.ComponentName;
+            return Equals(other);
         }
 
         public override int GetHashCode()

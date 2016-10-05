@@ -48,10 +48,13 @@ namespace Dewey.CLI
             if (command == null)
             {
                 Console.WriteLine("Unknown command.");
+                Environment.ExitCode = 1;
             }
             else
             {
                 var commandProcessor = container.GetInstance<ICommandProcessor>();
+                var eventAggregator = container.GetInstance<IEventAggregator>();
+                var commandReport = new CommandReport(command, eventAggregator);
 
                 //Load Manifest Files first to create a store to use.
                 commandProcessor.Execute(new LoadManifestFiles());
@@ -60,6 +63,12 @@ namespace Dewey.CLI
                 if (commandHandler == null)
                 {
                     Console.WriteLine("No command handler registered for command.");
+                    Environment.ExitCode = 1;
+                }
+
+                if (commandReport.HasAnyFailed)
+                {
+                    Environment.ExitCode = 1;
                 }
             }
 

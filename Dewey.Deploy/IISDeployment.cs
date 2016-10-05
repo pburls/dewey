@@ -20,19 +20,19 @@ namespace Dewey.Deploy
             _eventAggregator = eventAggregator;
         }
 
-        public void Deploy(ComponentManifest componentManifest, XElement deploymentElement)
+        public bool Deploy(ComponentManifest componentManifest, XElement deploymentElement)
         {
             var iisDeploymentArgs = IISDeploumentArgs.ParseIISDeploymentElement(deploymentElement);
             if (iisDeploymentArgs.MissingAttributes.Any())
             {
                 _eventAggregator.PublishEvent(new DeploymentElementMissingAttributeResult(componentManifest, DEPLOYMENT_TYPE, deploymentElement, iisDeploymentArgs.MissingAttributes));
-                return;
+                return false;
             }
 
             if (iisDeploymentArgs.InvalidAttributes.Any())
             {
                 _eventAggregator.PublishEvent(new DeploymentElementInvalidAttributeResult(componentManifest, DEPLOYMENT_TYPE, deploymentElement, iisDeploymentArgs.InvalidAttributes));
-                return;
+                return false;
             }
 
             string contentPath = Path.Combine(componentManifest.File.DirectoryName, iisDeploymentArgs.Content);
@@ -40,13 +40,13 @@ namespace Dewey.Deploy
             if (!Directory.Exists(contentPath))
             {
                 _eventAggregator.PublishEvent(new DeploymentActionContentNotFoundResult(componentManifest, DEPLOYMENT_TYPE, contentPath));
-                return;
+                return false;
             }
 
             if (!IsAdministrator())
             {
                 _eventAggregator.PublishEvent(new DeploymentActionFailed(componentManifest, DEPLOYMENT_TYPE, "Administrator priviledges required. Please run as Administrator."));
-                return;
+                return false;
             }
 
             _eventAggregator.PublishEvent(new DeploymentActionStarted(componentManifest, DEPLOYMENT_TYPE, iisDeploymentArgs));
@@ -88,6 +88,8 @@ namespace Dewey.Deploy
             serverManager.CommitChanges();
 
             _eventAggregator.PublishEvent(new DeploymentActionCompletedResult(componentManifest, DEPLOYMENT_TYPE, iisDeploymentArgs));
+
+            return true;
         }
 
         private static bool IsAdministrator()
