@@ -48,7 +48,9 @@ namespace Dewey.Graph
                 graphStringBuilder.AppendLine(string.Format("g.addEdge('{0}', '{1}');", dependecy.Parent.Name, dependecy.Name));
             }
 
-            WriteGraphFiles(graphStringBuilder.ToString());
+            var indexFileName = WriteGraphFiles(graphStringBuilder.ToString());
+
+            System.Diagnostics.Process.Start(indexFileName);
         }
 
         public void Handle(DependencyElementResult dependencyElementResult)
@@ -56,7 +58,7 @@ namespace Dewey.Graph
             _dependencies.Add(dependencyElementResult);
         }
 
-        private void WriteGraphFiles(string graph)
+        private string WriteGraphFiles(string graph)
         {
             string codeBase = Assembly.GetExecutingAssembly().CodeBase;
             UriBuilder uri = new UriBuilder(codeBase);
@@ -74,13 +76,12 @@ namespace Dewey.Graph
                 fileInfo.CopyTo(outputFileName, true);
             }
 
-            var scriptFileName = Path.Combine(graphDirectoryInfo.FullName, "script.js");
-            string src = File.ReadAllText(scriptFileName);
-            src = src.Replace("$graphItems$", graph);
-            File.WriteAllText(scriptFileName, src);
-
             var indexFileName = Path.Combine(graphDirectoryInfo.FullName, "index.html");
-            System.Diagnostics.Process.Start(indexFileName);
+            string src = File.ReadAllText(indexFileName);
+            src = src.Replace("$graphItems$", graph);
+            File.WriteAllText(indexFileName, src);
+
+            return indexFileName;
         }
     }
 }

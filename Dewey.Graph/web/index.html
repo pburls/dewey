@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -9,6 +9,18 @@
 
 <body>
   <div id="canvas" style="height: 100%; width: 100%;"></div>
-  <script type="text/javascript" src="script.js"></script>
+  <script type="text/javascript">
+      const width = 800;
+      const height = 600;
+
+      const g = new Dracula.Graph
+
+      $graphItems$
+
+      const layouter = new Dracula.Layout.Spring(g);
+
+      const renderer = new Dracula.Renderer.Raphael('#canvas', g, width, height);
+      renderer.draw();
+  </script>
 </body>
 </html>
