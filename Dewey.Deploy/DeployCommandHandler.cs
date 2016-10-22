@@ -70,7 +70,7 @@ namespace Dewey.Deploy
 
             if (_command.DeployDependencies)
             {
-                _dependencyElementLoader.LoadFromComponentManifest(_component.ComponentElement);
+                _dependencyElementLoader.LoadFromComponentManifest(_component.ComponentManifest, _component.ComponentElement);
 
                 if (_dependencies.Any())
                 {
