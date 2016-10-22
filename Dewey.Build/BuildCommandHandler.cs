@@ -21,6 +21,7 @@ namespace Dewey.Build
         readonly IEventAggregator _eventAggregator;
         readonly IBuildActionFactory _buildActionFactory;
         readonly IBuildElementLoader _buildElementLoader;
+        readonly IDependencyElementLoader _dependencyElementLoader;
 
         readonly List<DependencyElementResult> _dependencies;
 
@@ -28,12 +29,13 @@ namespace Dewey.Build
         BuildElementResult _buildElementResult;
         Component _component;
 
-        public BuildCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IBuildActionFactory buildActionFactory, IBuildElementLoader buildElementLoader)
+        public BuildCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IBuildActionFactory buildActionFactory, IBuildElementLoader buildElementLoader, IDependencyElementLoader dependencyElementLoader)
         {
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
             _buildActionFactory = buildActionFactory;
             _buildElementLoader = buildElementLoader;
+            _dependencyElementLoader = dependencyElementLoader;
 
             _dependencies = new List<DependencyElementResult>();
 
@@ -73,7 +75,7 @@ namespace Dewey.Build
 
             if (_command.BuildDependencies)
             {
-                DependencyElementResult.LoadDependencies(_component.ComponentElement, _eventAggregator);
+                _dependencyElementLoader.LoadFromComponentManifest(_component.ComponentElement);
 
                 if (_dependencies.Any())
                 {

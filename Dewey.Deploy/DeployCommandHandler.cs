@@ -18,16 +18,19 @@ namespace Dewey.Deploy
     {
         readonly ICommandProcessor _commandProcessor;
         readonly IEventAggregator _eventAggregator;
+        readonly IDependencyElementLoader _dependencyElementLoader;
+
         readonly List<DependencyElementResult> _dependencies;
 
         DeployCommand _command;
         Component _component;
         DeploymentElementResult _deploymentElementResult;
 
-        public DeployCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator)
+        public DeployCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IDependencyElementLoader dependencyElementLoader)
         {
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
+            _dependencyElementLoader = dependencyElementLoader;
 
             _dependencies = new List<DependencyElementResult>();
 
@@ -67,7 +70,7 @@ namespace Dewey.Deploy
 
             if (_command.DeployDependencies)
             {
-                DependencyElementResult.LoadDependencies(_component.ComponentElement, _eventAggregator);
+                _dependencyElementLoader.LoadFromComponentManifest(_component.ComponentElement);
 
                 if (_dependencies.Any())
                 {
