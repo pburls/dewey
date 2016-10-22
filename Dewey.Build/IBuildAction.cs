@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 namespace Dewey.Build
 {
-    interface IBuildAction
+    public interface IBuildAction
     {
         string BuildType { get; }
 

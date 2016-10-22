@@ -17,20 +17,25 @@ namespace Dewey.Build
         IEventHandler<BuildElementResult>,
         IEventHandler<DependencyElementResult>
     {
-        readonly Container _container;
         readonly ICommandProcessor _commandProcessor;
         readonly IEventAggregator _eventAggregator;
+        readonly IBuildActionFactory _buildActionFactory;
+        readonly IBuildElementLoader _buildElementLoader;
+        readonly IDependencyElementLoader _dependencyElementLoader;
+
         readonly List<DependencyElementResult> _dependencies;
 
         BuildCommand _command;
         BuildElementResult _buildElementResult;
         Component _component;
 
-        public BuildCommandHandler(Container container, ICommandProcessor commandProcessor, IEventAggregator eventAggregator)
+        public BuildCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IBuildActionFactory buildActionFactory, IBuildElementLoader buildElementLoader, IDependencyElementLoader dependencyElementLoader)
         {
-            _container = container;
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
+            _buildActionFactory = buildActionFactory;
+            _buildElementLoader = buildElementLoader;
+            _dependencyElementLoader = dependencyElementLoader;
 
             _dependencies = new List<DependencyElementResult>();
 
@@ -61,7 +66,7 @@ namespace Dewey.Build
                 return false;
             }
 
-            BuildElementResult.LoadBuildElementsFromComponentManifest(_command, _component.ComponentElement, _eventAggregator);
+            _buildElementLoader.LoadFromComponentManifest(_command, _component.ComponentElement);
 
             if (_buildElementResult == null)
             {
@@ -70,7 +75,7 @@ namespace Dewey.Build
 
             if (_command.BuildDependencies)
             {
-                DependencyElementResult.LoadDependencies(_component.ComponentElement, _eventAggregator);
+                _dependencyElementLoader.LoadFromComponentManifest(_component.ComponentManifest, _component.ComponentElement);
 
                 if (_dependencies.Any())
                 {
@@ -78,7 +83,7 @@ namespace Dewey.Build
                     {
                         if (dependency.Type == DependencyElementResult.COMPONENT_DEPENDENCY_TYPE)
                         {
-                            _commandProcessor.Execute(BuildCommand.Create(dependency.Name, _command.BuildDependencies));
+                            _commandProcessor.Execute(new BuildCommand(dependency.Name, _command.BuildDependencies));
                         }
                     }
                 }
@@ -87,7 +92,7 @@ namespace Dewey.Build
             var result = false;
             try
             {
-                var buildAction = BuildActionFactory.CreateBuildAction(_buildElementResult.BuildType, _container);
+                var buildAction = _buildActionFactory.CreateBuildAction(_buildElementResult.BuildType);
                 result = buildAction.Build(_component.ComponentManifest, _buildElementResult.BuildElement);
             }
             catch (Exception ex)
@@ -108,7 +113,10 @@ namespace Dewey.Build
 
         public void Handle(DependencyElementResult dependencyElementResult)
         {
-            _dependencies.Add(dependencyElementResult);
+            if (_component.ComponentManifest.Name == dependencyElementResult.ComponentManifest.Name)
+            {
+                _dependencies.Add(dependencyElementResult);
+            }
         }
 
         public void Handle(BuildElementResult buildElementResult)

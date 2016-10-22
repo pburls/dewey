@@ -14,5 +14,10 @@ namespace Dewey.State
             ComponentManifest = componentManifest;
             ComponentElement = componentElement;
         }
+
+        public Component WithComponentMandifest(ComponentManifest componentManifest)
+        {
+            return new Component(componentManifest, ComponentElement);
+        }
     }
 }

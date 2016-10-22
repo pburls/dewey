@@ -23,6 +23,11 @@ namespace Dewey.Manifest.Component
             File = file;
         }
 
+        public ComponentManifest WithName(string name)
+        {
+            return new ComponentManifest(name, Type, File);
+        }
+
         public static ComponentManifestLoadResult LoadComponentItem(ComponentItem componentItem, IManifestFileReaderService manifestFileReaderService)
         {
             var componentManifestFile = manifestFileReaderService.ReadComponentManifestFile(componentItem.RepositoryManifest.DirectoryName, componentItem.RelativeLocation);

@@ -48,9 +48,11 @@
     <Compile Include="Component\ComponentManifestLoadResult.cs" />
     <Compile Include="Dependency\DependenciesElementNotFoundResult.cs" />
     <Compile Include="Dependency\DependencyElementEvent.cs" />
+    <Compile Include="Dependency\DependencyElementLoader.cs" />
     <Compile Include="Dependency\DependencyElementMissingAttributesResult.cs" />
     <Compile Include="Dependency\DependencyElementResult.cs" />
     <Compile Include="Dependency\DependencyElementsNotFoundResult.cs" />
+    <Compile Include="Dependency\IDependencyElementLoader.cs" />
     <Compile Include="Events\LoadManifestFilesResult.cs" />
     <Compile Include="Events\ManifestFilesFound.cs" />
     <Compile Include="Events\NoManifestFileFoundResult.cs" />
