@@ -75,7 +75,7 @@ namespace Dewey.Build
 
             if (_command.BuildDependencies)
             {
-                _dependencyElementLoader.LoadFromComponentManifest(_component.ComponentElement);
+                _dependencyElementLoader.LoadFromComponentManifest(_component.ComponentManifest, _component.ComponentElement);
 
                 if (_dependencies.Any())
                 {
@@ -113,7 +113,10 @@ namespace Dewey.Build
 
         public void Handle(DependencyElementResult dependencyElementResult)
         {
-            _dependencies.Add(dependencyElementResult);
+            if (_component.ComponentManifest.Name == dependencyElementResult.ComponentManifest.Name)
+            {
+                _dependencies.Add(dependencyElementResult);
+            }
         }
 
         public void Handle(BuildElementResult buildElementResult)

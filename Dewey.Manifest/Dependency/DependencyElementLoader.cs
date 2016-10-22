@@ -1,4 +1,5 @@
-﻿using Dewey.Messaging;
+﻿using Dewey.Manifest.Component;
+using Dewey.Messaging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
@@ -14,7 +15,7 @@ namespace Dewey.Manifest.Dependency
             _eventAggregator = eventAggregator;
         }
 
-        public void LoadFromComponentManifest(XElement componentElement)
+        public void LoadFromComponentManifest(ComponentManifest componentMandifest, XElement componentElement)
         {
             var dependenciesElement = componentElement.Elements().FirstOrDefault(x => x.Name.LocalName == "dependencies");
             if (dependenciesElement == null)
@@ -51,7 +52,7 @@ namespace Dewey.Manifest.Dependency
                     continue;
                 }
 
-                _eventAggregator.PublishEvent(new DependencyElementResult(dependencyElement, dependencyTypeAtt.Value, dependencyNameAtt.Value));
+                _eventAggregator.PublishEvent(new DependencyElementResult(componentMandifest, dependencyElement, dependencyTypeAtt.Value, dependencyNameAtt.Value));
             }
         }
     }
