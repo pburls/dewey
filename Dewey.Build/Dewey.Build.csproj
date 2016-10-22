@@ -57,6 +57,7 @@
     <Compile Include="BuildCommand.cs" />
     <Compile Include="BuildCommandHandler.cs" />
     <Compile Include="BuildCommandWriter.cs" />
+    <Compile Include="BuildElementLoader.cs" />
     <Compile Include="CLICommandProvider.cs" />
     <Compile Include="Events\BuildActionCompletedResult.cs" />
     <Compile Include="Events\BuildActionEvent.cs" />
@@ -73,6 +74,8 @@
     <Compile Include="Events\MSBuildExecutableNotFoundResult.cs" />
     <Compile Include="Events\NoBuildElementsFoundResult.cs" />
     <Compile Include="IBuildAction.cs" />
+    <Compile Include="IBuildActionFactory.cs" />
+    <Compile Include="IBuildElementLoader.cs" />
     <Compile Include="IMSBuildProcess.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="MSBuild.cs" />

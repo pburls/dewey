@@ -13,9 +13,10 @@ namespace Dewey.Build
 
         public bool BuildDependencies { get; private set; }
 
-        BuildCommand()
+        public BuildCommand(string componentName, bool buildDependencies)
         {
-
+            ComponentName = componentName;
+            BuildDependencies = buildDependencies;
         }
 
         public static BuildCommand Create(string[] args)
@@ -33,12 +34,7 @@ namespace Dewey.Build
             var switches = arguments.Where(arg => arg.StartsWith("-"));
             var buildDependencies = switches.Any(s => s.Contains("d"));
 
-            return Create(componentName, buildDependencies);
-        }
-
-        public static BuildCommand Create(string componentName, bool buildDependencies)
-        {
-            return new BuildCommand() { ComponentName = componentName, BuildDependencies = buildDependencies };
+            return new BuildCommand(componentName, buildDependencies);
         }
 
         public override string ToString()

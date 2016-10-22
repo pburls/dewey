@@ -4,11 +4,18 @@ using System.Linq;
 
 namespace Dewey.Build
 {
-    class BuildActionFactory
+    public class BuildActionFactory : IBuildActionFactory
     {
-        public static IBuildAction CreateBuildAction(string buildType, Container container)
+        private readonly Container _container;
+
+        public BuildActionFactory(Container container)
         {
-            var buildActions = container.GetAllInstances<IBuildAction>().ToDictionary(x => x.BuildType);
+            _container = container;
+        }
+
+        public IBuildAction CreateBuildAction(string buildType)
+        {
+            var buildActions = _container.GetAllInstances<IBuildAction>().ToDictionary(x => x.BuildType);
 
             IBuildAction buildAction;
             if(!buildActions.TryGetValue(buildType, out buildAction))
