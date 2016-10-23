@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bootstrapper.cs" />
     <Compile Include="Component\ComponentManifest.cs" />
     <Compile Include="Component\ComponentManifestLoadResult.cs" />
     <Compile Include="Dependency\DependenciesElementNotFoundResult.cs" />

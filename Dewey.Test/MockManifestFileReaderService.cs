@@ -48,13 +48,7 @@ namespace Dewey.Test
 
         public string XmlText { get; set; }
 
-        public ManifestFileType MandifestFileType
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public ManifestFileType MandifestFileType { get; set; }
 
         public MockManifestFileReader()
         {
