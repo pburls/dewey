@@ -42,6 +42,10 @@
       <HintPath>..\packages\AutoFixture.3.49.0\lib\net40\Ploeh.AutoFixture.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="SimpleInjector, Version=3.2.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleInjector.3.2.0\lib\net45\SimpleInjector.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -69,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildCommandHandlerTest.cs" />
+    <Compile Include="BuildCommandIntegrationTest.cs" />
     <Compile Include="BuildElementResultTest.cs" />
     <Compile Include="MSBuildTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

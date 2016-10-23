@@ -14,8 +14,9 @@ namespace Dewey.CLI
         {
             var container = new Container();
 
-            Bootstrapper.RegisterTypes(container);
+            Messaging.Bootstrapper.RegisterTypes(container);
             File.Bootstrapper.RegisterTypes(container);
+            Manifest.Bootstrapper.RegisterTypes(container);
             State.Bootstrapper.RegisterTypes(container);
             Build.Bootstrapper.RegisterTypes(container);
 
