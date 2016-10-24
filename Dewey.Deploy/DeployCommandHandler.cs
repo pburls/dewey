@@ -19,6 +19,7 @@ namespace Dewey.Deploy
         readonly ICommandProcessor _commandProcessor;
         readonly IEventAggregator _eventAggregator;
         readonly IDependencyElementLoader _dependencyElementLoader;
+        readonly IDeploymentActionFactory _deploymentActionFactory;
 
         readonly List<DependencyElementResult> _dependencies;
 
@@ -26,11 +27,12 @@ namespace Dewey.Deploy
         Component _component;
         DeploymentElementResult _deploymentElementResult;
 
-        public DeployCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IDependencyElementLoader dependencyElementLoader)
+        public DeployCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IDependencyElementLoader dependencyElementLoader, IDeploymentActionFactory deploymentActionFactory)
         {
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
             _dependencyElementLoader = dependencyElementLoader;
+            _deploymentActionFactory = deploymentActionFactory;
 
             _dependencies = new List<DependencyElementResult>();
 
@@ -87,7 +89,7 @@ namespace Dewey.Deploy
             var result = false;
             try
             {
-                var deploymentAction = DeploymentActionFactory.CreateDeploymentAction(_deploymentElementResult.DeploymentType, _eventAggregator);
+                var deploymentAction = _deploymentActionFactory.CreateDeploymentAction(_deploymentElementResult.DeploymentType);
                 result = deploymentAction.Deploy(_component.ComponentManifest, _deploymentElementResult.DeploymentElement);
             }
             catch (Exception ex)
@@ -108,7 +110,10 @@ namespace Dewey.Deploy
 
         public void Handle(DependencyElementResult dependencyElementResult)
         {
-            _dependencies.Add(dependencyElementResult);
+            if (_component.ComponentManifest.Name == dependencyElementResult.ComponentManifest.Name)
+            {
+                _dependencies.Add(dependencyElementResult);
+            }
         }
 
         public void Handle(DeploymentElementResult deploymentElementResult)
