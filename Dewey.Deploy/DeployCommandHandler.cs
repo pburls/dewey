@@ -110,7 +110,7 @@ namespace Dewey.Deploy
 
         public void Handle(DependencyElementResult dependencyElementResult)
         {
-            if (_component.ComponentManifest.Name == dependencyElementResult.ComponentManifest.Name)
+            if (_component != null && _component.ComponentManifest.Name == dependencyElementResult.ComponentManifest.Name)
             {
                 _dependencies.Add(dependencyElementResult);
             }
