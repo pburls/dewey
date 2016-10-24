@@ -15,6 +15,8 @@ namespace Dewey.Deploy
 
         public const string DEPLOYMENT_TYPE = "iis";
 
+        public string Type { get { return DEPLOYMENT_TYPE; } }
+
         public IISDeployment(IEventAggregator eventAggregator)
         {
             _eventAggregator = eventAggregator;

@@ -4,8 +4,10 @@ using System.Xml.Linq;
 
 namespace Dewey.Deploy
 {
-    interface IDeploymentAction
+    public interface IDeploymentAction
     {
+        string Type { get; }
+
         bool Deploy(ComponentManifest componentManifest, XElement deploymentElement);
     }
 }

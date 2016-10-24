@@ -8,69 +8,69 @@ using SimpleInjector;
 using System.Xml.Linq;
 using Xunit;
 
-namespace Dewey.Build.Test
+namespace Dewey.Deploy.Test
 {
-    public class BuildCommandIntegrationTest
+    public class DeployCommandTest
     {
         Mock<IManifestFileReaderService> mockIManifestFileReaderService;
-        Mock<IBuildAction> mockBuildAction;
-        Mock<IBuildActionFactory> mockBuildActionFactory;
+        Mock<IDeploymentAction> mockDeploymentAction;
+        Mock<IDeploymentActionFactory> mockDeploymentActionFactory;
 
         Container container;
         ICommandProcessor commandProcessor;
 
-        public BuildCommandIntegrationTest()
+        public DeployCommandTest()
         {
             mockIManifestFileReaderService = new Mock<IManifestFileReaderService>();
-            mockBuildAction = new Mock<IBuildAction>();
-            mockBuildActionFactory = new Mock<IBuildActionFactory>();
+            mockDeploymentAction = new Mock<IDeploymentAction>();
+            mockDeploymentActionFactory = new Mock<IDeploymentActionFactory>();
 
             container = new Container();
             Messaging.Bootstrapper.RegisterTypes(container);
             File.Bootstrapper.RegisterTypes(container);
             Manifest.Bootstrapper.RegisterTypes(container);
             State.Bootstrapper.RegisterTypes(container);
-            Build.Bootstrapper.RegisterTypes(container);
+            Deploy.Bootstrapper.RegisterTypes(container);
 
             container.Options.AllowOverridingRegistrations = true;
             container.RegisterSingleton(mockIManifestFileReaderService.Object);
-            container.RegisterSingleton(mockBuildActionFactory.Object);
+            container.RegisterSingleton(mockDeploymentActionFactory.Object);
 
             var moduleCataloge = container.GetInstance<ModuleCatalogue>();
             moduleCataloge.Load<State.Module>();
             moduleCataloge.Load<Manifest.Module>();
-            moduleCataloge.Load<Build.Module>();
+            moduleCataloge.Load<Deploy.Module>();
 
             commandProcessor = container.GetInstance<ICommandProcessor>();
         }
 
         [Fact]
-        public void BuildCommand_Should_InvokeBuildAction()
+        public void DeployCommand_Should_InvokeDeployAction()
         {
             //Given
             var xmlText =
 @"<componentManifest name=""testComponent"" type=""web"">
-	<builds>
-		<build type=""testType"" target=""testTarget"" />
-	</builds>
+	<deployments>
+		<deployment type=""testType"" port=""13319"" siteName=""WebApplication"" appPool=""WebApplication"" content=""src/WebApplication"" />
+	</deployments>
 </componentManifest>";
-            var manifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Component, XmlText = xmlText };
+            var manifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Component, XmlText = xmlText, DirectoryName = "testLocation" };
             mockIManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(manifestFileReader);
 
-            mockBuildActionFactory.Setup(x => x.CreateBuildAction("testType")).Returns(mockBuildAction.Object);
+            mockDeploymentActionFactory.Setup(x => x.CreateDeploymentAction("testType")).Returns(mockDeploymentAction.Object);
 
-            var buildCommand = new BuildCommand("testComponent", false);
+            var deployCommand = DeployCommand.Create("testComponent", false);
 
             //When
             commandProcessor.Execute(new LoadManifestFiles());
-            commandProcessor.Execute(buildCommand);
+            commandProcessor.Execute(deployCommand);
 
             //Then
-            mockBuildAction.Verify(x => x.Build(It.IsAny<ComponentManifest>(), It.IsAny<XElement>()), Times.Once);
+            mockDeploymentAction.Verify(x => x.Deploy(It.IsAny<ComponentManifest>(), It.IsAny<XElement>()), Times.Once);
         }
 
         [Fact]
-        public void BuildCommand_Without_Dependencies_Should_Not_InvokeBuildAction_For_Dependencies()
+        public void DeployCommand_Without_Dependenices_Should_Not_InvokeDeployAction_For_Dependencies()
         {
             //Given
             var repositoryDirectory = "testDirectory";
@@ -86,9 +86,9 @@ namespace Dewey.Build.Test
 
             var testComponentManifestText =
 @"<componentManifest name=""testComponent"" type=""web"">
-	<builds>
-		<build type=""testType"" target=""testTarget"" />
-	</builds>
+	<deployments>
+		<deployment type=""testType"" port=""13319"" siteName=""WebApplication"" appPool=""WebApplication"" content=""src/WebApplication"" />
+	</deployments>
 	<dependencies>
 		<dependency type=""component"" name=""dependencyComponent"" />
 	</dependencies>
@@ -98,28 +98,28 @@ namespace Dewey.Build.Test
 
             var dependencyComponentManifestText =
 @"<componentManifest name=""dependencyComponent"" type=""web"">
-	<builds>
-		<build type=""testType"" target=""testTarget"" />
-	</builds>
+	<deployments>
+		<deployment type=""testType"" port=""13319"" siteName=""WebApplication"" appPool=""WebApplication"" content=""src/WebApplication"" />
+	</deployments>
 </componentManifest>";
             var dependencyComponentManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Component, XmlText = dependencyComponentManifestText };
             mockIManifestFileReaderService.Setup(x => x.ReadComponentManifestFile(repositoryDirectory, "DependencyLocation")).Returns(dependencyComponentManifestFileReader);
 
-            var buildCommand = new BuildCommand("testComponent", false);
+            mockDeploymentActionFactory.Setup(x => x.CreateDeploymentAction("testType")).Returns(mockDeploymentAction.Object);
 
-            mockBuildActionFactory.Setup(x => x.CreateBuildAction("testType")).Returns(mockBuildAction.Object);
+            var deployCommand = DeployCommand.Create("testComponent", false);
 
             //When
             commandProcessor.Execute(new LoadManifestFiles());
-            commandProcessor.Execute(buildCommand);
+            commandProcessor.Execute(deployCommand);
 
             //Then
-            mockBuildAction.Verify(x => x.Build(It.IsAny<ComponentManifest>(), It.IsAny<XElement>()), Times.Once);
+            mockDeploymentAction.Verify(x => x.Deploy(It.IsAny<ComponentManifest>(), It.IsAny<XElement>()), Times.Once);
         }
 
-        //Fixes: Issue #5
+        //Fixes Issue #6
         [Fact]
-        public void BuildCommand_With_Dependencies_Should_InvokeBuildAction_For_Dependencies()
+        public void DeployCommand_With_Dependencies_Should_InvokeBuildAction_For_Dependencies()
         {
             //Given
             var repositoryDirectory = "testDirectory";
@@ -136,9 +136,9 @@ namespace Dewey.Build.Test
 
             var testComponentManifestText =
 @"<componentManifest name=""testComponent"" type=""web"">
-	<builds>
-		<build type=""testType"" target=""testTarget"" />
-	</builds>
+	<deployments>
+		<deployment type=""testType"" port=""13319"" siteName=""WebApplication"" appPool=""WebApplication"" content=""src/WebApplication"" />
+	</deployments>
 	<dependencies>
 		<dependency type=""component"" name=""dependencyComponent"" />
 	</dependencies>
@@ -148,9 +148,9 @@ namespace Dewey.Build.Test
 
             var dependencyComponentManifestText =
 @"<componentManifest name=""dependencyComponent"" type=""web"">
-	<builds>
-		<build type=""testType"" target=""testTarget"" />
-	</builds>
+	<deployments>
+		<deployment type=""testType"" port=""13319"" siteName=""WebApplication"" appPool=""WebApplication"" content=""src/WebApplication"" />
+	</deployments>
 	<dependencies>
 		<dependency type=""component"" name=""dependencyComponent2"" />
 	</dependencies>
@@ -160,23 +160,23 @@ namespace Dewey.Build.Test
 
             var dependencyComponent2ManifestText =
 @"<componentManifest name=""dependencyComponent2"" type=""web"">
-	<builds>
-		<build type=""testType"" target=""testTarget"" />
-	</builds>
+	<deployments>
+		<deployment type=""testType"" port=""13319"" siteName=""WebApplication"" appPool=""WebApplication"" content=""src/WebApplication"" />
+	</deployments>
 </componentManifest>";
             var dependencyComponent2ManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Component, XmlText = dependencyComponent2ManifestText };
             mockIManifestFileReaderService.Setup(x => x.ReadComponentManifestFile(repositoryDirectory, "DependencyLocation2")).Returns(dependencyComponent2ManifestFileReader);
 
-            var buildCommand = new BuildCommand("testComponent", true);
+            var deployCommand = DeployCommand.Create("testComponent", true);
 
-            mockBuildActionFactory.Setup(x => x.CreateBuildAction("testType")).Returns(mockBuildAction.Object);
+            mockDeploymentActionFactory.Setup(x => x.CreateDeploymentAction("testType")).Returns(mockDeploymentAction.Object);
 
             //When
             commandProcessor.Execute(new LoadManifestFiles());
-            commandProcessor.Execute(buildCommand);
+            commandProcessor.Execute(deployCommand);
 
             //Then
-            mockBuildAction.Verify(x => x.Build(It.IsAny<ComponentManifest>(), It.IsAny<XElement>()), Times.Exactly(3));
+            mockDeploymentAction.Verify(x => x.Deploy(It.IsAny<ComponentManifest>(), It.IsAny<XElement>()), Times.Exactly(3));
         }
     }
 }

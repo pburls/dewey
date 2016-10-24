@@ -1,19 +1,30 @@
 ﻿using Dewey.Messaging;
+using SimpleInjector;
 using System;
+using System.Linq;
 
 namespace Dewey.Deploy
 {
-    class DeploymentActionFactory
+    public class DeploymentActionFactory : IDeploymentActionFactory
     {
-        public static IDeploymentAction CreateDeploymentAction(string deploymentType, IEventAggregator eventAggregator)
+        private readonly Container _container;
+
+        public DeploymentActionFactory(Container container)
         {
-            switch (deploymentType)
+            _container = container;
+        }
+
+        public IDeploymentAction CreateDeploymentAction(string deploymentType)
+        {
+            var deploymentActions = _container.GetAllInstances<IDeploymentAction>().ToDictionary(x => x.Type);
+
+            IDeploymentAction deployAction;
+            if (!deploymentActions.TryGetValue(deploymentType, out deployAction))
             {
-                case IISDeployment.DEPLOYMENT_TYPE:
-                    return new IISDeployment(eventAggregator);
-                default:
-                    throw new ArgumentOutOfRangeException("deploymentType", deploymentType, string.Format("Unknown deployment type {0}.", deploymentType));
+                throw new ArgumentOutOfRangeException("deploymentType", deploymentType, string.Format("Unknown deployment type {0}.", deploymentType));
             }
+
+            return deployAction;
         }
     }
 }
