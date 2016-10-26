@@ -37,7 +37,7 @@ namespace Dewey.Deploy
                 return false;
             }
 
-            string contentPath = Path.Combine(componentManifest.File.DirectoryName, iisDeploymentArgs.Content);
+            string contentPath = string.IsNullOrWhiteSpace(iisDeploymentArgs.Content) ? componentManifest.File.DirectoryName : Path.Combine(componentManifest.File.DirectoryName, iisDeploymentArgs.Content);
 
             if (!Directory.Exists(contentPath))
             {
@@ -69,22 +69,25 @@ namespace Dewey.Deploy
                 site = serverManager.Sites.Add(iisDeploymentArgs.SiteName, contentPath, iisDeploymentArgs.Port);
             }
 
+            if (site.Bindings[0].EndPoint.Port != iisDeploymentArgs.Port)
+            {
+                _eventAggregator.PublishEvent(new DeploymentActionOutputMessage(componentManifest, DEPLOYMENT_TYPE, string.Format("Recreating IIS Site '{0}' on port {2} mapped to path '{1}'.", iisDeploymentArgs.SiteName, contentPath, iisDeploymentArgs.Port)));
+                serverManager.Sites.Remove(site);
+                site = serverManager.Sites.Add(iisDeploymentArgs.SiteName, contentPath, iisDeploymentArgs.Port);
+            }
+            else
+            {
+                if (site.Applications[0].VirtualDirectories[0].PhysicalPath != contentPath)
+                {
+                    _eventAggregator.PublishEvent(new DeploymentActionOutputMessage(componentManifest, DEPLOYMENT_TYPE, string.Format("Setting IIS Site '{0}' to use content '{1}'.", iisDeploymentArgs.SiteName, contentPath)));
+                    site.Applications[0].VirtualDirectories[0].PhysicalPath = contentPath;
+                }
+            }
+
             if (site.Applications[0].ApplicationPoolName != iisDeploymentArgs.AppPool)
             {
                 _eventAggregator.PublishEvent(new DeploymentActionOutputMessage(componentManifest, DEPLOYMENT_TYPE, string.Format("Setting IIS Site '{0}' to use App Pool '{1}'.", iisDeploymentArgs.SiteName, iisDeploymentArgs.AppPool)));
                 site.Applications[0].ApplicationPoolName = iisDeploymentArgs.AppPool;
-            }
-
-            if (site.Applications[0].VirtualDirectories[0].PhysicalPath != contentPath)
-            {
-                _eventAggregator.PublishEvent(new DeploymentActionOutputMessage(componentManifest, DEPLOYMENT_TYPE, string.Format("Setting IIS Site '{0}' to use content '{1}'.", iisDeploymentArgs.SiteName, contentPath)));
-                site.Applications[0].VirtualDirectories[0].PhysicalPath = contentPath;
-            }
-
-            if (site.Bindings[0].EndPoint.Port != iisDeploymentArgs.Port)
-            {
-                _eventAggregator.PublishEvent(new DeploymentActionOutputMessage(componentManifest, DEPLOYMENT_TYPE, string.Format("Setting IIS Site '{0}' to use port '{1}'.", iisDeploymentArgs.SiteName, iisDeploymentArgs.Port)));
-                site.Bindings[0].EndPoint.Port = iisDeploymentArgs.Port;
             }
 
             serverManager.CommitChanges();
