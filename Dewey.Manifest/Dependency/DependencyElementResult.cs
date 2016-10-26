@@ -14,15 +14,13 @@ namespace Dewey.Manifest.Dependency
         public XElement DependencyElement { get; private set; }
         public string Type { get; private set; }
         public string Name { get; private set; }
-        public ComponentManifest Parent { get; private set; }
 
-        public DependencyElementResult(ComponentManifest componentMandifest, XElement dependencyElement, string type, string name, ComponentManifest parent)
+        public DependencyElementResult(ComponentManifest componentMandifest, XElement dependencyElement, string type, string name)
         {
             ComponentManifest = componentMandifest;
             DependencyElement = dependencyElement;
             Type = type;
             Name = name;
-            Parent = parent;
         }
 
         public DependencyElementResult WithType(string type)

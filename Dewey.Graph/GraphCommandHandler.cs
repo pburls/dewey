@@ -18,13 +18,15 @@ namespace Dewey.Graph
     {
         readonly ICommandProcessor _commandProcessor;
         readonly IEventAggregator _eventAggregator;
+        readonly IDependencyElementLoader _dependencyElementLoader;
 
         readonly List<DependencyElementResult> _dependencies = new List<DependencyElementResult>();
 
-        public GraphCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator)
+        public GraphCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IDependencyElementLoader dependencyElementLoader)
         {
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
+            _dependencyElementLoader = dependencyElementLoader;
 
             eventAggregator.Subscribe<GetComponentsResult>(this);
             eventAggregator.Subscribe<DependencyElementResult>(this);
@@ -39,13 +41,13 @@ namespace Dewey.Graph
         {
             foreach (var component in getComponentsResult.Components)
             {
-                DependencyElementResult.LoadDependencies(component.ComponentElement, component.ComponentManifest, _eventAggregator);
+                _dependencyElementLoader.LoadFromComponentManifest(component.ComponentManifest, component.ComponentElement);
             }
 
             var graphStringBuilder = new StringBuilder();
             foreach (var dependecy in _dependencies)
             {
-                graphStringBuilder.AppendLine(string.Format("g.addEdge('{0}', '{1}');", dependecy.Parent.Name, dependecy.Name));
+                graphStringBuilder.AppendLine(string.Format("g.addEdge('{0}', '{1}');", dependecy.ComponentManifest.Name, dependecy.Name));
             }
 
             var indexFileName = WriteGraphFiles(graphStringBuilder.ToString());
