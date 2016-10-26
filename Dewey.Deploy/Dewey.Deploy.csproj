@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bootstrapper.cs" />
     <Compile Include="CLICommandProvider.cs" />
     <Compile Include="DeployCommand.cs" />
     <Compile Include="DeployCommandHandler.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Events\DeploymentElementResult.cs" />
     <Compile Include="Events\NoDeploymentElementsFoundResult.cs" />
     <Compile Include="IDeploymentAction.cs" />
+    <Compile Include="IDeploymentActionFactory.cs" />
     <Compile Include="IISDeploumentArgs.cs" />
     <Compile Include="IISDeployment.cs" />
     <Compile Include="Module.cs" />

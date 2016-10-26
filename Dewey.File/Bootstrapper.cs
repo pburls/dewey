@@ -7,6 +7,7 @@ namespace Dewey.File
         public static void RegisterTypes(Container container)
         {
             container.Register<IFileService, FileService>(Lifestyle.Singleton);
+            container.Register<IManifestFileReaderService, ManifestFileReaderService>(Lifestyle.Singleton);
         }
     }
 }

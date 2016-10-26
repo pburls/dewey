@@ -15,33 +15,9 @@ namespace Dewey.Build.Events
             BuildType = buildType;
         }
 
-        public static void LoadBuildElementsFromComponentManifest(BuildCommand command, XElement componentElement, IEventAggregator eventAggregator)
+        public BuildElementResult WithCommand(BuildCommand command)
         {
-            var buildsElement = componentElement.Elements().FirstOrDefault(x => x.Name.LocalName == "builds");
-            if (buildsElement == null)
-            {
-                eventAggregator.PublishEvent(new NoBuildElementsFoundResult(command, componentElement));
-                return;
-            }
-
-            var buildElements = buildsElement.Elements().Where(x => x.Name.LocalName == "build").ToList();
-            if (buildElements.Count == 0)
-            {
-                eventAggregator.PublishEvent(new NoBuildElementsFoundResult(command, componentElement));
-                return;
-            }
-
-            foreach (var buildElement in buildElements)
-            {
-                var buildTypeAtt = buildElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "type");
-                if (buildTypeAtt == null || string.IsNullOrWhiteSpace(buildTypeAtt.Value))
-                {
-                    eventAggregator.PublishEvent(new BuildElementMissingTypeAttributeResult(command, buildElement));
-                    continue;
-                }
-
-                eventAggregator.PublishEvent(new BuildElementResult(command, buildElement, buildTypeAtt.Value));
-            }
+            return new BuildElementResult(command, BuildElement, BuildType);
         }
 
         public override bool Equals(object obj)

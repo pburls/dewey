@@ -10,58 +10,29 @@ namespace Dewey.Manifest.Dependency
     {
         public const string COMPONENT_DEPENDENCY_TYPE = "component";
 
+        public ComponentManifest ComponentManifest { get; private set; }
         public XElement DependencyElement { get; private set; }
         public string Type { get; private set; }
         public string Name { get; private set; }
         public ComponentManifest Parent { get; private set; }
 
-        public DependencyElementResult(XElement dependencyElement, string type, string name, ComponentManifest parent)
+        public DependencyElementResult(ComponentManifest componentMandifest, XElement dependencyElement, string type, string name, ComponentManifest parent)
         {
+            ComponentManifest = componentMandifest;
             DependencyElement = dependencyElement;
             Type = type;
             Name = name;
             Parent = parent;
         }
 
-        public static void LoadDependencies(XElement componentElement, ComponentManifest parent, IEventAggregator eventAggregator)
+        public DependencyElementResult WithType(string type)
         {
-            var dependenciesElement = componentElement.Elements().FirstOrDefault(x => x.Name.LocalName == "dependencies");
-            if (dependenciesElement == null)
-            {
-                eventAggregator.PublishEvent(new DependenciesElementNotFoundResult(componentElement));
-                return;
-            }
+            return new DependencyElementResult(ComponentManifest, DependencyElement, type, Name);
+        }
 
-            var dependencyElements = dependenciesElement.Elements().Where(x => x.Name.LocalName == "dependency").ToList();
-            if (dependencyElements.Count == 0)
-            {
-                eventAggregator.PublishEvent(new DependencyElementsNotFoundResult(componentElement));
-                return;
-            }
-
-            foreach (var dependencyElement in dependencyElements)
-            {
-                var missingAttributes = new List<string>();
-                var dependencyTypeAtt = dependencyElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "type");
-                if (dependencyTypeAtt == null || string.IsNullOrWhiteSpace(dependencyTypeAtt.Value))
-                {
-                    missingAttributes.Add("type");
-                }
-
-                var dependencyNameAtt = dependencyElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "name");
-                if (dependencyNameAtt == null || string.IsNullOrWhiteSpace(dependencyNameAtt.Value))
-                {
-                    missingAttributes.Add("name");
-                }
-
-                if (missingAttributes.Any())
-                {
-                    eventAggregator.PublishEvent(new DependencyElementMissingAttributesResult(componentElement, missingAttributes));
-                    continue;
-                }
-
-                eventAggregator.PublishEvent(new DependencyElementResult(dependencyElement, dependencyTypeAtt.Value, dependencyNameAtt.Value, parent));
-            }
+        public DependencyElementResult WithComponentManifest(ComponentManifest componentMandifest)
+        {
+            return new DependencyElementResult(componentMandifest, DependencyElement, Type, Name);
         }
     }
 }

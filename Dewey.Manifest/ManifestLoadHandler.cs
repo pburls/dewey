@@ -17,10 +17,10 @@ namespace Dewey.Manifest
         private readonly IEventAggregator _eventAggregator;
         private readonly IManifestFileReaderService _manifestFileReaderService;
 
-        public ManifestLoadHandler(IEventAggregator eventAggregator)
+        public ManifestLoadHandler(IEventAggregator eventAggregator, IManifestFileReaderService manifestFileReaderService)
         {
             _eventAggregator = eventAggregator;
-            _manifestFileReaderService = new ManifestFileReaderService();
+            _manifestFileReaderService = manifestFileReaderService;
 
             _eventAggregator.Subscribe<RepositoriesManifestLoadResult>(this);
             _eventAggregator.Subscribe<ComponentManifestLoadResult>(this);
