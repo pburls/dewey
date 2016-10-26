@@ -61,7 +61,7 @@ namespace Dewey.Deploy
             }
 
             var contentAtt = deploymentElement.Attributes().FirstOrDefault(x => x.Name.LocalName == "content");
-            if (contentAtt == null || string.IsNullOrWhiteSpace(contentAtt.Value))
+            if (contentAtt == null || contentAtt.Value == null)
             {
                 missingAttList.Add("content");
             }

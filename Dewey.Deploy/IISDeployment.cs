@@ -37,7 +37,7 @@ namespace Dewey.Deploy
                 return false;
             }
 
-            string contentPath = Path.Combine(componentManifest.File.DirectoryName, iisDeploymentArgs.Content);
+            string contentPath = string.IsNullOrWhiteSpace(iisDeploymentArgs.Content) ? componentManifest.File.DirectoryName : Path.Combine(componentManifest.File.DirectoryName, iisDeploymentArgs.Content);
 
             if (!Directory.Exists(contentPath))
             {
