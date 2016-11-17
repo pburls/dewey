@@ -14,18 +14,21 @@ namespace Dewey.Manifest.Component
 
         public string Type { get; private set; }
 
+        public string SubType { get; private set; }
+
         public IManifestFileReader File { get; private set; }
 
-        public ComponentManifest(string name, string type, IManifestFileReader file)
+        public ComponentManifest(string name, string type, string subType, IManifestFileReader file)
         {
             Name = name;
             Type = type;
             File = file;
+            SubType = subType;
         }
 
         public ComponentManifest WithName(string name)
         {
-            return new ComponentManifest(name, Type, File);
+            return new ComponentManifest(name, Type, SubType, File);
         }
 
         public static ComponentManifestLoadResult LoadComponentItem(ComponentItem componentItem, IManifestFileReaderService manifestFileReaderService)
@@ -54,12 +57,14 @@ namespace Dewey.Manifest.Component
                 missingAttributes.Add("type");
             }
 
+            var subTypeAtt = rootElement.Attribute(XName.Get("sub-type"));
+
             if (missingAttributes.Any())
             {
                 return ComponentManifestLoadResult.CreateMissingAttributesResult(repositoryManifest, componentManifestFile, rootElement, missingAttributes);
             }
 
-            var componentManifest = new ComponentManifest(nameAtt.Value, typeAtt.Value, componentManifestFile);
+            var componentManifest = new ComponentManifest(nameAtt.Value, typeAtt.Value, subTypeAtt != null ? subTypeAtt.Value : string.Empty, componentManifestFile);
 
             return ComponentManifestLoadResult.CreateSuccessfulResult(repositoryManifest, componentManifestFile, rootElement, componentManifest);
         }

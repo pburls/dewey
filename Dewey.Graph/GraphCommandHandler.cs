@@ -39,18 +39,32 @@ namespace Dewey.Graph
 
         public void Handle(GetComponentsResult getComponentsResult)
         {
+            var nodeDictionary = new Dictionary<string, Node>();
+            int id = 1;
             foreach (var component in getComponentsResult.Components)
             {
+                string type;
+                if (string.IsNullOrWhiteSpace(component.ComponentManifest.SubType))
+                    type = string.Join("-", Node.COMPONENT_NODE_TYPE, component.ComponentManifest.Type);
+                else
+                    type = string.Join("-", Node.COMPONENT_NODE_TYPE, component.ComponentManifest.Type, component.ComponentManifest.SubType);
+
+                nodeDictionary.Add(component.ComponentManifest.Name, new Node(id++, component.ComponentManifest.Name, type));
+
                 _dependencyElementLoader.LoadFromComponentManifest(component.ComponentManifest, component.ComponentElement);
             }
-
-            var graphStringBuilder = new StringBuilder();
+            
+            var edgeList = new List<Edge>();
             foreach (var dependecy in _dependencies)
             {
-                graphStringBuilder.AppendLine(string.Format("g.addEdge('{0}', '{1}');", dependecy.ComponentManifest.Name, dependecy.Name));
+                Node node1, node2;
+                if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out node1) && nodeDictionary.TryGetValue(dependecy.Name, out node2))
+                {
+                    edgeList.Add(new Edge(node1.Id, node2.Id));
+                }
             }
 
-            var indexFileName = WriteGraphFiles(graphStringBuilder.ToString());
+            var indexFileName = WriteGraphFiles(nodeDictionary.Values, edgeList);
 
             System.Diagnostics.Process.Start(indexFileName);
         }
@@ -60,7 +74,7 @@ namespace Dewey.Graph
             _dependencies.Add(dependencyElementResult);
         }
 
-        private string WriteGraphFiles(string graph)
+        private string WriteGraphFiles(IEnumerable<Node> nodes, IEnumerable<Edge> edges)
         {
             string codeBase = Assembly.GetExecutingAssembly().CodeBase;
             UriBuilder uri = new UriBuilder(codeBase);
@@ -79,8 +93,11 @@ namespace Dewey.Graph
             }
 
             var indexFileName = Path.Combine(graphDirectoryInfo.FullName, "index.html");
+            string nodeData = string.Join(",\n", nodes);
+            string edgeData = string.Join(",\n", edges);
             string src = File.ReadAllText(indexFileName);
-            src = src.Replace("$graphItems$", graph);
+            src = src.Replace("$nodes$", nodeData);
+            src = src.Replace("$edges$", edgeData);
             File.WriteAllText(indexFileName, src);
 
             return indexFileName;
