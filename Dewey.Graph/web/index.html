@@ -53,11 +53,21 @@ function draw() {
 			        size: 50,
 			        color: '#000000'
 			    }
+			},
+			'queue': {
+			    shape: 'icon',
+			    icon: {
+			        face: 'FontAwesome',
+			        code: '\uf16c',
+			        size: 50,
+			        color: '#000000'
+			    }
 			}
 		},
 		layout: {
 			hierarchical: {
-				direction: 'UD'
+			    direction: 'UD',
+			    sortMethod: 'hubsize'
 			}
 		},
 		edges: {

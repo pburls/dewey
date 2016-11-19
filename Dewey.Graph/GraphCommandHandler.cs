@@ -57,13 +57,29 @@ namespace Dewey.Graph
             var edgeList = new List<Edge>();
             foreach (var dependecy in _dependencies)
             {
-                if (dependecy.Type == ComponentDependency.COMPONENT_DEPENDENCY_TYPE)
+                if (dependecy is ComponentDependency)
                 {
                     var componentDependency = dependecy as ComponentDependency;
                     Node node1, node2;
                     if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out node1) && nodeDictionary.TryGetValue(dependecy.Name, out node2))
                     {
                         edgeList.Add(new Edge(node1.Id, node2.Id, componentDependency.Protocol));
+                    }
+                }
+                else if (dependecy is QueueDependency)
+                {
+                    var queueDepenedency = dependecy as QueueDependency;
+                    Node componentNode, queueNode;
+                    if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out componentNode))
+                    {
+                        var name = string.Format("{0}:\\n\\'{1}\\'", queueDepenedency.Provider, queueDepenedency.Name);
+                        if (!nodeDictionary.TryGetValue(name, out queueNode))
+                        {
+                            queueNode = new Node(nodeId++, name, dependecy.Type);
+                            nodeDictionary.Add(queueNode.Name, queueNode);
+                        }
+
+                        edgeList.Add(new Edge(componentNode.Id, queueNode.Id, queueDepenedency.Description));
                     }
                 }
                 else if (dependecy.Type == "file")

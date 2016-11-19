@@ -70,6 +70,8 @@ namespace Dewey.Manifest.Dependency
             {
                 case ComponentDependency.COMPONENT_DEPENDENCY_TYPE:
                     return ComponentDependency.Load(type, name, componentMandifest, dependencyElement, missingAttributes);
+                case QueueDependency.QUEUE_DEPENDENCY_TYPE:
+                    return QueueDependency.Load(type, name, componentMandifest, dependencyElement, missingAttributes);
                 default:
                     return new DependencyElementResult(componentMandifest, dependencyElement, type, name);
             }
