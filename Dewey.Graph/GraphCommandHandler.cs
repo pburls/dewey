@@ -40,7 +40,7 @@ namespace Dewey.Graph
         public void Handle(GetComponentsResult getComponentsResult)
         {
             var nodeDictionary = new Dictionary<string, Node>();
-            int id = 1;
+            int nodeId = 1;
             foreach (var component in getComponentsResult.Components)
             {
                 string type;
@@ -49,7 +49,7 @@ namespace Dewey.Graph
                 else
                     type = string.Join("-", Node.COMPONENT_NODE_TYPE, component.ComponentManifest.Type, component.ComponentManifest.SubType);
 
-                nodeDictionary.Add(component.ComponentManifest.Name, new Node(id++, component.ComponentManifest.Name, type));
+                nodeDictionary.Add(component.ComponentManifest.Name, new Node(nodeId++, component.ComponentManifest.Name, type));
 
                 _dependencyElementLoader.LoadFromComponentManifest(component.ComponentManifest, component.ComponentElement);
             }
@@ -64,6 +64,20 @@ namespace Dewey.Graph
                     if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out node1) && nodeDictionary.TryGetValue(dependecy.Name, out node2))
                     {
                         edgeList.Add(new Edge(node1.Id, node2.Id, componentDependency.Protocol));
+                    }
+                }
+                else if (dependecy.Type == "file")
+                {
+                    Node componentNode, fileNode;
+                    if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out componentNode))
+                    {
+                        if (!nodeDictionary.TryGetValue(dependecy.Name, out fileNode))
+                        {
+                            fileNode = new Node(nodeId++, dependecy.Name, dependecy.Type);
+                            nodeDictionary.Add(fileNode.Name, fileNode);
+                        }
+
+                        edgeList.Add(new Edge(componentNode.Id, fileNode.Id));
                     }
                 }
             }
