@@ -8,18 +8,24 @@ namespace Dewey.Graph
 {
     class Edge
     {
-        public int Id1 { get; private set; }
-        public int Id2 { get; private set; }
+        public int From { get; private set; }
+        public int To { get; private set; }
+        public string Label { get; private set; }
 
-        public Edge(int id1, int id2)
+        public Edge(int from, int to, string label)
         {
-            Id1 = id1;
-            Id2 = id2;
+            From = from;
+            To = to;
+            Label = label;
         }
 
         public override string ToString()
         {
-            return string.Format("{{from: {0}, to: {1}}}", Id1, Id2);
+            if (!string.IsNullOrWhiteSpace(Label))
+            {
+                return string.Format("{{from: {0}, to: {1}, label:'{2}', font: {{align: 'horizontal'}}}}", From, To, Label);
+            }
+            return string.Format("{{from: {0}, to: {1}}}", From, To);
         }
     }
 }

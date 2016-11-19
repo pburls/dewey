@@ -8,12 +8,12 @@ namespace Dewey.Manifest.Dependency
 {
     public class DependencyElementResult : DependencyElementEvent
     {
-        public const string COMPONENT_DEPENDENCY_TYPE = "component";
-
         public ComponentManifest ComponentManifest { get; private set; }
         public XElement DependencyElement { get; private set; }
         public string Type { get; private set; }
         public string Name { get; private set; }
+
+        public virtual string Description { get { return string.Format("{0}: {1}", Type, Name); } }
 
         public DependencyElementResult(ComponentManifest componentMandifest, XElement dependencyElement, string type, string name)
         {

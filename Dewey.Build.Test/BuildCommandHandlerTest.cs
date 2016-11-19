@@ -59,7 +59,7 @@ namespace Dewey.Build.Test
                 target.Handle(buildElementResult);
             });
 
-            var dependencyElementResult = fixture.Create<DependencyElementResult>().WithType(DependencyElementResult.COMPONENT_DEPENDENCY_TYPE).WithComponentManifest(getComponentResult.Component.ComponentManifest);
+            var dependencyElementResult = fixture.Create<DependencyElementResult>().WithType(ComponentDependency.COMPONENT_DEPENDENCY_TYPE).WithComponentManifest(getComponentResult.Component.ComponentManifest);
             dependencyElementLoaderMock.Setup(x => x.LoadFromComponentManifest(getComponentResult.Component.ComponentManifest, getComponentResult.Component.ComponentElement)).Callback(() =>
             {
                 target.Handle(dependencyElementResult);

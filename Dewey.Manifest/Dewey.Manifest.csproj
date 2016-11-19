@@ -47,6 +47,7 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Component\ComponentManifest.cs" />
     <Compile Include="Component\ComponentManifestLoadResult.cs" />
+    <Compile Include="Dependency\ComponentDependency.cs" />
     <Compile Include="Dependency\DependenciesElementNotFoundResult.cs" />
     <Compile Include="Dependency\DependencyElementEvent.cs" />
     <Compile Include="Dependency\DependencyElementLoader.cs" />

@@ -3,6 +3,7 @@ using Dewey.Messaging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using System;
 
 namespace Dewey.Manifest.Dependency
 {
@@ -52,7 +53,25 @@ namespace Dewey.Manifest.Dependency
                     continue;
                 }
 
-                _eventAggregator.PublishEvent(new DependencyElementResult(componentMandifest, dependencyElement, dependencyTypeAtt.Value, dependencyNameAtt.Value));
+                DependencyElementResult dependencyElementResult = LoadDependencyElementForType(dependencyTypeAtt.Value, dependencyNameAtt.Value, componentMandifest, dependencyElement, missingAttributes);
+                if (dependencyElementResult == null)
+                {
+                    _eventAggregator.PublishEvent(new DependencyElementMissingAttributesResult(componentElement, missingAttributes));
+                    continue;
+                }
+
+                _eventAggregator.PublishEvent(dependencyElementResult);
+            }
+        }
+
+        private DependencyElementResult LoadDependencyElementForType(string type, string name, ComponentManifest componentMandifest, XElement dependencyElement, List<string> missingAttributes)
+        {
+            switch (type)
+            {
+                case ComponentDependency.COMPONENT_DEPENDENCY_TYPE:
+                    return ComponentDependency.Load(type, name, componentMandifest, dependencyElement, missingAttributes);
+                default:
+                    return new DependencyElementResult(componentMandifest, dependencyElement, type, name);
             }
         }
     }

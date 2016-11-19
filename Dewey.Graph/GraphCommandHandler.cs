@@ -57,10 +57,14 @@ namespace Dewey.Graph
             var edgeList = new List<Edge>();
             foreach (var dependecy in _dependencies)
             {
-                Node node1, node2;
-                if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out node1) && nodeDictionary.TryGetValue(dependecy.Name, out node2))
+                if (dependecy.Type == ComponentDependency.COMPONENT_DEPENDENCY_TYPE)
                 {
-                    edgeList.Add(new Edge(node1.Id, node2.Id));
+                    var componentDependency = dependecy as ComponentDependency;
+                    Node node1, node2;
+                    if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out node1) && nodeDictionary.TryGetValue(dependecy.Name, out node2))
+                    {
+                        edgeList.Add(new Edge(node1.Id, node2.Id, componentDependency.Protocol));
+                    }
                 }
             }
 

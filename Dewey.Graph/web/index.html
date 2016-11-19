@@ -50,7 +50,14 @@ function draw() {
 			hierarchical: {
 				direction: 'UD'
 			}
-		}
+		},
+		edges: {
+		    smooth: {
+		        type: 'cubicBezier',
+		        forceDirection: 'vertical',
+		        roundness: 0.4
+		    }
+		},
 	};
 
 	// create an array with nodes

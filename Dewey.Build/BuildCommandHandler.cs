@@ -81,7 +81,7 @@ namespace Dewey.Build
                 {
                     foreach (var dependency in _dependencies)
                     {
-                        if (dependency.Type == DependencyElementResult.COMPONENT_DEPENDENCY_TYPE)
+                        if (dependency.Type == ComponentDependency.COMPONENT_DEPENDENCY_TYPE)
                         {
                             _commandProcessor.Execute(new BuildCommand(dependency.Name, _command.BuildDependencies));
                         }
