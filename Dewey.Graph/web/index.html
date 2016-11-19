@@ -9,8 +9,8 @@
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <style type="text/css">
     #mynetwork {
-        width: 600px;
-        height: 400px;
+        width: 800px;
+        height: 600px;
         border: 1px solid lightgray;
     }
 </style>
@@ -64,18 +64,8 @@ function draw() {
 			    }
 			}
 		},
-		layout: {
-			hierarchical: {
-			    direction: 'UD',
-			    sortMethod: 'hubsize'
-			}
-		},
-		edges: {
-		    smooth: {
-		        type: 'cubicBezier',
-		        forceDirection: 'vertical',
-		        roundness: 0.4
-		    }
+		"physics": {
+		    "enabled": false
 		},
 	};
 

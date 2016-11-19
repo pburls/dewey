@@ -79,7 +79,7 @@ namespace Dewey.Graph
                             nodeDictionary.Add(queueNode.Name, queueNode);
                         }
 
-                        edgeList.Add(new Edge(componentNode.Id, queueNode.Id, queueDepenedency.Description));
+                        edgeList.Add(new Edge(componentNode.Id, queueNode.Id, queueDepenedency.Format));
                     }
                 }
                 else if (dependecy.Type == "file")
