@@ -44,6 +44,7 @@
     <Compile Include="Edge.cs" />
     <Compile Include="GraphCommand.cs" />
     <Compile Include="GraphCommandHandler.cs" />
+    <Compile Include="Layer.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -61,17 +62,6 @@
       <Project>{972c3e2d-b209-4c63-97da-fa4c16822e21}</Project>
       <Name>Dewey.State</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="web\index.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="web\vis.min.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="web\vis.min.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

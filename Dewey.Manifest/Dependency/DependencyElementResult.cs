@@ -8,6 +8,8 @@ namespace Dewey.Manifest.Dependency
 {
     public class DependencyElementResult : DependencyElementEvent
     {
+        public const string FILE_DEPENDENCY_TYPE = "file";
+
         public ComponentManifest ComponentManifest { get; private set; }
         public XElement DependencyElement { get; private set; }
         public string Type { get; private set; }

@@ -17,7 +17,8 @@
 
         public override string ToString()
         {
-            return string.Format("{{id: {0}, label: '{1}', group: '{2}'}}", Id, Name, Type);
+            //return string.Format("{{id: {0}, label: '{1}', group: '{2}'}}", Id, Name, Type);
+            return string.Format("{0} [label=\"{1}\\n{2}\"];", Id, Name, Type);
         }
     }
 }

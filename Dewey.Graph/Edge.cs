@@ -27,11 +27,12 @@ namespace Dewey.Graph
 
         public override string ToString()
         {
-            if (!string.IsNullOrWhiteSpace(Label))
-            {
-                return string.Format("{{from: {0}, to: {1}, label:'{2}', font: {{align: 'horizontal'}}}}", From, To, Label);
-            }
-            return string.Format("{{from: {0}, to: {1}}}", From, To);
+            //if (!string.IsNullOrWhiteSpace(Label))
+            //{
+            //    return string.Format("{{from: {0}, to: {1}, label:'{2}', font: {{align: 'horizontal'}}}}", From, To, Label);
+            //}
+            //return string.Format("{{from: {0}, to: {1}}}", From, To);
+            return string.Format("{0} -> {1};", From, To);
         }
     }
 }
