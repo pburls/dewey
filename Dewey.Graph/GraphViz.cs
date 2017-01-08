@@ -80,7 +80,20 @@ namespace Dewey.Graph
 
         private string WriteEdge(Edge edge)
         {
-            return string.Format("{0} -> {1};", edge.From, edge.To);
+            var attributes = new List<string>();
+            if (!string.IsNullOrWhiteSpace(edge.Label))
+            {
+                attributes.Add(string.Format("label=\"{0}\"", edge.Label));
+            }
+
+            var text = string.Format("{0} -> {1}", edge.From, edge.To);
+
+            if (attributes.Count > 0)
+            {
+                text = string.Format("{0} [{1}]", text, string.Join(",", attributes));
+            }
+
+            return text + ";";
         }
 
         private string WriteLayer(Layer layer)

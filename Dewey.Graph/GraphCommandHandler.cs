@@ -22,7 +22,7 @@ namespace Dewey.Graph
 
         readonly List<DependencyElementResult> _dependencies = new List<DependencyElementResult>();
 
-        readonly string[] LAYER_COMPONENT_TYPES = { QueueDependency.QUEUE_DEPENDENCY_TYPE, DependencyElementResult.FILE_DEPENDENCY_TYPE };
+        readonly string[] LAYER_COMPONENT_TYPES = { QueueDependency.QUEUE_DEPENDENCY_TYPE, DependencyElementResult.FILE_DEPENDENCY_TYPE, DependencyElementResult.ENVIRONMENT_VARIABLE_DEPENDENCY_TYPE, DatabaseDependency.DATABASE_DEPENDENCY_TYPE };
 
         public GraphCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IDependencyElementLoader dependencyElementLoader, IGraphGenerator graphGenerator)
         {
@@ -85,18 +85,34 @@ namespace Dewey.Graph
                         edgeList.Add(new Edge(componentNode.Id, queueNode.Id, queueDepenedency.Format));
                     }
                 }
-                else if (dependecy.Type == DependencyElementResult.FILE_DEPENDENCY_TYPE)
+                else if (dependecy is DatabaseDependency)
                 {
-                    Node componentNode, fileNode;
+                    var databaseDepenedency = dependecy as DatabaseDependency;
+                    Node componentNode, databaseNode;
                     if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out componentNode))
                     {
-                        if (!nodeDictionary.TryGetValue(dependecy.Name, out fileNode))
+                        var name = string.Format("{0}:{1}", databaseDepenedency.Provider, databaseDepenedency.Name);
+                        if (!nodeDictionary.TryGetValue(name, out databaseNode))
                         {
-                            fileNode = new Node(nodeId++, dependecy.Name, dependecy.Type);
-                            nodeDictionary.Add(fileNode.Name, fileNode);
+                            databaseNode = new Node(nodeId++, name, dependecy.Type);
+                            nodeDictionary.Add(databaseNode.Name, databaseNode);
                         }
 
-                        edgeList.Add(new Edge(componentNode.Id, fileNode.Id));
+                        edgeList.Add(new Edge(componentNode.Id, databaseNode.Id));
+                    }
+                }
+                else
+                {
+                    Node componentNode, node;
+                    if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out componentNode))
+                    {
+                        if (!nodeDictionary.TryGetValue(dependecy.Name, out node))
+                        {
+                            node = new Node(nodeId++, dependecy.Name, dependecy.Type);
+                            nodeDictionary.Add(node.Name, node);
+                        }
+
+                        edgeList.Add(new Edge(componentNode.Id, node.Id));
                     }
                 }
             }

@@ -9,6 +9,7 @@ namespace Dewey.Manifest.Dependency
     public class DependencyElementResult : DependencyElementEvent
     {
         public const string FILE_DEPENDENCY_TYPE = "file";
+        public const string ENVIRONMENT_VARIABLE_DEPENDENCY_TYPE = "environment-variable";
 
         public ComponentManifest ComponentManifest { get; private set; }
         public XElement DependencyElement { get; private set; }
