@@ -19,6 +19,7 @@ namespace Dewey.CLI
             State.Bootstrapper.RegisterTypes(container);
             Build.Bootstrapper.RegisterTypes(container);
             Deploy.Bootstrapper.RegisterTypes(container);
+            Graph.Bootstrapper.RegisterTypes(container);
 
             var commandManager = container.GetInstance<CLICommandManager>();
 

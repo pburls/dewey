@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SimpleInjector, Version=3.2.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleInjector.3.2.0\lib\net45\SimpleInjector.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,10 +44,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bootstrapper.cs" />
     <Compile Include="CLICommandProvider.cs" />
     <Compile Include="Edge.cs" />
+    <Compile Include="GenerateGraphResult.cs" />
     <Compile Include="GraphCommand.cs" />
     <Compile Include="GraphCommandHandler.cs" />
+    <Compile Include="GraphCommandWriter.cs" />
+    <Compile Include="GraphViz.cs" />
+    <Compile Include="IGraphGenerator.cs" />
     <Compile Include="Layer.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Node.cs" />
@@ -62,6 +71,9 @@
       <Project>{972c3e2d-b209-4c63-97da-fa4c16822e21}</Project>
       <Name>Dewey.State</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

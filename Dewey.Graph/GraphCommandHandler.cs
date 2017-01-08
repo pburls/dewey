@@ -3,6 +3,7 @@ using Dewey.Messaging;
 using Dewey.State.Messages;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -17,14 +18,18 @@ namespace Dewey.Graph
         readonly ICommandProcessor _commandProcessor;
         readonly IEventAggregator _eventAggregator;
         readonly IDependencyElementLoader _dependencyElementLoader;
+        readonly IGraphGenerator _graphGenerator;
 
         readonly List<DependencyElementResult> _dependencies = new List<DependencyElementResult>();
 
-        public GraphCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IDependencyElementLoader dependencyElementLoader)
+        readonly string[] LAYER_COMPONENT_TYPES = { QueueDependency.QUEUE_DEPENDENCY_TYPE, DependencyElementResult.FILE_DEPENDENCY_TYPE };
+
+        public GraphCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IDependencyElementLoader dependencyElementLoader, IGraphGenerator graphGenerator)
         {
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
             _dependencyElementLoader = dependencyElementLoader;
+            _graphGenerator = graphGenerator;
 
             eventAggregator.Subscribe<GetComponentsResult>(this);
             eventAggregator.Subscribe<DependencyElementResult>(this);
@@ -96,79 +101,24 @@ namespace Dewey.Graph
                 }
             }
 
-            var indexFileName = WriteGraphFiles(nodeDictionary.Values, edgeList, GenerateLayers(nodeDictionary.Values));
-
-            System.Diagnostics.Process.Start(indexFileName);
-        }
-
-        public void Handle(DependencyElementResult dependencyElementResult)
-        {
-            _dependencies.Add(dependencyElementResult);
-        }
-
-        private IEnumerable<Layer> GenerateLayers(IEnumerable<Node> nodes)
-        {
-            string[] layerTypes = { QueueDependency.QUEUE_DEPENDENCY_TYPE, DependencyElementResult.FILE_DEPENDENCY_TYPE };
-
             var layerList = new List<Layer>();
-            foreach (var layerType in layerTypes)
+            foreach (var layerType in LAYER_COMPONENT_TYPES)
             {
-                var nodesOfType = nodes.Where(x => x.Type == layerType);
+                var nodesOfType = nodeDictionary.Values.Where(x => x.Type == layerType);
                 if (nodesOfType.Any())
                 {
                     layerList.Add(new Layer(nodesOfType.Select(x => x.Id)));
                 }
             }
 
-            return layerList;
+            var result = _graphGenerator.GenerateGraph(nodeDictionary.Values, edgeList, layerList);
+
+            _eventAggregator.PublishEvent(result);
         }
 
-        private string WriteGraphFiles(IEnumerable<Node> nodes, IEnumerable<Edge> edges, IEnumerable<Layer> layers)
+        public void Handle(DependencyElementResult dependencyElementResult)
         {
-            //string codeBase = Assembly.GetExecutingAssembly().CodeBase;
-            //UriBuilder uri = new UriBuilder(codeBase);
-            //string path = Uri.UnescapeDataString(uri.Path);
-            //var assemblyPath = Path.GetDirectoryName(path);
-            //var webPath = Path.Combine(assemblyPath, "web");
-            //var webDirectoryInfo = new DirectoryInfo(webPath);
-
-            //var timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
-            //var graphDirectoryInfo = Directory.CreateDirectory(string.Format("Graph_{0}", timestamp));
-
-            //foreach (var fileInfo in webDirectoryInfo.GetFiles())
-            //{
-            //    var outputFileName = Path.Combine(graphDirectoryInfo.FullName, fileInfo.Name);
-            //    fileInfo.CopyTo(outputFileName, true);
-            //}
-
-            //var indexFileName = Path.Combine(graphDirectoryInfo.FullName, "index.html");
-            //string nodeData = string.Join(",\n", nodes);
-            //string edgeData = string.Join(",\n", edges);
-            //string src = File.ReadAllText(indexFileName);
-            //src = src.Replace("$nodes$", nodeData);
-            //src = src.Replace("$edges$", edgeData);
-            //File.WriteAllText(indexFileName, src);
-
-            var timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
-            var graphFileName = string.Format("graph_{0}.txt", timestamp);
-
-            string graphText = @"digraph G {
-	$layers$
-	$nodes$
-	$edges$
-}";
-
-            string layerData = string.Join("\r\n\t", layers);
-            string nodeData = string.Join("\r\n\t", nodes);
-            string edgeData = string.Join("\r\n\t", edges);
-
-            graphText = graphText.Replace("$layers$", layerData);
-            graphText = graphText.Replace("$nodes$", nodeData);
-            graphText = graphText.Replace("$edges$", edgeData);
-
-            File.WriteAllText(graphFileName, graphText);
-
-            return graphFileName;
+            _dependencies.Add(dependencyElementResult);
         }
     }
 }
