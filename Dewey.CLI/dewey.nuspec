@@ -20,6 +20,6 @@
     <file src="*.dll" />
     <file src="*.exe" />
     <file src="*.exe.config" />
-    <file src="web\*.*" target="web" />
+    <file src="icons\*.*" target="icons" />
   </files>
 </package>
