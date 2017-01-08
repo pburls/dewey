@@ -3,12 +3,24 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace Dewey.Graph
 {
     public class GraphViz : IGraphGenerator
     {
         const string GRAPH_VIZ_PATH = @"C:\Program Files (x86)\Graphviz2.38\bin\dot.exe";
+
+        private string _iconsPath;
+
+        public GraphViz()
+        {
+            string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+            UriBuilder uri = new UriBuilder(codeBase);
+            string path = Uri.UnescapeDataString(uri.Path);
+            var assemblyPath = Path.GetDirectoryName(path);
+            _iconsPath = Path.Combine(assemblyPath, "icons");
+        }
 
         public GenerateGraphResult GenerateGraph(IEnumerable<Node> nodes, IEnumerable<Edge> edges, IEnumerable<Layer> layers)
         {
@@ -20,9 +32,7 @@ namespace Dewey.Graph
             ProcessStartInfo startInfo = new ProcessStartInfo(GRAPH_VIZ_PATH);
             startInfo.Arguments = "-Tpng -o " + graphFileName;
             startInfo.UseShellExecute = false;
-            //startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardInput = true;
-            //startInfo.RedirectStandardOutput = true;
 
             var process = Process.Start(startInfo);
 
@@ -63,7 +73,9 @@ namespace Dewey.Graph
 
         private string WriteNode(Node node)
         {
-            return string.Format("{0} [label=\"{1}\\n{2}\"];", node.Id, node.Name, node.Type);
+            var imageFileName = string.Format("{0}.png", node.Type);
+            var imagePath = Path.Combine(_iconsPath, imageFileName);
+            return string.Format("{0} [label=\"{1}\",image=\"{2}\",labelloc=\"b\",shape=box];", node.Id, node.Name, imagePath);
         }
 
         private string WriteEdge(Edge edge)
