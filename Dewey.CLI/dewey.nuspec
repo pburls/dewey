@@ -22,4 +22,7 @@
     <file src="*.exe.config" />
     <file src="icons\*.*" target="icons" />
   </files>
+  <dependencies>
+    <dependency id="graphviz" version="2.38" />
+  </dependencies>
 </package>
