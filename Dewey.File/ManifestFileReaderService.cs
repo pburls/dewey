@@ -1,4 +1,6 @@
-﻿namespace Dewey.File
+﻿using System;
+
+namespace Dewey.File
 {
     public class ManifestFileReaderService : IManifestFileReaderService
     {
@@ -15,6 +17,11 @@
         public IManifestFileReader ReadRepositoryManifestFile(params string[] paths)
         {
             return new RepositoryManifestFileReader(paths);
+        }
+
+        public IManifestFileReader ReadRuntimeResourcesManifestFile(params string[] paths)
+        {
+            return new RuntimeResourcesManifestFileReader(paths);
         }
 
         public IManifestFileReader FindManifestFileInCurrentDirectory()
