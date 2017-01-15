@@ -15,6 +15,9 @@
     <tags>dewey devops windows</tags>
     <summary>Dewey command line tool</summary>
     <description>A simple command line application for reading standardised software manifests and performing simple actions described by them. Such as building and deploying.</description>
+    <dependencies>
+      <dependency id="graphviz" version="2.38" />
+    </dependencies>
   </metadata>
   <files>
     <file src="*.dll" />
@@ -22,7 +25,4 @@
     <file src="*.exe.config" />
     <file src="icons\*.*" target="icons" />
   </files>
-  <dependencies>
-    <dependency id="graphviz" version="2.38" />
-  </dependencies>
 </package>
