@@ -21,7 +21,7 @@ namespace Dewey.Graph
             }
             else
             {
-                Console.WriteLine("Error Generating Graph.");
+                Console.WriteLine("Error Generating Graph: '{0}'", result.ErrorMessage);
             }
         }
     }

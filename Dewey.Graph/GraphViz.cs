@@ -24,6 +24,11 @@ namespace Dewey.Graph
 
         public GenerateGraphResult GenerateGraph(IEnumerable<Node> nodes, IEnumerable<Edge> edges, IEnumerable<Layer> layers)
         {
+            if (!File.Exists(GRAPH_VIZ_PATH))
+            {
+                return new GenerateGraphResult(false, null, string.Format("GraphViz not found at path '{0}'.", GRAPH_VIZ_PATH));
+            }
+
             var timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
             var graphFileName = string.Format("graph_{0}.png", timestamp);
 
@@ -49,7 +54,7 @@ namespace Dewey.Graph
                 return new GenerateGraphResult(true, graphFileInfo.FullName);
             }
 
-            return new GenerateGraphResult(false, null);
+            return new GenerateGraphResult(false, null, string.Format("GraphViz process exited with existed with error code '{0}'.", process.ExitCode));
         }
 
         private string GenerateDotGraphText(IEnumerable<Node> nodes, IEnumerable<Edge> edges, IEnumerable<Layer> layers)
