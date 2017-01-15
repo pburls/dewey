@@ -33,9 +33,49 @@ namespace Dewey.Manifest.RuntimeResources
                 return RuntimeResourcesManifestLoadResult.CreateMissingAttributesResult(repositoryManifest, manifestFile, rootElement, missingAttributes);
             }
 
-            var runtimeResourcesManifest = new RuntimeResourcesManifest(nameAtt.Value, manifestFile);
+            var runtimeResourcesManifest = new RuntimeResourcesManifest(nameAtt.Value, manifestFile, null);
+
+            var runtimeResourceItemLoadResults = new List<RuntimeResourceItemLoadResult>();
+            var runtimeResourceElements = rootElement.Elements().Where(x => x.Name.LocalName == "runtimeResource");
+            foreach (var runtimeResourceElement in runtimeResourceElements)
+            {
+                runtimeResourceItemLoadResults.Add(LoadRuntimeResourceItemElement(runtimeResourceElement, runtimeResourcesManifest));
+            }
+
+            var runtimeResourceItems = runtimeResourceItemLoadResults.Where(x => x.IsSuccessful).Select(x => x.RuntimeResourceItem).ToList();
+            runtimeResourcesManifest = runtimeResourcesManifest.WithRuntimeResourceItems(runtimeResourceItems);
 
             return RuntimeResourcesManifestLoadResult.CreateSuccessfulResult(repositoryManifest, manifestFile, rootElement, runtimeResourcesManifest);
+        }
+
+
+        public static RuntimeResourceItemLoadResult LoadRuntimeResourceItemElement(XElement element, RuntimeResourcesManifest runtimeResourcesManifest)
+        {
+            var missingAttributes = new List<string>();
+
+            var nameAtt = element.Attributes().FirstOrDefault(x => x.Name.LocalName == "name");
+            if (nameAtt == null || string.IsNullOrWhiteSpace(nameAtt.Value))
+            {
+                missingAttributes.Add("name");
+            }
+
+            var typeAtt = element.Attributes().FirstOrDefault(x => x.Name.LocalName == "type");
+            if (typeAtt == null || string.IsNullOrWhiteSpace(typeAtt.Value))
+            {
+                missingAttributes.Add("type");
+            }
+
+            var providerAtt = element.Attributes().FirstOrDefault(x => x.Name.LocalName == "provider");
+            var contextAtt = element.Attributes().FirstOrDefault(x => x.Name.LocalName == "context");
+
+            if (missingAttributes.Any())
+            {
+                return RuntimeResourceItemLoadResult.CreateMissingAttributesResult(runtimeResourcesManifest, element, missingAttributes);
+            }
+
+            var runtimeResourceItem = new RuntimeResourceItem(nameAtt.Value, typeAtt.Value, providerAtt != null ? providerAtt.Value : string.Empty, contextAtt != null ? contextAtt.Value : string.Empty, runtimeResourcesManifest);
+
+            return RuntimeResourceItemLoadResult.CreateSuccessfulResult(runtimeResourcesManifest, element, runtimeResourceItem);
         }
     }
 }

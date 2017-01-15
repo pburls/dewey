@@ -76,6 +76,8 @@
     <Compile Include="Repository\LoadComponentElementResult.cs" />
     <Compile Include="Repository\RepositoryManifestLoadResult.cs" />
     <Compile Include="Repository\RepositoryManifest.cs" />
+    <Compile Include="RuntimeResources\RuntimeResourceItem.cs" />
+    <Compile Include="RuntimeResources\RuntimeResourceItemLoadResult.cs" />
     <Compile Include="RuntimeResources\RuntimeResourcesManifestLoadResult.cs" />
     <Compile Include="RuntimeResources\RuntimeResourcesManifest.cs" />
     <Compile Include="RuntimeResources\RuntimeResourcesManifestLoader.cs" />
