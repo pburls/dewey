@@ -75,7 +75,7 @@ namespace Dewey.Graph
                     Node componentNode, queueNode;
                     if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out componentNode))
                     {
-                        var name = string.Format("{0}:{1}", queueDepenedency.Provider, queueDepenedency.Name);
+                        var name = string.Format("{0}\n{1}", queueDepenedency.Name, queueDepenedency.Provider);
                         if (!nodeDictionary.TryGetValue(name, out queueNode))
                         {
                             queueNode = new Node(nodeId++, name, dependecy.Type);
@@ -91,7 +91,7 @@ namespace Dewey.Graph
                     Node componentNode, databaseNode;
                     if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out componentNode))
                     {
-                        var name = string.Format("{0}:{1}", databaseDepenedency.Provider, databaseDepenedency.Name);
+                        var name = string.Format("{0}\n{1}", databaseDepenedency.Name, databaseDepenedency.Provider);
                         if (!nodeDictionary.TryGetValue(name, out databaseNode))
                         {
                             databaseNode = new Node(nodeId++, name, dependecy.Type);
