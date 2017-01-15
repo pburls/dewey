@@ -12,7 +12,7 @@ namespace Dewey.Manifest.Repositories
 
         public IEnumerable<RepositoryItem> RepositoryItems { get; private set; }
 
-        private RepositoriesManifest(string directoryName, string fileName)
+        public RepositoriesManifest(string directoryName, string fileName)
         {
             DirectoryName = directoryName;
             FileName = fileName;

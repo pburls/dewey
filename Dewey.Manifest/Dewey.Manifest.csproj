@@ -70,7 +70,9 @@
     <Compile Include="Repositories\LoadRepositoryElementResult.cs" />
     <Compile Include="Repositories\RepositoriesManifest.cs" />
     <Compile Include="Repositories\RepositoryItem.cs" />
+    <Compile Include="Repository\ManifestFileItem.cs" />
     <Compile Include="Repository\ComponentItem.cs" />
+    <Compile Include="Repository\LoadManifestFileElementResult.cs" />
     <Compile Include="Repository\LoadComponentElementResult.cs" />
     <Compile Include="Repository\RepositoryManifestLoadResult.cs" />
     <Compile Include="Repository\RepositoryManifest.cs" />

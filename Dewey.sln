@@ -38,6 +38,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dewey.Deploy.Test", "Dewey.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dewey.Graph", "Dewey.Graph\Dewey.Graph.csproj", "{F7300426-CE9B-451F-AE10-D2736C32D3BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dewey.Manifest.Test", "Dewey.Manifest.Test\Dewey.Manifest.Test.csproj", "{2074C588-1F8B-4439-91A8-1E09C5966660}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,6 +98,10 @@ Global
 		{F7300426-CE9B-451F-AE10-D2736C32D3BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7300426-CE9B-451F-AE10-D2736C32D3BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7300426-CE9B-451F-AE10-D2736C32D3BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2074C588-1F8B-4439-91A8-1E09C5966660}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2074C588-1F8B-4439-91A8-1E09C5966660}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2074C588-1F8B-4439-91A8-1E09C5966660}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2074C588-1F8B-4439-91A8-1E09C5966660}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,5 +117,6 @@ Global
 		{29158691-30E4-4F59-AE6B-A99A065947CD} = {CF4C934E-00D5-44FF-BFED-7E2A156934B7}
 		{3E9CD4E0-2171-46D2-9CB5-55E9AB44AE65} = {CF4C934E-00D5-44FF-BFED-7E2A156934B7}
 		{F7300426-CE9B-451F-AE10-D2736C32D3BF} = {C769EC16-EAF7-41FE-94BF-8171D6A5E559}
+		{2074C588-1F8B-4439-91A8-1E09C5966660} = {CF4C934E-00D5-44FF-BFED-7E2A156934B7}
 	EndGlobalSection
 EndGlobal
