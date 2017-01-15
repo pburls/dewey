@@ -42,6 +42,8 @@ namespace Dewey.Graph
 
         public void Handle(GetComponentsResult getComponentsResult)
         {
+            _eventAggregator.PublishEvent(new GenerateGraphStarted());
+
             var nodeDictionary = new Dictionary<string, Node>();
             int nodeId = 1;
             foreach (var component in getComponentsResult.Components)

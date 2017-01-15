@@ -5,11 +5,19 @@ using System.Diagnostics;
 namespace Dewey.Graph
 {
     class GraphCommandWriter :
+        IEventHandler<GenerateGraphStarted>,
         IEventHandler<GenerateGraphResult>
     {
         public GraphCommandWriter(IEventAggregator eventAggregator)
         {
+            eventAggregator.Subscribe<GenerateGraphStarted>(this);
             eventAggregator.Subscribe<GenerateGraphResult>(this);
+        }
+
+        public void Handle(GenerateGraphStarted @event)
+        {
+            Console.ResetColor();
+            Console.WriteLine("Graph generation started.");
         }
 
         public void Handle(GenerateGraphResult result)
