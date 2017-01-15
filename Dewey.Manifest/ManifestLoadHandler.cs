@@ -79,11 +79,18 @@ namespace Dewey.Manifest
         {
             if (@event.IsSuccessful)
             {
-                var repositoryManifestLoadResults = @event.RepositoryManifest.ComponentItems.Select(x => ComponentManifest.LoadComponentItem(x, _manifestFileReaderService));
+                var componentManifestLoadResults = @event.RepositoryManifest.ComponentItems.Select(x => ComponentManifest.LoadComponentItem(x, _manifestFileReaderService));
 
-                foreach (var repositoryManifestLoadResult in repositoryManifestLoadResults)
+                foreach (var componentManifestLoadResult in componentManifestLoadResults)
                 {
-                    _eventAggregator.PublishEvent(repositoryManifestLoadResult);
+                    _eventAggregator.PublishEvent(componentManifestLoadResult);
+                }
+
+                var runtimeResourceManifestLoadResults = @event.RepositoryManifest.RuntimeResourcesItems.Select(x => RuntimeResources.RuntimeResourcesManifestLoader.LoadManifestFileItem(x, _manifestFileReaderService));
+
+                foreach (var runtimeResourceManifestLoadResult in runtimeResourceManifestLoadResults)
+                {
+                    _eventAggregator.PublishEvent(runtimeResourceManifestLoadResult);
                 }
             }
         }

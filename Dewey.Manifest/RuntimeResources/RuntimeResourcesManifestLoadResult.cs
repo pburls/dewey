@@ -23,7 +23,9 @@ namespace Dewey.Manifest.RuntimeResources
 
         public string ErrorMessage { get; private set; }
 
-        private RuntimeResourcesManifestLoadResult(bool isSuccessful, RepositoryManifest repositoryManifest, IManifestFileReader manifestFile, XElement element, IEnumerable<string> missingAttributes, RuntimeResourcesManifest runtimeResourcesManifest)
+        public IEnumerable<RuntimeResourceItemLoadResult> RuntimeResourceItemLoadResults { get; private set; }
+
+        private RuntimeResourcesManifestLoadResult(bool isSuccessful, RepositoryManifest repositoryManifest, IManifestFileReader manifestFile, XElement element, IEnumerable<string> missingAttributes, RuntimeResourcesManifest runtimeResourcesManifest, IEnumerable<RuntimeResourceItemLoadResult> runtimeResourceItemLoadResults)
         {
             IsSuccessful = isSuccessful;
             RepositoryManifest = repositoryManifest;
@@ -31,22 +33,23 @@ namespace Dewey.Manifest.RuntimeResources
             Element = element;
             MissingAttributes = missingAttributes;
             RuntimeResourcesManifest = runtimeResourcesManifest;
+            RuntimeResourceItemLoadResults = runtimeResourceItemLoadResults ?? new List<RuntimeResourceItemLoadResult>();
             ErrorMessage = GetErrorMessage();
         }
 
         internal static RuntimeResourcesManifestLoadResult CreateFileNotFoundResult(RepositoryManifest repositoryManifest, IManifestFileReader manifestFile)
         {
-            return new RuntimeResourcesManifestLoadResult(false, repositoryManifest, manifestFile, null, null, null);
+            return new RuntimeResourcesManifestLoadResult(false, repositoryManifest, manifestFile, null, null, null, null);
         }
 
         internal static RuntimeResourcesManifestLoadResult CreateMissingAttributesResult(RepositoryManifest repositoryManifest, IManifestFileReader manifestFile, XElement element, List<string> missingAttributes)
         {
-            return new RuntimeResourcesManifestLoadResult(false, repositoryManifest, manifestFile, element, missingAttributes, null);
+            return new RuntimeResourcesManifestLoadResult(false, repositoryManifest, manifestFile, element, missingAttributes, null, null);
         }
 
-        internal static RuntimeResourcesManifestLoadResult CreateSuccessfulResult(RepositoryManifest repositoryManifest, IManifestFileReader manifestFile, XElement element, RuntimeResourcesManifest runtimeResourcesManifest)
+        internal static RuntimeResourcesManifestLoadResult CreateSuccessfulResult(RepositoryManifest repositoryManifest, IManifestFileReader manifestFile, XElement element, RuntimeResourcesManifest runtimeResourcesManifest, IEnumerable<RuntimeResourceItemLoadResult> runtimeResourceItemLoadResults)
         {
-            return new RuntimeResourcesManifestLoadResult(true, repositoryManifest, manifestFile, element, null, runtimeResourcesManifest);
+            return new RuntimeResourcesManifestLoadResult(true, repositoryManifest, manifestFile, element, null, runtimeResourcesManifest, runtimeResourceItemLoadResults);
         }
 
         private string GetErrorMessage()

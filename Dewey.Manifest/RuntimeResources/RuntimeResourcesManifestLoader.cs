@@ -45,7 +45,7 @@ namespace Dewey.Manifest.RuntimeResources
             var runtimeResourceItems = runtimeResourceItemLoadResults.Where(x => x.IsSuccessful).Select(x => x.RuntimeResourceItem).ToList();
             runtimeResourcesManifest = runtimeResourcesManifest.WithRuntimeResourceItems(runtimeResourceItems);
 
-            return RuntimeResourcesManifestLoadResult.CreateSuccessfulResult(repositoryManifest, manifestFile, rootElement, runtimeResourcesManifest);
+            return RuntimeResourcesManifestLoadResult.CreateSuccessfulResult(repositoryManifest, manifestFile, rootElement, runtimeResourcesManifest, runtimeResourceItemLoadResults);
         }
 
 
@@ -73,7 +73,7 @@ namespace Dewey.Manifest.RuntimeResources
                 return RuntimeResourceItemLoadResult.CreateMissingAttributesResult(runtimeResourcesManifest, element, missingAttributes);
             }
 
-            var runtimeResourceItem = new RuntimeResourceItem(nameAtt.Value, typeAtt.Value, providerAtt != null ? providerAtt.Value : string.Empty, contextAtt != null ? contextAtt.Value : string.Empty, runtimeResourcesManifest);
+            var runtimeResourceItem = new RuntimeResourceItem(nameAtt.Value, typeAtt.Value, providerAtt != null ? providerAtt.Value : string.Empty, contextAtt != null ? contextAtt.Value : string.Empty, runtimeResourcesManifest, element);
 
             return RuntimeResourceItemLoadResult.CreateSuccessfulResult(runtimeResourcesManifest, element, runtimeResourceItem);
         }

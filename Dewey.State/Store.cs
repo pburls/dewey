@@ -5,6 +5,7 @@ using Dewey.Messaging;
 using Dewey.State.Messages;
 using System.Collections.Generic;
 using System;
+using Dewey.Manifest.RuntimeResources;
 
 namespace Dewey.State
 {
@@ -12,16 +13,19 @@ namespace Dewey.State
         IEventHandler<RepositoriesManifestLoadResult>, 
         IEventHandler<RepositoryManifestLoadResult>, 
         IEventHandler<ComponentManifestLoadResult>,
+        IEventHandler<RuntimeResourcesManifestLoadResult>,
         ICommandHandler<GetRepositoriesFiles>,
         ICommandHandler<GetRepositories>,
         ICommandHandler<GetComponents>,
-        ICommandHandler<GetComponent>
+        ICommandHandler<GetComponent>,
+        ICommandHandler<GetRuntimeResources>
     {
         readonly IEventAggregator _eventAggregator;
 
         Dictionary<string, RepositoriesFile> _repositoriesDictionary { get; set; }
         Dictionary<string, Repository> _repositoryDictionary { get; set; }
         Dictionary<string, Component> _componentsDictionary { get; set; }
+        Dictionary<string, RuntimeResource> _runtimeResourceDictionary { get; set; }
 
         public Store(IEventAggregator eventAggregator, ICommandProcessor commandProcessor)
         {
@@ -29,15 +33,18 @@ namespace Dewey.State
             _repositoriesDictionary = new Dictionary<string, RepositoriesFile>();
             _repositoryDictionary = new Dictionary<string, Repository>();
             _componentsDictionary = new Dictionary<string, Component>();
+            _runtimeResourceDictionary = new Dictionary<string, RuntimeResource>();
 
             commandProcessor.RegisterHandler<GetRepositoriesFiles, Store>();
             commandProcessor.RegisterHandler<GetRepositories, Store>();
             commandProcessor.RegisterHandler<GetComponents, Store>();
             commandProcessor.RegisterHandler<GetComponent, Store>();
+            commandProcessor.RegisterHandler<GetRuntimeResources, Store>();
 
             eventAggregator.Subscribe<RepositoriesManifestLoadResult>(this);
             eventAggregator.Subscribe<ComponentManifestLoadResult>(this);
             eventAggregator.Subscribe<RepositoryManifestLoadResult>(this);
+            eventAggregator.Subscribe<RuntimeResourcesManifestLoadResult>(this);
         }
 
         public void Handle(RepositoriesManifestLoadResult repositoriesManifestLoadResult)
@@ -103,6 +110,22 @@ namespace Dewey.State
             }
         }
 
+        public void Handle(RuntimeResourcesManifestLoadResult runtimeResourcesManifestLoadResult)
+        {
+            if (runtimeResourcesManifestLoadResult.IsSuccessful)
+            {
+                RuntimeResource runtimeResource = null;
+                foreach (var runtimeResourceItem in runtimeResourcesManifestLoadResult.RuntimeResourcesManifest.RuntimeResourceItems)
+                {
+                    if (!_runtimeResourceDictionary.TryGetValue(runtimeResourceItem.Name, out runtimeResource))
+                    {
+                        runtimeResource = new RuntimeResource(runtimeResourceItem, runtimeResourceItem.Element);
+                        _runtimeResourceDictionary.Add(runtimeResourceItem.Name, runtimeResource);
+                    }
+                }
+            }
+        }
+
         public void Execute(GetRepositoriesFiles command)
         {
             _eventAggregator.PublishEvent(new GetRepositoriesFilesResult(command, _repositoriesDictionary.Values));
@@ -124,6 +147,11 @@ namespace Dewey.State
             _componentsDictionary.TryGetValue(command.ComponentName, out component);
 
             _eventAggregator.PublishEvent(new GetComponentResult(command, component));
+        }
+
+        public void Execute(GetRuntimeResources command)
+        {
+            _eventAggregator.PublishEvent(new GetRuntimeResourcesResult(command, _runtimeResourceDictionary.Values));
         }
     }
 }
