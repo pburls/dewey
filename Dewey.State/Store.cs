@@ -151,7 +151,7 @@ namespace Dewey.State
 
         public void Execute(GetRuntimeResources command)
         {
-            _eventAggregator.PublishEvent(new GetRuntimeResourcesResult(command, _runtimeResourceDictionary.Values));
+            _eventAggregator.PublishEvent(new GetRuntimeResourcesResult(command, _runtimeResourceDictionary));
         }
     }
 }

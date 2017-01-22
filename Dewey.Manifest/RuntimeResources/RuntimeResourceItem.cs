@@ -8,10 +8,11 @@ namespace Dewey.Manifest.RuntimeResources
         public string Type { get; private set; }
         public string Provider { get; private set; }
         public string Context { get; private set; }
+        public string Format { get; private set; }
         public XElement Element { get; private set; }
         public RuntimeResourcesManifest RuntimeResourcesManifest { get; private set; }
 
-        public RuntimeResourceItem(string name, string type, string provider, string context, RuntimeResourcesManifest runtimeResourcesManifest, XElement element)
+        public RuntimeResourceItem(string name, string type, string provider, string format, string context, RuntimeResourcesManifest runtimeResourcesManifest, XElement element)
         {
             Name = name;
             Type = type;
@@ -19,6 +20,7 @@ namespace Dewey.Manifest.RuntimeResources
             Context = context;
             RuntimeResourcesManifest = runtimeResourcesManifest;
             Element = element;
+            Format = format;
         }
     }
 }

@@ -67,13 +67,14 @@ namespace Dewey.Manifest.RuntimeResources
 
             var providerAtt = element.Attributes().FirstOrDefault(x => x.Name.LocalName == "provider");
             var contextAtt = element.Attributes().FirstOrDefault(x => x.Name.LocalName == "context");
+            var formattAtt = element.Attributes().FirstOrDefault(x => x.Name.LocalName == "format");
 
             if (missingAttributes.Any())
             {
                 return RuntimeResourceItemLoadResult.CreateMissingAttributesResult(runtimeResourcesManifest, element, missingAttributes);
             }
 
-            var runtimeResourceItem = new RuntimeResourceItem(nameAtt.Value, typeAtt.Value, providerAtt != null ? providerAtt.Value : string.Empty, contextAtt != null ? contextAtt.Value : string.Empty, runtimeResourcesManifest, element);
+            var runtimeResourceItem = new RuntimeResourceItem(nameAtt.Value, typeAtt.Value, providerAtt != null ? providerAtt.Value : string.Empty, formattAtt?.Value, contextAtt != null ? contextAtt.Value : string.Empty, runtimeResourcesManifest, element);
 
             return RuntimeResourceItemLoadResult.CreateSuccessfulResult(runtimeResourcesManifest, element, runtimeResourceItem);
         }

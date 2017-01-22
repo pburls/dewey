@@ -11,9 +11,9 @@ namespace Dewey.State.Messages
     public class GetRuntimeResourcesResult : IEvent
     {
         public GetRuntimeResources Command { get; private set; }
-        public IEnumerable<RuntimeResource> RuntimeResources { get; private set; }
+        public IReadOnlyDictionary<string, RuntimeResource> RuntimeResources { get; private set; }
 
-        public GetRuntimeResourcesResult(GetRuntimeResources command, IEnumerable<RuntimeResource> runtimeResources)
+        public GetRuntimeResourcesResult(GetRuntimeResources command, IReadOnlyDictionary<string, RuntimeResource> runtimeResources)
         {
             Command = command;
             RuntimeResources = runtimeResources;

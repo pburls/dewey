@@ -1,5 +1,6 @@
 ﻿using Dewey.Manifest.Dependency;
 using Dewey.Messaging;
+using Dewey.State;
 using Dewey.State.Messages;
 using System;
 using System.Collections.Generic;
@@ -13,16 +14,20 @@ namespace Dewey.Graph
     public class GraphCommandHandler :
         ICommandHandler<GraphCommand>,
         IEventHandler<GetComponentsResult>,
+        IEventHandler<GetRuntimeResourcesResult>,
         IEventHandler<DependencyElementResult>
     {
         readonly ICommandProcessor _commandProcessor;
         readonly IEventAggregator _eventAggregator;
         readonly IDependencyElementLoader _dependencyElementLoader;
         readonly IGraphGenerator _graphGenerator;
-
+        
         readonly List<DependencyElementResult> _dependencies = new List<DependencyElementResult>();
 
         readonly string[] LAYER_COMPONENT_TYPES = { QueueDependency.QUEUE_DEPENDENCY_TYPE, DependencyElementResult.FILE_DEPENDENCY_TYPE, DependencyElementResult.ENVIRONMENT_VARIABLE_DEPENDENCY_TYPE, DatabaseDependency.DATABASE_DEPENDENCY_TYPE };
+
+        IEnumerable<Component> _components;
+        IReadOnlyDictionary<string, RuntimeResource> _runtimeResources;
 
         public GraphCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IDependencyElementLoader dependencyElementLoader, IGraphGenerator graphGenerator)
         {
@@ -32,21 +37,22 @@ namespace Dewey.Graph
             _graphGenerator = graphGenerator;
 
             eventAggregator.Subscribe<GetComponentsResult>(this);
+            eventAggregator.Subscribe<GetRuntimeResourcesResult>(this);
             eventAggregator.Subscribe<DependencyElementResult>(this);
         }
 
         public void Execute(GraphCommand command)
         {
-            _commandProcessor.Execute(new GetComponents());
-        }
-
-        public void Handle(GetComponentsResult getComponentsResult)
-        {
             _eventAggregator.PublishEvent(new GenerateGraphStarted());
+
+            _commandProcessor.Execute(new GetComponents());
+            _commandProcessor.Execute(new GetRuntimeResources());
 
             var nodeDictionary = new Dictionary<string, Node>();
             int nodeId = 1;
-            foreach (var component in getComponentsResult.Components)
+            var layerDictionary = new Dictionary<string, Layer>();
+
+            foreach (var component in _components)
             {
                 string type;
                 if (string.IsNullOrWhiteSpace(component.ComponentManifest.SubType))
@@ -57,6 +63,26 @@ namespace Dewey.Graph
                 nodeDictionary.Add(component.ComponentManifest.Name, new Node(nodeId++, component.ComponentManifest.Name, type));
 
                 _dependencyElementLoader.LoadFromComponentManifest(component.ComponentManifest, component.ComponentElement);
+            }
+
+            foreach (var runtimeResource in _runtimeResources.Values)
+            {
+                var name = !string.IsNullOrWhiteSpace(runtimeResource.RuntimeResourceItem.Provider) ? string.Format("{0}\n{1}", runtimeResource.RuntimeResourceItem.Name, runtimeResource.RuntimeResourceItem.Provider) : runtimeResource.RuntimeResourceItem.Name;
+                var node = new Node(nodeId++, name, runtimeResource.RuntimeResourceItem.Type);
+                nodeDictionary.Add(runtimeResource.RuntimeResourceItem.Name, node);
+
+                var layerName = runtimeResource.RuntimeResourceItem.Context;
+                if (!string.IsNullOrWhiteSpace(layerName))
+                {
+                    Layer layer = null;
+                    if (!layerDictionary.TryGetValue(layerName, out layer))
+                    {
+                        layer = new Layer(layerName);
+                        layerDictionary.Add(layerName, layer);
+                    }
+
+                    layer.AddNodeId(node.Id);
+                }
             }
 
             var edgeList = new List<Edge>();
@@ -71,36 +97,19 @@ namespace Dewey.Graph
                         edgeList.Add(new Edge(node1.Id, node2.Id, componentDependency.Protocol));
                     }
                 }
-                else if (dependecy is QueueDependency)
+                else if (dependecy is RuntimeResourceDependency)
                 {
-                    var queueDepenedency = dependecy as QueueDependency;
-                    Node componentNode, queueNode;
-                    if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out componentNode))
+                    var runtimeResourceDependency = dependecy as RuntimeResourceDependency;
+                    Node node1, node2;
+                    RuntimeResource runtimeResource;
+                    if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out node1) && nodeDictionary.TryGetValue(dependecy.Name, out node2))
                     {
-                        var name = string.Format("{0}\n{1}", queueDepenedency.Name, queueDepenedency.Provider);
-                        if (!nodeDictionary.TryGetValue(name, out queueNode))
+                        string format = null;
+                        if (_runtimeResources.TryGetValue(dependecy.Name, out runtimeResource))
                         {
-                            queueNode = new Node(nodeId++, name, dependecy.Type);
-                            nodeDictionary.Add(queueNode.Name, queueNode);
+                            format = runtimeResource.RuntimeResourceItem.Format;
                         }
-
-                        edgeList.Add(new Edge(componentNode.Id, queueNode.Id, queueDepenedency.Format));
-                    }
-                }
-                else if (dependecy is DatabaseDependency)
-                {
-                    var databaseDepenedency = dependecy as DatabaseDependency;
-                    Node componentNode, databaseNode;
-                    if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out componentNode))
-                    {
-                        var name = string.Format("{0}\n{1}", databaseDepenedency.Name, databaseDepenedency.Provider);
-                        if (!nodeDictionary.TryGetValue(name, out databaseNode))
-                        {
-                            databaseNode = new Node(nodeId++, name, dependecy.Type);
-                            nodeDictionary.Add(databaseNode.Name, databaseNode);
-                        }
-
-                        edgeList.Add(new Edge(componentNode.Id, databaseNode.Id));
+                        edgeList.Add(new Edge(node1.Id, node2.Id, format));
                     }
                 }
                 else
@@ -119,24 +128,24 @@ namespace Dewey.Graph
                 }
             }
 
-            var layerList = new List<Layer>();
-            foreach (var layerType in LAYER_COMPONENT_TYPES)
-            {
-                var nodesOfType = nodeDictionary.Values.Where(x => x.Type == layerType);
-                if (nodesOfType.Any())
-                {
-                    layerList.Add(new Layer(nodesOfType.Select(x => x.Id)));
-                }
-            }
-
-            var result = _graphGenerator.GenerateGraph(nodeDictionary.Values, edgeList, layerList);
+            var result = _graphGenerator.GenerateGraph(nodeDictionary.Values, edgeList, layerDictionary.Values);
 
             _eventAggregator.PublishEvent(result);
+        }
+
+        public void Handle(GetComponentsResult getComponentsResult)
+        {
+            _components = getComponentsResult.Components;
         }
 
         public void Handle(DependencyElementResult dependencyElementResult)
         {
             _dependencies.Add(dependencyElementResult);
+        }
+
+        public void Handle(GetRuntimeResourcesResult getRuntimeResourcesResult)
+        {
+            _runtimeResources = getRuntimeResourcesResult.RuntimeResources;
         }
     }
 }
