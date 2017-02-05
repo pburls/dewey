@@ -128,7 +128,11 @@ namespace Dewey.Graph
                 }
             }
 
-            var result = _graphGenerator.GenerateGraph(nodeDictionary.Values, edgeList, layerDictionary.Values);
+            var graphDOTtext = _graphGenerator.GenerateDOTGraph(nodeDictionary.Values, edgeList, layerDictionary.Values);
+
+            var writeResult = command.RenderToPNG ? _graphGenerator.WritePNGGraph(graphDOTtext) : _graphGenerator.WriteDOTGraph(graphDOTtext);
+
+            var result = GenerateGraphResult.Create(writeResult);
 
             _eventAggregator.PublishEvent(result);
         }

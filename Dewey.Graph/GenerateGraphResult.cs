@@ -14,5 +14,17 @@ namespace Dewey.Graph
             GraphFilePath = filePath;
             ErrorMessage = errorMessage;
         }
+
+        public static GenerateGraphResult Create(WriteGraphResult writeGraphResult)
+        {
+            if (string.IsNullOrEmpty(writeGraphResult.ErrorMessage))
+            {
+                return new GenerateGraphResult(true, writeGraphResult.FilePath);
+            }
+            else
+            {
+                return new GenerateGraphResult(false, writeGraphResult.FilePath, writeGraphResult.ErrorMessage);
+            }
+        }
     }
 }

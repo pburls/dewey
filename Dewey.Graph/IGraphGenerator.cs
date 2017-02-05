@@ -4,6 +4,10 @@ namespace Dewey.Graph
 {
     public interface IGraphGenerator
     {
-        GenerateGraphResult GenerateGraph(IEnumerable<Node> nodes, IEnumerable<Edge> edges, IEnumerable<Layer> layers);
+        string GenerateDOTGraph(IEnumerable<Node> nodes, IEnumerable<Edge> edges, IEnumerable<Layer> layers);
+
+        WriteGraphResult WritePNGGraph(string dotGraph);
+
+        WriteGraphResult WriteDOTGraph(string dotGraph);
     }
 }
