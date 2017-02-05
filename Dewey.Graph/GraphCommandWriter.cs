@@ -25,7 +25,11 @@ namespace Dewey.Graph
             if (result.IsSuccessful)
             {
                 Console.WriteLine("Finished Generating Graph: '{0}'", result.GraphFilePath);
-                Process.Start(result.GraphFilePath);
+
+                if (result.GraphCommand.RenderToPNG)
+                {
+                    Process.Start(result.GraphFilePath);
+                }
             }
             else
             {

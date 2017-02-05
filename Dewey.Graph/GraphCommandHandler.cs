@@ -26,6 +26,7 @@ namespace Dewey.Graph
 
         readonly string[] LAYER_COMPONENT_TYPES = { QueueDependency.QUEUE_DEPENDENCY_TYPE, DependencyElementResult.FILE_DEPENDENCY_TYPE, DependencyElementResult.ENVIRONMENT_VARIABLE_DEPENDENCY_TYPE, DatabaseDependency.DATABASE_DEPENDENCY_TYPE };
 
+        GraphCommand _command;
         IEnumerable<Component> _components;
         IReadOnlyDictionary<string, RuntimeResource> _runtimeResources;
 
@@ -43,8 +44,18 @@ namespace Dewey.Graph
 
         public void Execute(GraphCommand command)
         {
+            _command = command;
             _eventAggregator.PublishEvent(new GenerateGraphStarted());
 
+            var stopwatch = Stopwatch.StartNew();
+            var result = Execute();
+            stopwatch.Stop();
+            
+            _eventAggregator.PublishEvent(GenerateGraphResult.Create(command, stopwatch.Elapsed, result));
+        }
+
+        private WriteGraphResult Execute()
+        {
             _commandProcessor.Execute(new GetComponents());
             _commandProcessor.Execute(new GetRuntimeResources());
 
@@ -130,11 +141,7 @@ namespace Dewey.Graph
 
             var graphDOTtext = _graphGenerator.GenerateDOTGraph(nodeDictionary.Values, edgeList, layerDictionary.Values);
 
-            var writeResult = command.RenderToPNG ? _graphGenerator.WritePNGGraph(graphDOTtext) : _graphGenerator.WriteDOTGraph(graphDOTtext);
-
-            var result = GenerateGraphResult.Create(writeResult);
-
-            _eventAggregator.PublishEvent(result);
+            return _command.RenderToPNG ? _graphGenerator.WritePNGGraph(graphDOTtext) : _graphGenerator.WriteDOTGraph(graphDOTtext);
         }
 
         public void Handle(GetComponentsResult getComponentsResult)

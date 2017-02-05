@@ -1,6 +1,7 @@
 ﻿using Dewey.Messaging;
 using System;
 using System.Linq;
+using System.Text;
 
 namespace Dewey.Graph
 {
@@ -30,6 +31,14 @@ namespace Dewey.Graph
             var renderToPNG = switches.Any(s => s.Contains("r"));
 
             return new GraphCommand(renderToPNG);
+        }
+
+        public override string ToString()
+        {
+            var switchesBuilder = new StringBuilder();
+            if (RenderToPNG) switchesBuilder.Append(" -r");
+
+            return string.Format("{0}{1}", COMMAND_TEXT, switchesBuilder.ToString());
         }
     }
 }
