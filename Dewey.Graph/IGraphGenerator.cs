@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Dewey.Graph.Writers;
+using System.Collections.Generic;
 
 namespace Dewey.Graph
 {

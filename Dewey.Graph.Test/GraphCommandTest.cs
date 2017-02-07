@@ -1,4 +1,5 @@
-﻿using Dewey.Manifest;
+﻿using Dewey.Graph.Writers;
+using Dewey.Manifest;
 using Dewey.Messaging;
 using Moq;
 using SimpleInjector;

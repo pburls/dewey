@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dewey.Graph.Writers;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;

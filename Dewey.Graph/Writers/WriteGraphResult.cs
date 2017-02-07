@@ -1,4 +1,4 @@
-﻿namespace Dewey.Graph
+﻿namespace Dewey.Graph.Writers
 {
     public class WriteGraphResult
     {

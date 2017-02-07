@@ -1,5 +1,6 @@
 ﻿using System;
 using Dewey.Messaging;
+using Dewey.Graph.Writers;
 
 namespace Dewey.Graph
 {

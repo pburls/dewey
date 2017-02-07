@@ -1,4 +1,5 @@
-﻿using Dewey.Manifest.Dependency;
+﻿using Dewey.Graph.Writers;
+using Dewey.Manifest.Dependency;
 using Dewey.Messaging;
 using Dewey.State;
 using Dewey.State.Messages;
