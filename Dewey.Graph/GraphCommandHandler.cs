@@ -22,7 +22,9 @@ namespace Dewey.Graph
         readonly IEventAggregator _eventAggregator;
         readonly IDependencyElementLoader _dependencyElementLoader;
         readonly IGraphGenerator _graphGenerator;
-        
+        readonly IGraphWriterFactory _graphWriterFactory;
+
+
         readonly List<DependencyElementResult> _dependencies = new List<DependencyElementResult>();
 
         readonly string[] LAYER_COMPONENT_TYPES = { QueueDependency.QUEUE_DEPENDENCY_TYPE, DependencyElementResult.FILE_DEPENDENCY_TYPE, DependencyElementResult.ENVIRONMENT_VARIABLE_DEPENDENCY_TYPE, DatabaseDependency.DATABASE_DEPENDENCY_TYPE };
@@ -31,12 +33,13 @@ namespace Dewey.Graph
         IEnumerable<Component> _components;
         IReadOnlyDictionary<string, RuntimeResource> _runtimeResources;
 
-        public GraphCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IDependencyElementLoader dependencyElementLoader, IGraphGenerator graphGenerator)
+        public GraphCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IDependencyElementLoader dependencyElementLoader, IGraphGenerator graphGenerator, IGraphWriterFactory graphWriterFactory)
         {
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
             _dependencyElementLoader = dependencyElementLoader;
             _graphGenerator = graphGenerator;
+            _graphWriterFactory = graphWriterFactory;
 
             eventAggregator.Subscribe<GetComponentsResult>(this);
             eventAggregator.Subscribe<GetRuntimeResourcesResult>(this);
@@ -142,7 +145,9 @@ namespace Dewey.Graph
 
             var graphDOTtext = _graphGenerator.GenerateDOTGraph(nodeDictionary.Values, edgeList, layerDictionary.Values);
 
-            return _command.RenderToPNG ? _graphGenerator.WritePNGGraph(graphDOTtext) : _graphGenerator.WriteDOTGraph(graphDOTtext);
+            var graphWriter = _graphWriterFactory.CreateWriter(_command);
+
+            return graphWriter.Write(graphDOTtext);
         }
 
         public void Handle(GetComponentsResult getComponentsResult)

@@ -1,12 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace Dewey.Graph.Writers
 {
-    class DOTWriter
+    public class DOTWriter : IGraphWriter
     {
+        public WriteGraphResult Write(string graphDOTtext)
+        {
+            var graphFileName = "graph.gv";
+            File.WriteAllText(graphFileName, graphDOTtext);
+            var graphFileInfo = new FileInfo(graphFileName);
+            return new WriteGraphResult(graphFileInfo.FullName, null);
+        }
     }
 }

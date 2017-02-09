@@ -3,11 +3,7 @@ using Dewey.Manifest;
 using Dewey.Messaging;
 using Moq;
 using SimpleInjector;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Dewey.Graph.Test
@@ -15,6 +11,8 @@ namespace Dewey.Graph.Test
     public class GraphCommandTest
     {
         Mock<IGraphGenerator> mockIGraphGenerator;
+        Mock<IGraphWriterFactory> mockIGraphWriterFactory;
+        Mock<IGraphWriter> mockIGraphWriter;
 
         Container container;
         ICommandProcessor commandProcessor;
@@ -22,16 +20,19 @@ namespace Dewey.Graph.Test
         public GraphCommandTest()
         {
             mockIGraphGenerator = new Mock<IGraphGenerator>();
+            mockIGraphWriterFactory = new Mock<IGraphWriterFactory>();
+            mockIGraphWriter = new Mock<IGraphWriter>();
+
+            mockIGraphWriterFactory.Setup(x => x.CreateWriter(It.IsAny<GraphCommand>())).Returns(mockIGraphWriter.Object);
 
             container = new Container();
             Messaging.Bootstrapper.RegisterTypes(container);
             File.Bootstrapper.RegisterTypes(container);
             Manifest.Bootstrapper.RegisterTypes(container);
             State.Bootstrapper.RegisterTypes(container);
-            Graph.Bootstrapper.RegisterTypes(container);
 
-            container.Options.AllowOverridingRegistrations = true;
             container.RegisterSingleton(mockIGraphGenerator.Object);
+            container.RegisterSingleton(mockIGraphWriterFactory.Object);
 
             var moduleCataloge = container.GetInstance<ModuleCatalogue>();
             moduleCataloge.Load<State.Module>();
@@ -40,6 +41,9 @@ namespace Dewey.Graph.Test
             commandProcessor = container.GetInstance<ICommandProcessor>();
 
             commandProcessor.RegisterHandler<GraphCommand, GraphCommandHandler>();
+
+            var writeResult = new WriteGraphResult(null, null);
+            mockIGraphWriter.Setup(x => x.Write(It.IsAny<string>())).Returns(writeResult);
         }
 
         [Fact]
@@ -47,8 +51,6 @@ namespace Dewey.Graph.Test
         {
             //Given
             var graphCommand = new GraphCommand(false);
-            var writeResult = new WriteGraphResult(null, null);
-            mockIGraphGenerator.Setup(x => x.WriteDOTGraph(It.IsAny<string>())).Returns(writeResult);
 
             //When
             commandProcessor.Execute(new LoadManifestFiles());
@@ -59,35 +61,17 @@ namespace Dewey.Graph.Test
         }
 
         [Fact]
-        public void GraphCommand_Should_DefaultToWriteDOTGraphText()
+        public void GraphCommand_Should_WriteGraph()
         {
             //Given
             var graphCommand = new GraphCommand(false);
-            var writeResult = new WriteGraphResult(null, null);
-            mockIGraphGenerator.Setup(x => x.WriteDOTGraph(It.IsAny<string>())).Returns(writeResult);
 
             //When
             commandProcessor.Execute(new LoadManifestFiles());
             commandProcessor.Execute(graphCommand);
 
             //Then
-            mockIGraphGenerator.Verify(x => x.WriteDOTGraph(It.IsAny<string>()), Times.Once());
-        }
-
-        [Fact]
-        public void GraphCommand_Should_WritePNGGraph()
-        {
-            //Given
-            var graphCommand = new GraphCommand(true);
-            var writeResult = new WriteGraphResult(null, null);
-            mockIGraphGenerator.Setup(x => x.WritePNGGraph(It.IsAny<string>())).Returns(writeResult);
-
-            //When
-            commandProcessor.Execute(new LoadManifestFiles());
-            commandProcessor.Execute(graphCommand);
-
-            //Then
-            mockIGraphGenerator.Verify(x => x.WritePNGGraph(It.IsAny<string>()), Times.Once());
+            mockIGraphWriter.Verify(x => x.Write(It.IsAny<string>()), Times.Once());
         }
 
         [Fact]
@@ -95,9 +79,6 @@ namespace Dewey.Graph.Test
         {
             //Given
             var graphCommand = new GraphCommand(false);
-
-            var writeResult = new WriteGraphResult(null, null);
-            mockIGraphGenerator.Setup(x => x.WriteDOTGraph(It.IsAny<string>())).Returns(writeResult);
 
             GenerateGraphResult generateGraphResult = null;
             var mockGenerateGraphResultEventHandler = new Mock<IEventHandler<GenerateGraphResult>>();
