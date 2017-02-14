@@ -52,7 +52,7 @@
     <Compile Include="GraphCommand.cs" />
     <Compile Include="GraphCommandHandler.cs" />
     <Compile Include="GraphCommandWriter.cs" />
-    <Compile Include="GraphViz.cs" />
+    <Compile Include="DOT\GraphViz.cs" />
     <Compile Include="IGraphGenerator.cs" />
     <Compile Include="DOT\Cluster.cs" />
     <Compile Include="Module.cs" />

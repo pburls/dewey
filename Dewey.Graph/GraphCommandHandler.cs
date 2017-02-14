@@ -66,7 +66,8 @@ namespace Dewey.Graph
 
             var nodeDictionary = new Dictionary<string, Node>();
             int nodeId = 1;
-            var layerDictionary = new Dictionary<string, Cluster>();
+            var clusterDictionary = new Dictionary<string, Cluster>();
+            var unclusteredNodes = new List<Node>();
 
             foreach (var component in _components)
             {
@@ -76,9 +77,27 @@ namespace Dewey.Graph
                 else
                     type = string.Join("-", Node.COMPONENT_NODE_TYPE, component.ComponentManifest.Type, component.ComponentManifest.SubType);
 
-                nodeDictionary.Add(component.ComponentManifest.Name, new Node(nodeId++, component.ComponentManifest.Name, type));
+                var node = new Node(nodeId++, component.ComponentManifest.Name, type);
+                nodeDictionary.Add(component.ComponentManifest.Name, node);
 
                 _dependencyElementLoader.LoadFromComponentManifest(component.ComponentManifest, component.ComponentElement);
+
+                var clusterName = component.ComponentManifest.Context;
+                if (!string.IsNullOrWhiteSpace(clusterName))
+                {
+                    Cluster layer = null;
+                    if (!clusterDictionary.TryGetValue(clusterName, out layer))
+                    {
+                        layer = new Cluster(clusterName);
+                        clusterDictionary.Add(clusterName, layer);
+                    }
+
+                    layer.AddNode(node);
+                }
+                else
+                {
+                    unclusteredNodes.Add(node);
+                }
             }
 
             foreach (var runtimeResource in _runtimeResources.Values)
@@ -87,17 +106,21 @@ namespace Dewey.Graph
                 var node = new Node(nodeId++, name, runtimeResource.RuntimeResourceItem.Type);
                 nodeDictionary.Add(runtimeResource.RuntimeResourceItem.Name, node);
 
-                var layerName = runtimeResource.RuntimeResourceItem.Context;
-                if (!string.IsNullOrWhiteSpace(layerName))
+                var clusterName = runtimeResource.RuntimeResourceItem.Context;
+                if (!string.IsNullOrWhiteSpace(clusterName))
                 {
                     Cluster layer = null;
-                    if (!layerDictionary.TryGetValue(layerName, out layer))
+                    if (!clusterDictionary.TryGetValue(clusterName, out layer))
                     {
-                        layer = new Cluster(layerName);
-                        layerDictionary.Add(layerName, layer);
+                        layer = new Cluster(clusterName);
+                        clusterDictionary.Add(clusterName, layer);
                     }
 
-                    layer.AddNodeId(node.Id);
+                    layer.AddNode(node);
+                }
+                else
+                {
+                    unclusteredNodes.Add(node);
                 }
             }
 
@@ -144,7 +167,7 @@ namespace Dewey.Graph
                 }
             }
 
-            var graphDOTtext = _graphGenerator.GenerateDOTGraph(nodeDictionary.Values, edgeList, layerDictionary.Values);
+            var graphDOTtext = _graphGenerator.GenerateDOTGraph(unclusteredNodes, edgeList, clusterDictionary.Values);
 
             var graphWriter = _graphWriterFactory.CreateWriter(_command);
 

@@ -4,15 +4,15 @@ namespace Dewey.Graph.DOT
 {
     public class Cluster
     {
-        private List<int> _nodeIdList = new List<int>();
+        private List<Node> _nodeList;
 
         public string Name { get; private set; }
 
-        public IEnumerable<int> NodeIds
+        public IEnumerable<Node> Nodes
         {
             get
             {
-                return _nodeIdList;
+                return _nodeList;
             }
         }
 
@@ -20,12 +20,12 @@ namespace Dewey.Graph.DOT
         {
             Name = name;
 
-            _nodeIdList = new List<int>();
+            _nodeList = new List<Node>();
         }
 
-        public void AddNodeId(int nodeId)
+        public void AddNode(Node node)
         {
-            _nodeIdList.Add(nodeId);
+            _nodeList.Add(node);
         }
     }
 }

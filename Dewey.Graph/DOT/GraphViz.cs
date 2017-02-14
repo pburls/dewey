@@ -1,13 +1,10 @@
-﻿using Dewey.Graph.DOT;
-using Dewey.Graph.Writers;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace Dewey.Graph
+namespace Dewey.Graph.DOT
 {
     public class GraphViz : IGraphGenerator
     {
@@ -22,19 +19,19 @@ namespace Dewey.Graph
             _iconsPath = Path.Combine(assemblyPath, "icons");
         }
 
-        public string GenerateDOTGraph(IEnumerable<Node> nodes, IEnumerable<Edge> edges, IEnumerable<Cluster> layers)
+        public string GenerateDOTGraph(IEnumerable<Node> nodes, IEnumerable<Edge> edges, IEnumerable<Cluster> clusters)
         {
             string graphText = @"digraph G {
-	$layers$
+	$clusters$
 	$nodes$
 	$edges$
 }";
 
-            string layerData = string.Join("\r\n\t", layers.Select(WriteLayer));
+            string clusterText = string.Join("\r\n\t", clusters.Select(WriteCluster));
             string nodeData = string.Join("\r\n\t", nodes.Select(WriteNode));
             string edgeData = string.Join("\r\n\t", edges.Select(WriteEdge));
 
-            graphText = graphText.Replace("$layers$", layerData);
+            graphText = graphText.Replace("$clusters$", clusterText);
             graphText = graphText.Replace("$nodes$", nodeData);
             graphText = graphText.Replace("$edges$", edgeData);
 
@@ -66,9 +63,11 @@ namespace Dewey.Graph
             return text + ";";
         }
 
-        private string WriteLayer(Cluster layer)
+        private string WriteCluster(Cluster cluster)
         {
-            return string.Format("{{rank=same; {0}}}", string.Join(" ", layer.NodeIds));
+            string newline = "\r\n\t\t";
+            var nodeText = string.Join(newline, cluster.Nodes.Select(WriteNode));
+            return $"subgraph cluster_{cluster.Name} {{{newline}label={cluster.Name}{newline}{nodeText}{newline}}}";
         }
     }
 }

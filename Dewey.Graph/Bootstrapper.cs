@@ -1,4 +1,5 @@
-﻿using Dewey.Graph.Writers;
+﻿using Dewey.Graph.DOT;
+using Dewey.Graph.Writers;
 using SimpleInjector;
 
 namespace Dewey.Graph
