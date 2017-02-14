@@ -1,4 +1,4 @@
-﻿namespace Dewey.Graph
+﻿namespace Dewey.Graph.DOT
 {
     public class Node
     {

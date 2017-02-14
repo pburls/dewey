@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="CLICommandProvider.cs" />
-    <Compile Include="Edge.cs" />
+    <Compile Include="DOT\Edge.cs" />
     <Compile Include="GenerateGraphResult.cs" />
     <Compile Include="GenerateGraphStarted.cs" />
     <Compile Include="GraphCommand.cs" />
@@ -56,7 +56,7 @@
     <Compile Include="IGraphGenerator.cs" />
     <Compile Include="DOT\Cluster.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="Node.cs" />
+    <Compile Include="DOT\Node.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Writers\GraphWriterFactory.cs" />
     <Compile Include="Writers\IGraphWriterFactory.cs" />
