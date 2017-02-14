@@ -1,4 +1,5 @@
-﻿using Dewey.Graph.Writers;
+﻿using Dewey.Graph.DOT;
+using Dewey.Graph.Writers;
 using Dewey.Manifest.Dependency;
 using Dewey.Messaging;
 using Dewey.State;
@@ -65,7 +66,7 @@ namespace Dewey.Graph
 
             var nodeDictionary = new Dictionary<string, Node>();
             int nodeId = 1;
-            var layerDictionary = new Dictionary<string, Layer>();
+            var layerDictionary = new Dictionary<string, Cluster>();
 
             foreach (var component in _components)
             {
@@ -89,10 +90,10 @@ namespace Dewey.Graph
                 var layerName = runtimeResource.RuntimeResourceItem.Context;
                 if (!string.IsNullOrWhiteSpace(layerName))
                 {
-                    Layer layer = null;
+                    Cluster layer = null;
                     if (!layerDictionary.TryGetValue(layerName, out layer))
                     {
-                        layer = new Layer(layerName);
+                        layer = new Cluster(layerName);
                         layerDictionary.Add(layerName, layer);
                     }
 

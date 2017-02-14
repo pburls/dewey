@@ -1,4 +1,5 @@
-﻿using Dewey.Graph.Writers;
+﻿using Dewey.Graph.DOT;
+using Dewey.Graph.Writers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,7 +22,7 @@ namespace Dewey.Graph
             _iconsPath = Path.Combine(assemblyPath, "icons");
         }
 
-        public string GenerateDOTGraph(IEnumerable<Node> nodes, IEnumerable<Edge> edges, IEnumerable<Layer> layers)
+        public string GenerateDOTGraph(IEnumerable<Node> nodes, IEnumerable<Edge> edges, IEnumerable<Cluster> layers)
         {
             string graphText = @"digraph G {
 	$layers$
@@ -65,7 +66,7 @@ namespace Dewey.Graph
             return text + ";";
         }
 
-        private string WriteLayer(Layer layer)
+        private string WriteLayer(Cluster layer)
         {
             return string.Format("{{rank=same; {0}}}", string.Join(" ", layer.NodeIds));
         }

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Dewey.Graph
+namespace Dewey.Graph.DOT
 {
-    public class Layer
+    public class Cluster
     {
         private List<int> _nodeIdList = new List<int>();
 
@@ -16,7 +16,7 @@ namespace Dewey.Graph
             }
         }
 
-        public Layer(string name)
+        public Cluster(string name)
         {
             Name = name;
 

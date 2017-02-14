@@ -54,7 +54,7 @@
     <Compile Include="GraphCommandWriter.cs" />
     <Compile Include="GraphViz.cs" />
     <Compile Include="IGraphGenerator.cs" />
-    <Compile Include="Layer.cs" />
+    <Compile Include="DOT\Cluster.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

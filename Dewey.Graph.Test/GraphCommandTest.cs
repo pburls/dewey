@@ -1,4 +1,5 @@
-﻿using Dewey.Graph.Writers;
+﻿using Dewey.Graph.DOT;
+using Dewey.Graph.Writers;
 using Dewey.Manifest;
 using Dewey.Messaging;
 using Moq;
@@ -57,7 +58,7 @@ namespace Dewey.Graph.Test
             commandProcessor.Execute(graphCommand);
 
             //Then
-            mockIGraphGenerator.Verify(x => x.GenerateDOTGraph(It.IsAny<IEnumerable<Node>>(), It.IsAny<IEnumerable<Edge>>(), It.IsAny<IEnumerable<Layer>>()), Times.Once());
+            mockIGraphGenerator.Verify(x => x.GenerateDOTGraph(It.IsAny<IEnumerable<Node>>(), It.IsAny<IEnumerable<Edge>>(), It.IsAny<IEnumerable<Cluster>>()), Times.Once());
         }
 
         [Fact]
