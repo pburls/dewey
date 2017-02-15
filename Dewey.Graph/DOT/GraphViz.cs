@@ -70,12 +70,17 @@ namespace Dewey.Graph.DOT
         private string WriteCluster(Cluster cluster)
         {
             var nodeText = string.Join(DoubleLevel, cluster.Nodes.Select(WriteNode));
-            return $"subgraph cluster_{cluster.Name} {{{DoubleLevel}label=\"{EscapeLabel(cluster.Name)}\"{DoubleLevel}{nodeText}{SingleLevel}}}";
+            return $"subgraph cluster_{EscapeClusterNames(cluster.Name)} {{{DoubleLevel}label=\"{EscapeLabel(cluster.Name)}\"{DoubleLevel}{nodeText}{SingleLevel}}}";
         }
 
         private string EscapeLabel(string label)
         {
             return Regex.Escape(label);
+        }
+
+        private string EscapeClusterNames(string clusterName)
+        {
+            return clusterName.Replace('-', '_');
         }
     }
 }
