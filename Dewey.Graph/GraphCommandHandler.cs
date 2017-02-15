@@ -42,9 +42,7 @@ namespace Dewey.Graph
             _graphGenerator = graphGenerator;
             _graphWriterFactory = graphWriterFactory;
 
-            eventAggregator.Subscribe<GetComponentsResult>(this);
-            eventAggregator.Subscribe<GetRuntimeResourcesResult>(this);
-            eventAggregator.Subscribe<DependencyElementResult>(this);
+            eventAggregator.SubscribeAll(this);
         }
 
         public void Execute(GraphCommand command)
