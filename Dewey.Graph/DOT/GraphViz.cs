@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace Dewey.Graph.DOT
 {
     public class GraphViz : IGraphGenerator
     {
         private string _iconsPath;
+        private const string SingleLevel = "\r\n\t";
+        private const string DoubleLevel = "\r\n\t\t";
 
         public GraphViz()
         {
@@ -27,9 +30,9 @@ namespace Dewey.Graph.DOT
 	$edges$
 }";
 
-            string clusterText = string.Join("\r\n\t", clusters.Select(WriteCluster));
-            string nodeData = string.Join("\r\n\t", nodes.Select(WriteNode));
-            string edgeData = string.Join("\r\n\t", edges.Select(WriteEdge));
+            string clusterText = string.Join(SingleLevel, clusters.Select(WriteCluster));
+            string nodeData = string.Join(SingleLevel, nodes.Select(WriteNode));
+            string edgeData = string.Join(SingleLevel, edges.Select(WriteEdge));
 
             graphText = graphText.Replace("$clusters$", clusterText);
             graphText = graphText.Replace("$nodes$", nodeData);
@@ -42,7 +45,8 @@ namespace Dewey.Graph.DOT
         {
             var imageFileName = string.Format("{0}.png", node.Type);
             var imagePath = Path.Combine(_iconsPath, imageFileName);
-            return string.Format("{0} [label=\"{1}\",image=\"{2}\",labelloc=\"b\",shape=box];", node.Id, node.Name, imagePath);
+            var label = EscapeLabel(node.Name);
+            return string.Format("{0} [label=\"{1}\",image=\"{2}\",labelloc=\"b\",shape=box];", node.Id, label, imagePath);
         }
 
         private string WriteEdge(Edge edge)
@@ -50,7 +54,7 @@ namespace Dewey.Graph.DOT
             var attributes = new List<string>();
             if (!string.IsNullOrWhiteSpace(edge.Label))
             {
-                attributes.Add(string.Format("label=\"{0}\"", edge.Label));
+                attributes.Add(string.Format("label=\"{0}\"", EscapeLabel(edge.Label)));
             }
 
             var text = string.Format("{0} -> {1}", edge.From, edge.To);
@@ -65,9 +69,13 @@ namespace Dewey.Graph.DOT
 
         private string WriteCluster(Cluster cluster)
         {
-            string newline = "\r\n\t\t";
-            var nodeText = string.Join(newline, cluster.Nodes.Select(WriteNode));
-            return $"subgraph cluster_{cluster.Name} {{{newline}label=\"{cluster.Name}\"{newline}{nodeText}{newline}}}";
+            var nodeText = string.Join(DoubleLevel, cluster.Nodes.Select(WriteNode));
+            return $"subgraph cluster_{cluster.Name} {{{DoubleLevel}label=\"{EscapeLabel(cluster.Name)}\"{DoubleLevel}{nodeText}{SingleLevel}}}";
+        }
+
+        private string EscapeLabel(string label)
+        {
+            return Regex.Escape(label);
         }
     }
 }
