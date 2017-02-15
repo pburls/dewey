@@ -67,7 +67,7 @@ namespace Dewey.Graph.DOT
         {
             string newline = "\r\n\t\t";
             var nodeText = string.Join(newline, cluster.Nodes.Select(WriteNode));
-            return $"subgraph cluster_{cluster.Name} {{{newline}label={cluster.Name}{newline}{nodeText}{newline}}}";
+            return $"subgraph cluster_{cluster.Name} {{{newline}label=\"{cluster.Name}\"{newline}{nodeText}{newline}}}";
         }
     }
 }
