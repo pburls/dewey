@@ -8,6 +8,7 @@ namespace Dewey.ListItems
         Repositories = ConsoleColor.Cyan,
         RepositoryItem = ConsoleColor.Green,
         ComponentItem = ConsoleColor.Yellow,
+        RuntimeResource = ConsoleColor.DarkCyan,
     }
 
     static class ItemColorExtensions

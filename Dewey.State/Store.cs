@@ -122,6 +122,18 @@ namespace Dewey.State
                         runtimeResource = new RuntimeResource(runtimeResourceItem, runtimeResourceItem.Element);
                         _runtimeResourceDictionary.Add(runtimeResourceItem.Name, runtimeResource);
                     }
+
+                    if (runtimeResourcesManifestLoadResult.RepositoryManifest != null)
+                    {
+                        Repository repository = null;
+                        if (!_repositoryDictionary.TryGetValue(runtimeResourcesManifestLoadResult.RepositoryManifest.Name, out repository))
+                        {
+                            repository = new Repository(runtimeResourcesManifestLoadResult.RepositoryManifest);
+                            _repositoryDictionary.Add(repository.Name, repository);
+                        }
+
+                        repository.AddRuntimeResource(runtimeResource);
+                    }
                 }
             }
         }

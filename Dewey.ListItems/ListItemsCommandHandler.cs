@@ -8,7 +8,8 @@ namespace Dewey.ListItems
         ICommandHandler<ListItemsCommand>,
         IEventHandler<GetRepositoriesFilesResult>,
         IEventHandler<GetRepositoriesResult>,
-        IEventHandler<GetComponentsResult>
+        IEventHandler<GetComponentsResult>,
+        IEventHandler<GetRuntimeResourcesResult>
     {
         readonly ICommandProcessor _commandProcessor;
 
@@ -16,9 +17,7 @@ namespace Dewey.ListItems
         {
             _commandProcessor = commandProcessor;
 
-            eventAggregator.Subscribe<GetRepositoriesFilesResult>(this);
-            eventAggregator.Subscribe<GetRepositoriesResult>(this);
-            eventAggregator.Subscribe<GetComponentsResult>(this);
+            eventAggregator.SubscribeAll(this);
         }
 
         public void Execute(ListItemsCommand command)
@@ -53,6 +52,7 @@ namespace Dewey.ListItems
             else
             {
                 _commandProcessor.Execute(new GetComponents());
+                _commandProcessor.Execute(new GetRuntimeResources());
             }
         }
 
@@ -63,6 +63,17 @@ namespace Dewey.ListItems
                 foreach (var component in getComponentsResult.Components)
                 {
                     component.Write();
+                }
+            }
+        }
+
+        public void Handle(GetRuntimeResourcesResult getRuntimeResourcesResult)
+        {
+            if (getRuntimeResourcesResult.RuntimeResources.Any())
+            {
+                foreach (var runtimeResource in getRuntimeResourcesResult.RuntimeResources.Values)
+                {
+                    runtimeResource.Write();
                 }
             }
         }
