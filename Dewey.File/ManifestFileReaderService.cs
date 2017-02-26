@@ -26,6 +26,7 @@ namespace Dewey.File
 
         public IManifestFileReader FindManifestFileInCurrentDirectory()
         {
+            //Todo: Change to strategy pattern.
             if (System.IO.File.Exists(RepositoriesManifestFileReader.DEFAULT_REPOSITORIES_FILE_NAME))
             {
                 return new RepositoriesManifestFileReader();
