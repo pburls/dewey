@@ -28,7 +28,7 @@ namespace Dewey.ListItems
                 type = string.Format("{0}-{1}", type, component.ComponentManifest.SubType);
             }
 
-            return string.Format("{0} ({1})", component.ComponentManifest.Name, type);
+            return string.Format("{0} ({1}) - \"{2}\"", component.ComponentManifest.Name, type, component.ComponentManifest.File.DirectoryName);
         }
     }
 }
