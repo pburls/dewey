@@ -9,7 +9,7 @@ namespace Dewey.ListItems
         public static void Write(this Component component)
         {
             Console.ForegroundColor = (ConsoleColor)ItemColor.ComponentItem;
-            Console.WriteLine("{0} ({1})", component.ComponentManifest.Name, component.ComponentManifest.Type);
+            Console.WriteLine(component.BuildDescription());
         }
 
         public static void Write(this Component component, Stack<ItemColor> offsets)
@@ -17,7 +17,18 @@ namespace Dewey.ListItems
             offsets.WriteOffsets();
 
             Console.ForegroundColor = (ConsoleColor)ItemColor.ComponentItem;
-            Console.WriteLine("├ {0} ({1})", component.ComponentManifest.Name, component.ComponentManifest.Type);
+            Console.WriteLine("├ {0}", component.BuildDescription());
+        }
+
+        private static string BuildDescription(this Component component)
+        {
+            string type = component.ComponentManifest.Type;
+            if (!string.IsNullOrWhiteSpace(component.ComponentManifest.SubType))
+            {
+                type = string.Format("{0}-{1}", type, component.ComponentManifest.SubType);
+            }
+
+            return string.Format("{0} ({1})", component.ComponentManifest.Name, type);
         }
     }
 }
