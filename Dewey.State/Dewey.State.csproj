@@ -48,12 +48,14 @@
     <Compile Include="Component.cs" />
     <Compile Include="Messages\GetComponent.cs" />
     <Compile Include="Messages\GetComponents.cs" />
+    <Compile Include="Messages\GetRuntimeResources.cs" />
     <Compile Include="Messages\GetRepositories.cs" />
     <Compile Include="Messages\GetRepositoriesFiles.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoriesFile.cs" />
     <Compile Include="Repository.cs" />
+    <Compile Include="RuntimeResource.cs" />
     <Compile Include="Store.cs" />
   </ItemGroup>
   <ItemGroup>

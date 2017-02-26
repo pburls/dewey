@@ -16,6 +16,8 @@ namespace Dewey.Manifest.Repository
 
         public IEnumerable<ComponentItem> ComponentItems { get; private set; }
 
+        public IEnumerable<ManifestFileItem> RuntimeResourcesItems { get; private set; }
+
         public RepositoryManifest (string name, string directoryName, string fileName)
         {
             Name = name;
@@ -51,11 +53,25 @@ namespace Dewey.Manifest.Repository
                 var componentElements = componentsElement.Elements().Where(x => x.Name.LocalName == "component");
                 foreach (var componentElement in componentElements)
                 {
-                    componentItemResults.Add(ComponentItem.LoadComponentElement(componentElement, repositoryManifestFile.DirectoryName, repositoryManifest));
+                    componentItemResults.Add(ComponentItem.LoadComponentElement(componentElement, repositoryManifest));
                 }
             }
 
             repositoryManifest.ComponentItems = componentItemResults.Where(x => x.IsSuccessful).Select(x => x.ComponentItem).ToList();
+
+            var runtimeResourcesElement = repository.Elements().FirstOrDefault(x => x.Name.LocalName == "runtimeResources");
+
+            var runtimeResourceLoadResults = new List<LoadManifestFileElementResult>();
+            if (runtimeResourcesElement != null)
+            {
+                var manifestFileElements = runtimeResourcesElement.Elements().Where(x => x.Name.LocalName == "manifestFile");
+                foreach (var manifestFileElement in manifestFileElements)
+                {
+                    runtimeResourceLoadResults.Add(LoadManifestFileElementResult.LoadManifestFileElement(manifestFileElement, repositoryManifest));
+                }
+            }
+
+            repositoryManifest.RuntimeResourcesItems = runtimeResourceLoadResults.Where(x => x.IsSuccessful).Select(x => x.ManifestFileItem).ToList();
 
             return RepositoryManifestLoadResult.CreateSuccessfulResult(repositoriesManifest, repositoryManifestFile, repositoryManifest, componentItemResults);
         }

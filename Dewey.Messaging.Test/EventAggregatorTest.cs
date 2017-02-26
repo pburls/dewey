@@ -62,5 +62,20 @@ namespace Dewey.Messaging.Test
             mockBaseEventHandler.Verify(x => x.Handle(It.IsAny<TestEventBase>()), Times.Never);
             mockIEventHandler.Verify(x => x.Handle(@event), Times.Once);
         }
+
+        [Fact]
+        public void Test_PublishEvent_Invokes_Event_Handlers_Subscribed_For_The_Events_Type_Using_SubscribeAll()
+        {
+            //Given
+            var @event = new TestEventA();
+            var mockTestEventHandler = new Mock<IEventHandler<TestEventA>>();
+            eventAggregator.SubscribeAll(mockTestEventHandler.Object);
+
+            //When
+            eventAggregator.PublishEvent(@event);
+
+            //Then
+            mockTestEventHandler.Verify(x => x.Handle(@event), Times.Once);
+        }
     }
 }

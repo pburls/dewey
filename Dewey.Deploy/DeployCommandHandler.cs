@@ -78,7 +78,7 @@ namespace Dewey.Deploy
                 {
                     foreach (var dependency in _dependencies)
                     {
-                        if (dependency.Type == DependencyElementResult.COMPONENT_DEPENDENCY_TYPE)
+                        if (dependency.Type == ComponentDependency.COMPONENT_DEPENDENCY_TYPE)
                         {
                             _commandProcessor.Execute(DeployCommand.Create(dependency.Name, _command.DeployDependencies));
                         }

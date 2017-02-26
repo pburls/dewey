@@ -47,6 +47,8 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Component\ComponentManifest.cs" />
     <Compile Include="Component\ComponentManifestLoadResult.cs" />
+    <Compile Include="Dependency\RuntimeResourceDependency.cs" />
+    <Compile Include="Dependency\ComponentDependency.cs" />
     <Compile Include="Dependency\DependenciesElementNotFoundResult.cs" />
     <Compile Include="Dependency\DependencyElementEvent.cs" />
     <Compile Include="Dependency\DependencyElementLoader.cs" />
@@ -54,6 +56,8 @@
     <Compile Include="Dependency\DependencyElementResult.cs" />
     <Compile Include="Dependency\DependencyElementsNotFoundResult.cs" />
     <Compile Include="Dependency\IDependencyElementLoader.cs" />
+    <Compile Include="Dependency\DatabaseDependency.cs" />
+    <Compile Include="Dependency\QueueDependency.cs" />
     <Compile Include="Events\LoadManifestFilesResult.cs" />
     <Compile Include="Events\ManifestFilesFound.cs" />
     <Compile Include="Events\NoManifestFileFoundResult.cs" />
@@ -67,10 +71,17 @@
     <Compile Include="Repositories\LoadRepositoryElementResult.cs" />
     <Compile Include="Repositories\RepositoriesManifest.cs" />
     <Compile Include="Repositories\RepositoryItem.cs" />
+    <Compile Include="Repository\ManifestFileItem.cs" />
     <Compile Include="Repository\ComponentItem.cs" />
+    <Compile Include="Repository\LoadManifestFileElementResult.cs" />
     <Compile Include="Repository\LoadComponentElementResult.cs" />
     <Compile Include="Repository\RepositoryManifestLoadResult.cs" />
     <Compile Include="Repository\RepositoryManifest.cs" />
+    <Compile Include="RuntimeResources\RuntimeResourceItem.cs" />
+    <Compile Include="RuntimeResources\RuntimeResourceItemLoadResult.cs" />
+    <Compile Include="RuntimeResources\RuntimeResourcesManifestLoadResult.cs" />
+    <Compile Include="RuntimeResources\RuntimeResourcesManifest.cs" />
+    <Compile Include="RuntimeResources\RuntimeResourcesManifestLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dewey.File\Dewey.File.csproj">

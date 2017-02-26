@@ -32,6 +32,11 @@ namespace Dewey.Test
         {
             return _mockManifestFileReader;
         }
+
+        public IManifestFileReader ReadRuntimeResourcesManifestFile(params string[] paths)
+        {
+            return _mockManifestFileReader;
+        }
     }
 
     public class MockManifestFileReader : IManifestFileReader

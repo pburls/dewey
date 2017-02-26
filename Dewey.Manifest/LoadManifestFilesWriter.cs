@@ -2,6 +2,7 @@
 using Dewey.Manifest.Events;
 using Dewey.Manifest.Repositories;
 using Dewey.Manifest.Repository;
+using Dewey.Manifest.RuntimeResources;
 using Dewey.Messaging;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,8 @@ namespace Dewey.Manifest
         IEventHandler<ComponentManifestLoadResult>,
         IEventHandler<LoadManifestFilesStarted>,
         IEventHandler<NoManifestFileFoundResult>,
-        IEventHandler<ManifestFilesFound>
+        IEventHandler<ManifestFilesFound>,
+        IEventHandler<RuntimeResourcesManifestLoadResult>
     {
         public LoadManifestFilesWriter(IEventAggregator eventAggregator)
         {
@@ -25,6 +27,7 @@ namespace Dewey.Manifest
             eventAggregator.Subscribe<LoadManifestFilesStarted>(this);
             eventAggregator.Subscribe<NoManifestFileFoundResult>(this);
             eventAggregator.Subscribe<ManifestFilesFound>(this);
+            eventAggregator.Subscribe<RuntimeResourcesManifestLoadResult>(this);
         }
 
         public void Handle(LoadManifestFilesStarted @event)
@@ -47,7 +50,7 @@ namespace Dewey.Manifest
 
         public void Handle(RepositoriesManifestLoadResult @event)
         {
-            if (!@event.IsSuccessful)
+            if (!@event.IsSuccessful || @event.LoadRepositoryElementResults.Any(x => x.ErrorMessage != null))
             {
                 var errorMessages = new List<string>();
 
@@ -77,7 +80,7 @@ namespace Dewey.Manifest
 
         public void Handle(RepositoryManifestLoadResult @event)
         {
-            if (!@event.IsSuccessful)
+            if (!@event.IsSuccessful || @event.LoadComponentElementResults.Any(x => !x.IsSuccessful))
             {
                 var errorMessages = new List<string>();
 
@@ -95,6 +98,36 @@ namespace Dewey.Manifest
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine(@event.RepositoryManifestFile.FileName);
+                }
+
+                Console.ForegroundColor = ConsoleColor.Red;
+                foreach (var message in errorMessages)
+                {
+                    Console.WriteLine(message);
+                }
+            }
+        }
+
+        public void Handle(RuntimeResourcesManifestLoadResult @event)
+        {
+            if (!@event.IsSuccessful || @event.RuntimeResourceItemLoadResults.Any(x => !x.IsSuccessful))
+            {
+                var errorMessages = new List<string>();
+
+                if (@event.ErrorMessage != null)
+                {
+                    errorMessages.Add(@event.ErrorMessage);
+                }
+
+                if (@event.RuntimeResourceItemLoadResults != null)
+                {
+                    errorMessages.AddRange(@event.RuntimeResourceItemLoadResults.Where(x => x.ErrorMessage != null).Select(x => x.ErrorMessage));
+                }
+
+                if (@event.ManifestFile != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine(@event.ManifestFile.FileName);
                 }
 
                 Console.ForegroundColor = ConsoleColor.Red;

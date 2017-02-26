@@ -17,7 +17,7 @@ namespace Dewey.Manifest.Repository
             RelativeLocation = relativeLocation;
         }
 
-        public static LoadComponentElementResult LoadComponentElement(XElement componentElement, string repositoryRoot, RepositoryManifest repositoryManifest)
+        public static LoadComponentElementResult LoadComponentElement(XElement componentElement, RepositoryManifest repositoryManifest)
         {
             var missingAttributes = new List<string>();
 

@@ -29,7 +29,7 @@ namespace Dewey.Test
             XElement componentItemElement = XElement.Parse(xmlElementData.XmlText);
 
             //When
-            var result = ComponentItem.LoadComponentElement(componentItemElement, "root", repositoryManifest);
+            var result = ComponentItem.LoadComponentElement(componentItemElement, repositoryManifest);
 
             //Then
             Assert.False(result.IsSuccessful);
@@ -43,7 +43,7 @@ namespace Dewey.Test
             XElement componentItemElement = XElement.Parse("<component name=\"ExampleWebApiComp\" location=\"ExampleWebApiComp/\" />");
 
             //When
-            var result = ComponentItem.LoadComponentElement(componentItemElement, "root", repositoryManifest);
+            var result = ComponentItem.LoadComponentElement(componentItemElement, repositoryManifest);
 
             //Then
             Assert.True(result.IsSuccessful);
