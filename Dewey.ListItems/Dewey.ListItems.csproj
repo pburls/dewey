@@ -67,6 +67,10 @@
       <Project>{00ea83da-674d-4ffc-8e63-4c3a37a79cf9}</Project>
       <Name>Dewey.Manifest</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Dewey.State\Dewey.State.csproj">
+      <Project>{972c3e2d-b209-4c63-97da-fa4c16822e21}</Project>
+      <Name>Dewey.State</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

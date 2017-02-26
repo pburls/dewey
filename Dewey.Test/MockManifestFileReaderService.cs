@@ -32,6 +32,11 @@ namespace Dewey.Test
         {
             return _mockManifestFileReader;
         }
+
+        public IManifestFileReader ReadRuntimeResourcesManifestFile(params string[] paths)
+        {
+            return _mockManifestFileReader;
+        }
     }
 
     public class MockManifestFileReader : IManifestFileReader
@@ -48,13 +53,7 @@ namespace Dewey.Test
 
         public string XmlText { get; set; }
 
-        public ManifestFileType MandifestFileType
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public ManifestFileType MandifestFileType { get; set; }
 
         public MockManifestFileReader()
         {

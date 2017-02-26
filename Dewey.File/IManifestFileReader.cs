@@ -7,7 +7,8 @@ namespace Dewey.File
         Unknown,
         Component,
         Repository,
-        Repositories
+        Repositories,
+        RuntimeResources
     }
 
     public interface IManifestFileReader

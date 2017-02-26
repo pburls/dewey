@@ -13,17 +13,23 @@ namespace Dewey.CLI
         {
             var container = new Container();
 
-            Bootstrapper.RegisterTypes(container);
+            Messaging.Bootstrapper.RegisterTypes(container);
             File.Bootstrapper.RegisterTypes(container);
+            Manifest.Bootstrapper.RegisterTypes(container);
+            State.Bootstrapper.RegisterTypes(container);
             Build.Bootstrapper.RegisterTypes(container);
+            Deploy.Bootstrapper.RegisterTypes(container);
+            Graph.Bootstrapper.RegisterTypes(container);
 
             var commandManager = container.GetInstance<CLICommandManager>();
 
             var moduleCataloge = container.GetInstance<ModuleCatalogue>();
+            moduleCataloge.Load<State.Module>();
             moduleCataloge.Load<Manifest.Module>();
             moduleCataloge.Load<ListItems.Module>();
             moduleCataloge.Load<Build.Module>();
             moduleCataloge.Load<Deploy.Module>();
+            moduleCataloge.Load<Graph.Module>();
 
             if (args.Length < 1)
             {
@@ -45,14 +51,27 @@ namespace Dewey.CLI
             if (command == null)
             {
                 Console.WriteLine("Unknown command.");
+                Environment.ExitCode = 1;
             }
             else
             {
                 var commandProcessor = container.GetInstance<ICommandProcessor>();
+                var eventAggregator = container.GetInstance<IEventAggregator>();
+                var commandReport = new CommandReport(command, eventAggregator);
+
+                //Load Manifest Files first to create a store to use.
+                commandProcessor.Execute(new Manifest.LoadManifestFiles());
+
                 var commandHandler = commandProcessor.Execute(command);
                 if (commandHandler == null)
                 {
                     Console.WriteLine("No command handler registered for command.");
+                    Environment.ExitCode = 1;
+                }
+
+                if (commandReport.HasAnyFailed)
+                {
+                    Environment.ExitCode = 1;
                 }
             }
 

@@ -48,12 +48,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bootstrapper.cs" />
     <Compile Include="CLICommandProvider.cs" />
     <Compile Include="DeployCommand.cs" />
     <Compile Include="DeployCommandHandler.cs" />
     <Compile Include="DeployCommandWriter.cs" />
     <Compile Include="DeploymentActionFactory.cs" />
     <Compile Include="Events\ComponentNotFoundResult.cs" />
+    <Compile Include="Events\DeployCommandCompleted.cs" />
     <Compile Include="Events\DeployCommandEvent.cs" />
     <Compile Include="Events\DeployCommandStarted.cs" />
     <Compile Include="Events\DeploymentActionContentNotFoundResult.cs" />
@@ -69,6 +71,7 @@
     <Compile Include="Events\DeploymentElementResult.cs" />
     <Compile Include="Events\NoDeploymentElementsFoundResult.cs" />
     <Compile Include="IDeploymentAction.cs" />
+    <Compile Include="IDeploymentActionFactory.cs" />
     <Compile Include="IISDeploumentArgs.cs" />
     <Compile Include="IISDeployment.cs" />
     <Compile Include="Module.cs" />
@@ -86,6 +89,10 @@
     <ProjectReference Include="..\Dewey.Manifest\Dewey.Manifest.csproj">
       <Project>{00ea83da-674d-4ffc-8e63-4c3a37a79cf9}</Project>
       <Name>Dewey.Manifest</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dewey.State\Dewey.State.csproj">
+      <Project>{972c3e2d-b209-4c63-97da-fa4c16822e21}</Project>
+      <Name>Dewey.State</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

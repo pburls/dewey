@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Dewey.Messaging
 {
-    class CommandProcessor : ICommandProcessor
+    public class CommandProcessor : ICommandProcessor
     {
         readonly Container _container;
         readonly IEventAggregator _eventAggregator;
@@ -39,7 +39,7 @@ namespace Dewey.Messaging
             {
                 commandProcessor = _container.GetInstance(commandHandlerType);
 
-                MethodInfo executeMethod = commandHandlerType.GetMethod("Execute");
+                MethodInfo executeMethod = commandHandlerType.GetMethod("Execute", new[] { commandType });
                 executeMethod.Invoke(commandProcessor, new[] { command });
             }
 

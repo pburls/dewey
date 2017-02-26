@@ -50,6 +50,7 @@
     <Compile Include="Events\ModuleLoaded.cs" />
     <Compile Include="ICLICommandProvider.cs" />
     <Compile Include="ICommand.cs" />
+    <Compile Include="ICommandCompleteEvent.cs" />
     <Compile Include="ICommandProcessor.cs" />
     <Compile Include="IEvent.cs" />
     <Compile Include="IEventAggregator.cs" />

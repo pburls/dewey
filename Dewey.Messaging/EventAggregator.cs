@@ -1,25 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Dewey.Messaging
 {
-    class EventAggregator : IEventAggregator
+    public class EventAggregator : IEventAggregator
     {
-        private Dictionary<Type, object> _eventHandlers = new Dictionary<Type, object>();
+        private Dictionary<Type, EventHandlerCollection> _eventHandlers = new Dictionary<Type, EventHandlerCollection>();
+        private Type _eventHandlerInterfaceType = typeof(IEventHandler<>);
 
         public void Subscribe<TEvent>(IEventHandler<TEvent> eventHandler) where TEvent : IEvent
         {
-            Type eventType = typeof(TEvent);
-            object item = null;
-            EventHandlerCollection<TEvent> eventHandlerCollection = null;
+            Type eventHandlerInterfaceType = typeof(IEventHandler<TEvent>);
+            Subscribe(eventHandlerInterfaceType, eventHandler);
+        }
 
-            if(_eventHandlers.TryGetValue(eventType, out item))
+        public void SubscribeAll(object eventHandler)
+        {
+            Type eventHandlerType = eventHandler.GetType();
+            var interfaces = eventHandlerType.GetInterfaces();
+            var eventHandlerInterfaceTypes = interfaces.Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == _eventHandlerInterfaceType);
+
+            foreach (var eventHandlerInterfaceType in eventHandlerInterfaceTypes)
             {
-                eventHandlerCollection = (EventHandlerCollection<TEvent>)item;
+                Subscribe(eventHandlerInterfaceType, eventHandler);
             }
-            else
+        }
+
+        protected void Subscribe(Type eventHandlerInterfaceType, object eventHandler)
+        {
+            var eventType = eventHandlerInterfaceType.GetGenericArguments()[0];
+            EventHandlerCollection eventHandlerCollection = null;
+
+            if (!_eventHandlers.TryGetValue(eventType, out eventHandlerCollection))
             {
-                eventHandlerCollection = new EventHandlerCollection<TEvent>();
+                eventHandlerCollection = new EventHandlerCollection(eventHandlerInterfaceType);
                 _eventHandlers.Add(eventType, eventHandlerCollection);
             }
 
@@ -30,26 +46,39 @@ namespace Dewey.Messaging
         {
             Type eventType = typeof(TEvent);
 
-            if (_eventHandlers.ContainsKey(eventType))
+            foreach (var type in _eventHandlers.Keys)
             {
-                ((EventHandlerCollection<TEvent>)_eventHandlers[eventType]).ExecuteAll(@event);
+                if (type.IsAssignableFrom(eventType))
+                {
+                    var eventHandlerCollection = _eventHandlers[type];
+                    eventHandlerCollection.ExecuteAll(@event);
+                }
             }
         }
 
-        class EventHandlerCollection<TEvent> where TEvent : IEvent
+        class EventHandlerCollection
         {
-            private List<IEventHandler<TEvent>> _eventHandlers = new List<IEventHandler<TEvent>>();
+            private List<object> _eventHandlers = new List<object>();
+            private MethodInfo _handleMethod;
 
-            public void Add(IEventHandler<TEvent> eventHandler)
+            public Type EventHandlerType { get; private set; }
+
+            public EventHandlerCollection(Type eventHandlerType)
+            {
+                EventHandlerType = eventHandlerType;
+                _handleMethod = eventHandlerType.GetMethod("Handle");
+            }
+
+            public void Add(object eventHandler)
             {
                 _eventHandlers.Add(eventHandler);
             }
 
-            public void ExecuteAll(TEvent @event)
+            public void ExecuteAll(object @event)
             {
                 foreach (var eventHandler in _eventHandlers)
                 {
-                    eventHandler.Handle(@event);
+                    _handleMethod.Invoke(eventHandler, new[] { @event });
                 }
             }
         }

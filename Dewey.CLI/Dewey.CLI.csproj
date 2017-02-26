@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CLICommandManager.cs" />
+    <Compile Include="CommandReport.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -71,6 +72,10 @@
       <Project>{9078b56e-2979-4bd4-abf7-34eed2662e29}</Project>
       <Name>Dewey.File</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Dewey.Graph\Dewey.Graph.csproj">
+      <Project>{f7300426-ce9b-451f-ae10-d2736c32d3bf}</Project>
+      <Name>Dewey.Graph</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Dewey.ListItems\Dewey.ListItems.csproj">
       <Project>{b2561b13-71ef-45cc-bdea-615556c22283}</Project>
       <Name>Dewey.ListItems</Name>
@@ -82,6 +87,10 @@
     <ProjectReference Include="..\Dewey.Manifest\Dewey.Manifest.csproj">
       <Project>{00ea83da-674d-4ffc-8e63-4c3a37a79cf9}</Project>
       <Name>Dewey.Manifest</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dewey.State\Dewey.State.csproj">
+      <Project>{972c3e2d-b209-4c63-97da-fa4c16822e21}</Project>
+      <Name>Dewey.State</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
