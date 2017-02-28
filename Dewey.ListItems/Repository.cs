@@ -17,6 +17,11 @@ namespace Dewey.ListItems
             {
                 component.Write(offsets);
             }
+
+            foreach (var runtimeResource in repository.RuntimeResources)
+            {
+                runtimeResource.Write(offsets);
+            }
         }
 
         public static void Write(this Repository repository, Stack<ItemColor> offsets)
@@ -31,6 +36,11 @@ namespace Dewey.ListItems
             foreach (var component in repository.Components)
             {
                 component.Write(offsets);
+            }
+
+            foreach (var runtimeResource in repository.RuntimeResources)
+            {
+                runtimeResource.Write(offsets);
             }
 
             offsets.Pop();
