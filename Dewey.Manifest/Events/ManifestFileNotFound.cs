@@ -2,7 +2,7 @@
 
 namespace Dewey.Manifest.Events
 {
-    public class ManifestFileNotFound : ManifestFileResult
+    public class ManifestFileNotFound : ManifestFileResultBase
     {
         public ManifestFileNotFound(IManifestFileReader manifestFile) : base(manifestFile) { }
     }

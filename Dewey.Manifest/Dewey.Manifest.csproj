@@ -64,6 +64,7 @@
     <Compile Include="Events\LoadManifestFilesResult.cs" />
     <Compile Include="Events\ManifestFileNotFound.cs" />
     <Compile Include="Events\ManifestFileResult.cs" />
+    <Compile Include="Events\ManifestFileResultBase.cs" />
     <Compile Include="Events\ManifestFilesFound.cs" />
     <Compile Include="Events\NoManifestFileFoundResult.cs" />
     <Compile Include="LoadManifestFiles.cs" />

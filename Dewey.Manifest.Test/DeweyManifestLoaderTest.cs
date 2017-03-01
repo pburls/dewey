@@ -39,6 +39,7 @@ namespace Dewey.Manifest.Test
             //Then
             Assert.IsType<InvalidManifestFile>(result);
         }
+
         static IEnumerable<object[]> GetEmptyMockManifestFileReaders()
         {
             yield return new object[] { new MockManifestFileReader() { ScenarioName = "with no child elements", XmlText = @"<deweyManifest/>" } };
@@ -54,6 +55,24 @@ namespace Dewey.Manifest.Test
 
             //Then
             Assert.IsType<EmptyManifestFile>(result);
+        }
+
+        static IEnumerable<object[]> GetValidMockManifestFileReaders()
+        {
+            yield return new object[] { new MockManifestFileReader() { ScenarioName = "with manifestFiles element", XmlText = @"<deweyManifest><manifestFiles/></deweyManifest>" } };
+            yield return new object[] { new MockManifestFileReader() { ScenarioName = "with components element", XmlText = @"<deweyManifest><components/></deweyManifest>" } };
+            yield return new object[] { new MockManifestFileReader() { ScenarioName = "with runtimeResources element", XmlText = @"<deweyManifest><runtimeResources/></deweyManifest>" } };
+        }
+
+        [Theory]
+        [MemberData(nameof(GetValidMockManifestFileReaders))]
+        public void LoadDeweyManifest_returns_ManifestFileResult_for_(MockManifestFileReader manifestFileReader)
+        {
+            //When
+            var result = DeweyManifestLoader.LoadDeweyManifest(manifestFileReader);
+
+            //Then
+            Assert.IsType<ManifestFileResult>(result);
         }
     }
 }

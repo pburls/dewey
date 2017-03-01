@@ -2,7 +2,7 @@
 
 namespace Dewey.Manifest.Events
 {
-    public class EmptyManifestFile : ManifestFileResult
+    public class EmptyManifestFile : ManifestFileResultBase
     {
         public EmptyManifestFile(IManifestFileReader manifestFile) : base(manifestFile) { }
     }
