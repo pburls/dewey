@@ -16,7 +16,7 @@ namespace Dewey.Manifest.Test
 
         [Theory]
         [MemberData(nameof(GetFileNotFoundMockManifestFileReaders))]
-        public void DeweyManifestLoader_LoadDeweyManifest_returns_ManifestFileNotFound_for(MockManifestFileReader manifestFileReader)
+        public void LoadDeweyManifest_returns_ManifestFileNotFound_for(MockManifestFileReader manifestFileReader)
         {
             //When
             var result = DeweyManifestLoader.LoadDeweyManifest(manifestFileReader);
@@ -39,18 +39,21 @@ namespace Dewey.Manifest.Test
             //Then
             Assert.IsType<InvalidManifestFile>(result);
         }
-
-        [Fact]
-        public void DeweyManifestLoader_LoadDeweyManifest_returns_2()
+        static IEnumerable<object[]> GetEmptyMockManifestFileReaders()
         {
-            //Given
-            var xmlText =
-@"<deweyManifest>
-	<repositories>
-		<manifestFile name=""test-repo"" location=""test-repo"" />
-	</repositories>
-</deweyManifest>";
-            var manifestFileReader = new MockManifestFileReader() { XmlText = xmlText };
+            yield return new object[] { new MockManifestFileReader() { ScenarioName = "with no child elements", XmlText = @"<deweyManifest/>" } };
+            yield return new object[] { new MockManifestFileReader() { ScenarioName = "with no dewey child elements", XmlText = @"<deweyManifest><test/></deweyManifest>" } };
+        }
+
+        [Theory]
+        [MemberData(nameof(GetEmptyMockManifestFileReaders))]
+        public void LoadDeweyManifest_returns_EmptyManifestFile_for(MockManifestFileReader manifestFileReader)
+        {
+            //When
+            var result = DeweyManifestLoader.LoadDeweyManifest(manifestFileReader);
+
+            //Then
+            Assert.IsType<EmptyManifestFile>(result);
         }
     }
 }

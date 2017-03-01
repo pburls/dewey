@@ -16,7 +16,9 @@ namespace Dewey.Manifest
                 return new InvalidManifestFile(manifestFile);
             }
 
-            return null;
+            var childElements = rootElement.Elements();
+
+            return new EmptyManifestFile(manifestFile);
         }
     }
 }

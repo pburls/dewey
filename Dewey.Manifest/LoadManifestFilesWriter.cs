@@ -19,7 +19,8 @@ namespace Dewey.Manifest
         IEventHandler<ManifestFilesFound>,
         IEventHandler<RuntimeResourcesManifestLoadResult>,
         IEventHandler<ManifestFileNotFound>,
-        IEventHandler<InvalidManifestFile>
+        IEventHandler<InvalidManifestFile>,
+        IEventHandler<EmptyManifestFile>
     {
         public LoadManifestFilesWriter(IEventAggregator eventAggregator)
         {
@@ -49,6 +50,12 @@ namespace Dewey.Manifest
             {
                 Console.WriteLine($"Unable to load manifest file '{@event.ManifestFile.FileName}'. File does not exist.");
             }
+        }
+
+        public void Handle(EmptyManifestFile @event)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"No dewey xml elements to load in manifest file '{@event.ManifestFile.FileName}'.");
         }
 
         public void Handle(InvalidManifestFile @event)
