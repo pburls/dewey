@@ -17,17 +17,13 @@ namespace Dewey.Manifest
         IEventHandler<LoadManifestFilesStarted>,
         IEventHandler<NoManifestFileFoundResult>,
         IEventHandler<ManifestFilesFound>,
-        IEventHandler<RuntimeResourcesManifestLoadResult>
+        IEventHandler<RuntimeResourcesManifestLoadResult>,
+        IEventHandler<ManifestFileNotFound>,
+        IEventHandler<InvalidManifestFile>
     {
         public LoadManifestFilesWriter(IEventAggregator eventAggregator)
         {
-            eventAggregator.Subscribe<RepositoriesManifestLoadResult>(this);
-            eventAggregator.Subscribe<RepositoryManifestLoadResult>(this);
-            eventAggregator.Subscribe<ComponentManifestLoadResult>(this);
-            eventAggregator.Subscribe<LoadManifestFilesStarted>(this);
-            eventAggregator.Subscribe<NoManifestFileFoundResult>(this);
-            eventAggregator.Subscribe<ManifestFilesFound>(this);
-            eventAggregator.Subscribe<RuntimeResourcesManifestLoadResult>(this);
+            eventAggregator.SubscribeAll(this);
         }
 
         public void Handle(LoadManifestFilesStarted @event)
@@ -40,6 +36,25 @@ namespace Dewey.Manifest
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Unable to find any manifest file in the current working directory.");
+        }
+
+        public void Handle(ManifestFileNotFound @event)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            if (!@event.ManifestFile.DirectoryExists)
+            {
+                Console.WriteLine($"Unable to load manifest file '{@event.ManifestFile.FileName}'. Directory does not exist.");
+            }
+            else
+            {
+                Console.WriteLine($"Unable to load manifest file '{@event.ManifestFile.FileName}'. File does not exist.");
+            }
+        }
+
+        public void Handle(InvalidManifestFile @event)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Unable to load manifest file '{@event.ManifestFile.FileName}'. The xml file is not a valid manifest.");
         }
 
         public void Handle(ManifestFilesFound @event)
