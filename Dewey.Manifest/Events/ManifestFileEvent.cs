@@ -3,11 +3,11 @@ using Dewey.Messaging;
 
 namespace Dewey.Manifest.Events
 {
-    public abstract class ManifestFileResultBase : IEvent
+    public abstract class ManifestFileEvent : IEvent
     {
         public IManifestFileReader ManifestFile { get; private set; }
 
-        public ManifestFileResultBase(IManifestFileReader manifestFile)
+        public ManifestFileEvent(IManifestFileReader manifestFile)
         {
             ManifestFile = manifestFile;
         }

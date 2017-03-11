@@ -2,7 +2,7 @@
 
 namespace Dewey.Manifest.Events
 {
-    public class InvalidManifestFile : ManifestFileResultBase
+    public class InvalidManifestFile : ManifestFileEvent
     {
         public InvalidManifestFile(IManifestFileReader manifestFile) : base(manifestFile) { }
     }

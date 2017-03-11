@@ -1,13 +1,13 @@
 ﻿using Dewey.File;
 using Dewey.Manifest.Events;
-using Dewey.Messaging;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace Dewey.Manifest
 {
     public static class DeweyManifestLoader
     {
-        public static IEvent LoadDeweyManifest(IManifestFileReader manifestFile)
+        public static ManifestFileEvent LoadDeweyManifest(IManifestFileReader manifestFile)
         {
             if (!manifestFile.DirectoryExists || !manifestFile.FileExists) return new ManifestFileNotFound(manifestFile);
 
@@ -23,10 +23,15 @@ namespace Dewey.Manifest
             var runtimeResourcesElement = childElements.FirstOrDefault(x => x.Name == "runtimeResources");
             if (manifestFilesElement != null || componentsElement != null || runtimeResourcesElement != null)
             {
-                return new ManifestFileResult(manifestFile, manifestFilesElement, componentsElement, runtimeResourcesElement);
+                return new ManifestLoadResult(manifestFile, manifestFilesElement, componentsElement, runtimeResourcesElement);
             }
 
             return new EmptyManifestFile(manifestFile);
+        }
+
+        public static void LoadManifestFilesElement(XElement manifestFilesElement)
+        {
+
         }
     }
 }

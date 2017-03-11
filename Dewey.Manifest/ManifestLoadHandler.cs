@@ -5,6 +5,7 @@ using Dewey.Manifest.Repositories;
 using Dewey.Manifest.Repository;
 using Dewey.Messaging;
 using System.Linq;
+using System;
 
 namespace Dewey.Manifest
 {
@@ -12,6 +13,7 @@ namespace Dewey.Manifest
         IEventHandler<RepositoriesManifestLoadResult>,
         IEventHandler<RepositoryManifestLoadResult>,
         IEventHandler<ComponentManifestLoadResult>,
+        IEventHandler<ManifestLoadResult>,
         ICommandHandler<LoadManifestFiles>
     {
         private readonly IEventAggregator _eventAggregator;
@@ -22,9 +24,7 @@ namespace Dewey.Manifest
             _eventAggregator = eventAggregator;
             _manifestFileReaderService = manifestFileReaderService;
 
-            _eventAggregator.Subscribe<RepositoriesManifestLoadResult>(this);
-            _eventAggregator.Subscribe<ComponentManifestLoadResult>(this);
-            _eventAggregator.Subscribe<RepositoryManifestLoadResult>(this);
+            _eventAggregator.SubscribeAll(this);
         }
 
         public void Execute(LoadManifestFiles command)
@@ -47,11 +47,11 @@ namespace Dewey.Manifest
                     _eventAggregator.PublishEvent(loadComponentManifestFileResult);
                     break;
                 case ManifestFileType.Repository:
-                    var loadRepositoryManifestFileResult = RepositoryManifest.LoadRepositoryManifestFile(manifestFile, null);
+                    var loadRepositoryManifestFileResult = DeweyManifestLoader.LoadDeweyManifest(manifestFile);
                     _eventAggregator.PublishEvent(loadRepositoryManifestFileResult);
                     break;
                 case ManifestFileType.Repositories:
-                    var loadRepositoriesManifestFileResult = RepositoriesManifest.LoadRepositoriesManifestFile(manifestFile);
+                    var loadRepositoriesManifestFileResult = DeweyManifestLoader.LoadDeweyManifest(manifestFile);
                     _eventAggregator.PublishEvent(loadRepositoriesManifestFileResult);
                     break;
                 case ManifestFileType.Unknown:
@@ -98,6 +98,14 @@ namespace Dewey.Manifest
         public void Handle(ComponentManifestLoadResult @event)
         {
 
+        }
+
+        public void Handle(ManifestLoadResult @event)
+        {
+            if (@event.ManifestFilesElement != null)
+            {
+                DeweyManifestLoader.LoadManifestFilesElement(@event.ManifestFilesElement);
+            }
         }
     }
 }

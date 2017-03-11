@@ -72,7 +72,7 @@ namespace Dewey.Manifest.Test
             var result = DeweyManifestLoader.LoadDeweyManifest(manifestFileReader);
 
             //Then
-            Assert.IsType<ManifestFileResult>(result);
+            Assert.IsType<ManifestLoadResult>(result);
         }
     }
 }
