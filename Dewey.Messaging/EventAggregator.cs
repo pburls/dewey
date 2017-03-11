@@ -44,7 +44,7 @@ namespace Dewey.Messaging
 
         public void PublishEvent<TEvent>(TEvent @event) where TEvent : IEvent
         {
-            Type eventType = typeof(TEvent);
+            Type eventType = @event.GetType();
 
             foreach (var type in _eventHandlers.Keys)
             {
