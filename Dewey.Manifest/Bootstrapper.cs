@@ -8,6 +8,7 @@ namespace Dewey.Manifest
         public static void RegisterTypes(Container container)
         {
             container.Register<IDependencyElementLoader, DependencyElementLoader>();
+            container.Register<Store>(Lifestyle.Singleton);
         }
     }
 }

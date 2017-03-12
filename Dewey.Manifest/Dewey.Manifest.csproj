@@ -76,6 +76,7 @@
     <Compile Include="Events\LoadManifestFilesStarted.cs" />
     <Compile Include="LoadManifestFilesWriter.cs" />
     <Compile Include="ManifestLoadHandler.cs" />
+    <Compile Include="Messages\GetComponent.cs" />
     <Compile Include="Models\Manifest.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="RuntimeResources\RuntimeResourcesManifestLoadResult.cs" />
     <Compile Include="RuntimeResources\RuntimeResourcesManifest.cs" />
     <Compile Include="RuntimeResources\RuntimeResourcesManifestLoader.cs" />
+    <Compile Include="Store.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dewey.File\Dewey.File.csproj">

@@ -5,9 +5,13 @@ namespace Dewey.Manifest
 {
     public class Module : IModule
     {
-        public Module(Container container, ICommandProcessor commandProcessor)
+        readonly Store _store;
+        readonly LoadManifestFilesWriter _writer;
+
+        public Module(IEventAggregator eventAggregator, ICommandProcessor commandProcessor, Store store)
         {
-            var writer = container.GetInstance<LoadManifestFilesWriter>();
+            _writer = new LoadManifestFilesWriter(eventAggregator);
+            _store = store;
 
             commandProcessor.RegisterHandler<LoadManifestFiles, ManifestLoadHandler>();
         }
