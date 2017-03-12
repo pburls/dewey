@@ -77,7 +77,10 @@
     <Compile Include="LoadManifestFilesWriter.cs" />
     <Compile Include="ManifestLoadHandler.cs" />
     <Compile Include="Messages\GetComponent.cs" />
+    <Compile Include="Messages\GetRuntimeResources.cs" />
+    <Compile Include="Models\Component.cs" />
     <Compile Include="Models\Manifest.cs" />
+    <Compile Include="Models\RuntimeResource.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\RepositoriesManifestLoadResult.cs" />

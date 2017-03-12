@@ -60,5 +60,29 @@ namespace Dewey.Manifest.Test
             Assert.NotNull(getComponentResult);
             Assert.Equal(expectedComponent, getComponentResult.Component);
         }
+
+        [Fact]
+        public void ManifestStore_Caches_LoadManifestFiles_RuntimeResources()
+        {
+            //Given
+            var manifest = new Fixture().Create<Models.Manifest>();
+            var manifestFileReader = new MockManifestFileReader() { Text = JsonConvert.SerializeObject(manifest), MandifestFileType = ManifestFileType.Dewey };
+            _mockManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(manifestFileReader);
+
+            var mockGetRuntimeResourcesResultEventHandler = new Mock<IEventHandler<GetRuntimeResourcesResult>>();
+            _eventAggregator.Subscribe(mockGetRuntimeResourcesResultEventHandler.Object);
+            GetRuntimeResourcesResult getRuntimeResourcesResult = null;
+            mockGetRuntimeResourcesResultEventHandler.Setup(x => x.Handle(It.IsAny<GetRuntimeResourcesResult>())).Callback<GetRuntimeResourcesResult>(result => getRuntimeResourcesResult = result);
+
+            var expectedComponent = manifest.components.First();
+
+            //When
+            _commandProcessor.Execute(new Manifest.LoadManifestFiles());
+            _commandProcessor.Execute(new Manifest.Messages.GetRuntimeResources());
+
+            //Then
+            Assert.NotNull(getRuntimeResourcesResult);
+            Assert.Equal(manifest.runtimeResources, getRuntimeResourcesResult.RuntimeResources.Values);
+        }
     }
 }

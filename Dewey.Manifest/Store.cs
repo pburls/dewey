@@ -8,7 +8,8 @@ namespace Dewey.Manifest
 {
     public class Store : 
         IEventHandler<JsonManifestLoadResult>,
-        ICommandHandler<GetComponent>
+        ICommandHandler<GetComponent>,
+        ICommandHandler<GetRuntimeResources>
     {
         private readonly IEventAggregator _eventAggregator;
 
@@ -23,7 +24,9 @@ namespace Dewey.Manifest
             _componentsDictionary = new Dictionary<string, Models.Component>();
             _runtimeResourcesDictionary = new Dictionary<string, Models.RuntimeResource>();
 
+            //todo: should be able to make a register all.
             commandProcessor.RegisterHandler<GetComponent, Store>();
+            commandProcessor.RegisterHandler<GetRuntimeResources, Store>();
 
             _eventAggregator.SubscribeAll(this);
         }
@@ -53,6 +56,11 @@ namespace Dewey.Manifest
             _componentsDictionary.TryGetValue(command.ComponentName, out component);
 
             _eventAggregator.PublishEvent(new GetComponentResult(command, component));
+        }
+
+        public void Execute(GetRuntimeResources command)
+        {
+            _eventAggregator.PublishEvent(new GetRuntimeResourcesResult(command, _runtimeResourcesDictionary));
         }
     }
 }
