@@ -38,7 +38,7 @@ namespace Dewey.Manifest.Test
         }
 
         [Fact]
-        public void ManifestStore_Caches_LoadManifestFiles_Components()
+        public void ManifestStore_returns_LoadManifestFiles_Component_with_GetComponent()
         {
             //Given
             var manifest = new Fixture().Create<Models.Manifest>();
@@ -62,7 +62,7 @@ namespace Dewey.Manifest.Test
         }
 
         [Fact]
-        public void ManifestStore_Caches_LoadManifestFiles_RuntimeResources()
+        public void ManifestStore_returns_LoadManifestFiles_RuntimeResources_with_GetRuntimeResources()
         {
             //Given
             var manifest = new Fixture().Create<Models.Manifest>();
@@ -83,6 +83,28 @@ namespace Dewey.Manifest.Test
             //Then
             Assert.NotNull(getRuntimeResourcesResult);
             Assert.Equal(manifest.runtimeResources, getRuntimeResourcesResult.RuntimeResources.Values);
+        }
+
+        [Fact]
+        public void ManifestStore_returns_LoadManifestFiles_Components_with_GetComponents()
+        {
+            //Given
+            var manifest = new Fixture().Create<Models.Manifest>();
+            var manifestFileReader = new MockManifestFileReader() { Text = JsonConvert.SerializeObject(manifest), MandifestFileType = ManifestFileType.Dewey };
+            _mockManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(manifestFileReader);
+
+            var mockGetComponentsResultEventHandler = new Mock<IEventHandler<GetComponentsResult>>();
+            _eventAggregator.Subscribe(mockGetComponentsResultEventHandler.Object);
+            GetComponentsResult getComponentsResult = null;
+            mockGetComponentsResultEventHandler.Setup(x => x.Handle(It.IsAny<GetComponentsResult>())).Callback<GetComponentsResult>(result => getComponentsResult = result);
+            
+            //When
+            _commandProcessor.Execute(new Manifest.LoadManifestFiles());
+            _commandProcessor.Execute(new Manifest.Messages.GetComponents());
+
+            //Then
+            Assert.NotNull(getComponentsResult);
+            Assert.Equal(manifest.components, getComponentsResult.Components);
         }
     }
 }
