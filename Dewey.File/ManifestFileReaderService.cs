@@ -22,6 +22,11 @@
             return new RuntimeResourcesManifestFileReader(paths);
         }
 
+        public IManifestFileReader ReadDeweyManifestFile(params string[] paths)
+        {
+            return new DeweyManifestFileReader(paths);
+        }
+
         public IManifestFileReader FindManifestFileInCurrentDirectory()
         {
             //Todo: Change to strategy pattern.

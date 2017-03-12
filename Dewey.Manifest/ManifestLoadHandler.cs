@@ -14,6 +14,7 @@ namespace Dewey.Manifest
         IEventHandler<RepositoryManifestLoadResult>,
         IEventHandler<ComponentManifestLoadResult>,
         IEventHandler<ManifestLoadResult>,
+        IEventHandler<JsonManifestLoadResult>,
         ICommandHandler<LoadManifestFiles>
     {
         private readonly IEventAggregator _eventAggregator;
@@ -31,31 +32,31 @@ namespace Dewey.Manifest
         {
             _eventAggregator.PublishEvent(new LoadManifestFilesStarted());
 
-            var manifestFile = _manifestFileReaderService.FindManifestFileInCurrentDirectory();
-            if (manifestFile == null)
+            var manifestFileReader = _manifestFileReaderService.FindManifestFileInCurrentDirectory();
+            if (manifestFileReader == null)
             {
                 _eventAggregator.PublishEvent(new NoManifestFileFoundResult());
                 return;
             }
 
-            _eventAggregator.PublishEvent(new ManifestFilesFound(manifestFile.FileName));
+            _eventAggregator.PublishEvent(new ManifestFilesFound(manifestFileReader.FileName));
 
-            switch (manifestFile.MandifestFileType)
+            switch (manifestFileReader.MandifestFileType)
             {
                 case ManifestFileType.Component:
-                    var loadComponentManifestFileResult = ComponentManifest.LoadComponentManifestFile(manifestFile, null);
+                    var loadComponentManifestFileResult = ComponentManifest.LoadComponentManifestFile(manifestFileReader, null);
                     _eventAggregator.PublishEvent(loadComponentManifestFileResult);
                     break;
                 case ManifestFileType.Repository:
-                    var loadRepositoryManifestFileResult = DeweyManifestLoader.LoadDeweyManifest(manifestFile);
+                    var loadRepositoryManifestFileResult = DeweyManifestLoader.LoadDeweyManifest(manifestFileReader);
                     _eventAggregator.PublishEvent(loadRepositoryManifestFileResult);
                     break;
                 case ManifestFileType.Repositories:
-                    var loadRepositoriesManifestFileResult = DeweyManifestLoader.LoadDeweyManifest(manifestFile);
+                    var loadRepositoriesManifestFileResult = DeweyManifestLoader.LoadDeweyManifest(manifestFileReader);
                     _eventAggregator.PublishEvent(loadRepositoriesManifestFileResult);
                     break;
                 case ManifestFileType.Dewey:
-                    var loadDeweyManifestResult = DeweyManifestLoader.LoadJsonDeweyManifest(manifestFile);
+                    var loadDeweyManifestResult = DeweyManifestLoader.LoadJsonDeweyManifest(manifestFileReader);
                     _eventAggregator.PublishEvent(loadDeweyManifestResult);
                     break;
                 case ManifestFileType.Unknown:
@@ -109,6 +110,19 @@ namespace Dewey.Manifest
             if (@event.ManifestFilesElement != null)
             {
                 DeweyManifestLoader.LoadManifestFilesElement(@event.ManifestFilesElement);
+            }
+        }
+
+        public void Handle(JsonManifestLoadResult loadResult)
+        {
+            if (loadResult.Manifest.manifestFiles != null)
+            {
+                foreach (var manifestFile in loadResult.Manifest.manifestFiles)
+                {
+                    var manifestFileReader = _manifestFileReaderService.ReadDeweyManifestFile(loadResult.ManifestFile.DirectoryName, manifestFile.location);
+                    var loadDeweyManifestResult = DeweyManifestLoader.LoadJsonDeweyManifest(manifestFileReader);
+                    _eventAggregator.PublishEvent(loadDeweyManifestResult);
+                }
             }
         }
     }

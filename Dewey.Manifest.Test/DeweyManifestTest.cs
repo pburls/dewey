@@ -13,6 +13,7 @@ namespace Dewey.Manifest.Test
 {
     public class DeweyManifestTest
     {
+        readonly Fixture _fixture;
         readonly Container _container;
         readonly IEventAggregator _eventAggregator;
         readonly ICommandProcessor _commandProcessor;
@@ -21,6 +22,10 @@ namespace Dewey.Manifest.Test
 
         public DeweyManifestTest()
         {
+            _fixture = new Fixture();
+            _fixture.Customizations.Add(new PropertyTypeOmitter(typeof(IManifestFileReader)));
+
+
             _container = new Container();
             _mockManifestFileReaderService = new Mock<IManifestFileReaderService>();
 
@@ -37,7 +42,7 @@ namespace Dewey.Manifest.Test
         public void ManifestStore_returns_LoadManifestFiles_Component_with_GetComponent()
         {
             //Given
-            var manifest = new Fixture().Create<Models.Manifest>();
+            var manifest = _fixture.Build<Models.Manifest>().Without(x => x.manifestFiles).Create();
             var manifestFileReader = new MockManifestFileReader() { Text = JsonConvert.SerializeObject(manifest), MandifestFileType = ManifestFileType.Dewey };
             _mockManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(manifestFileReader);
 
@@ -61,7 +66,7 @@ namespace Dewey.Manifest.Test
         public void ManifestStore_returns_LoadManifestFiles_RuntimeResources_with_GetRuntimeResources()
         {
             //Given
-            var manifest = new Fixture().Create<Models.Manifest>();
+            var manifest = _fixture.Build<Models.Manifest>().Without(x => x.manifestFiles).Create();
             var manifestFileReader = new MockManifestFileReader() { Text = JsonConvert.SerializeObject(manifest), MandifestFileType = ManifestFileType.Dewey };
             _mockManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(manifestFileReader);
 
@@ -85,7 +90,7 @@ namespace Dewey.Manifest.Test
         public void ManifestStore_returns_LoadManifestFiles_Components_with_GetComponents()
         {
             //Given
-            var manifest = new Fixture().Create<Models.Manifest>();
+            var manifest = _fixture.Build<Models.Manifest>().Without(x => x.manifestFiles).Create();
             var manifestFileReader = new MockManifestFileReader() { Text = JsonConvert.SerializeObject(manifest), MandifestFileType = ManifestFileType.Dewey };
             _mockManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(manifestFileReader);
 
@@ -101,6 +106,28 @@ namespace Dewey.Manifest.Test
             //Then
             Assert.NotNull(getComponentsResult);
             Assert.Equal(manifest.components, getComponentsResult.Components);
+        }
+
+        [Fact]
+        public void ManifestLoadHandler_should_load_ManifestFileReader_foreach_ManifestFileReference()
+        {
+            //Given
+            var manifest = _fixture.Build<Models.Manifest>()
+                .Without(x => x.components)
+                .Without(x => x.runtimeResources)
+                .Create();
+
+            var manifestFileReader = new MockManifestFileReader() { Text = JsonConvert.SerializeObject(manifest), MandifestFileType = ManifestFileType.Dewey, DirectoryName = "testDirectory" };
+            _mockManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(manifestFileReader);
+
+            var childManifestFileReader = new MockManifestFileReader() { Text = "", MandifestFileType = ManifestFileType.Dewey };
+            _mockManifestFileReaderService.Setup(x => x.ReadDeweyManifestFile(It.IsAny<string[]>())).Returns(childManifestFileReader);
+
+            //When
+            _commandProcessor.Execute(new Manifest.LoadManifestFiles());
+
+            //Then
+            _mockManifestFileReaderService.Verify(x => x.ReadDeweyManifestFile(manifestFileReader.DirectoryName, It.IsAny<string>()), Times.Exactly(manifest.manifestFiles.Length));
         }
     }
 }

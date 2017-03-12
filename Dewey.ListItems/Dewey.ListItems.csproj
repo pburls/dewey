@@ -51,8 +51,6 @@
     <Compile Include="ListItemsCommandHandler.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RepositoriesFile.cs" />
-    <Compile Include="Repository.cs" />
     <Compile Include="RuntimeResource.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -23,6 +23,11 @@ namespace Dewey.Test
             return _mockManifestFileReader;
         }
 
+        public IManifestFileReader ReadDeweyManifestFile(params string[] paths)
+        {
+            return _mockManifestFileReader;
+        }
+
         public IManifestFileReader ReadRepositoriesManifestFile()
         {
             return _mockManifestFileReader;
