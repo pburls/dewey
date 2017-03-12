@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Dewey.File
+﻿namespace Dewey.File
 {
     public class ManifestFileReaderService : IManifestFileReaderService
     {
@@ -27,6 +25,11 @@ namespace Dewey.File
         public IManifestFileReader FindManifestFileInCurrentDirectory()
         {
             //Todo: Change to strategy pattern.
+            if (System.IO.File.Exists(DeweyManifestFileReader.DEFAULT_FILE_NAME))
+            {
+                return new DeweyManifestFileReader();
+            }
+
             if (System.IO.File.Exists(RepositoriesManifestFileReader.DEFAULT_REPOSITORIES_FILE_NAME))
             {
                 return new RepositoriesManifestFileReader();

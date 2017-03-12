@@ -1,5 +1,6 @@
 ﻿using Dewey.File;
 using Dewey.Manifest.Events;
+using Newtonsoft.Json;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -33,5 +34,21 @@ namespace Dewey.Manifest
         {
 
         }
+
+        public static ManifestFileEvent LoadJsonDeweyManifest(IManifestFileReader manifestFile)
+        {
+            if (!manifestFile.DirectoryExists || !manifestFile.FileExists) return new ManifestFileNotFound(manifestFile);
+
+            var manifest = JsonConvert.DeserializeObject<Manifest.Models.Manifest>(manifestFile.LoadText());
+
+            if (manifest == null)
+            {
+                return new EmptyManifestFile(manifestFile);
+            }
+
+            return new JsonManifestLoadResult(manifestFile, manifest);
+        }
     }
+
+
 }

@@ -68,6 +68,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeweyManifestJsonLoaderTest.cs" />
     <Compile Include="DeweyManifestLoaderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryManifestTest.cs" />

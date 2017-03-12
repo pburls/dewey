@@ -53,6 +53,8 @@ namespace Dewey.Test
 
         public string XmlText { get; set; }
 
+        public string Text { get; set; }
+
         public ManifestFileType MandifestFileType { get; set; }
 
         public MockManifestFileReader()
@@ -64,6 +66,11 @@ namespace Dewey.Test
         public XElement Load()
         {
             return XElement.Parse(XmlText);
+        }
+
+        public string LoadText()
+        {
+            return Text;
         }
 
         public override string ToString()

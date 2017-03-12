@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Xml.Linq;
 
 namespace Dewey.File
@@ -31,6 +30,14 @@ namespace Dewey.File
         public XElement Load()
         {
             return XElement.Load(FileName);
+        }
+
+        public string LoadText()
+        {
+            using (StreamReader file = System.IO.File.OpenText(FileName))
+            {
+                return file.ReadToEnd();
+            }
         }
     }
 }

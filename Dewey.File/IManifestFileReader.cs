@@ -8,7 +8,8 @@ namespace Dewey.File
         Component,
         Repository,
         Repositories,
-        RuntimeResources
+        RuntimeResources,
+        Dewey
     }
 
     public interface IManifestFileReader
@@ -21,5 +22,7 @@ namespace Dewey.File
         string FileName { get; }
 
         XElement Load();
+
+        string LoadText();
     }
 }

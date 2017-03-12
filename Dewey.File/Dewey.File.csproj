@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="DeweyManifestFileReader.cs" />
     <Compile Include="RuntimeResourcesManifestFileReader.cs" />
     <Compile Include="ComponentManifestFileReader.cs" />
     <Compile Include="FileService.cs" />

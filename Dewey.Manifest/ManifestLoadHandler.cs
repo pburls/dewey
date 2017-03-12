@@ -54,6 +54,10 @@ namespace Dewey.Manifest
                     var loadRepositoriesManifestFileResult = DeweyManifestLoader.LoadDeweyManifest(manifestFile);
                     _eventAggregator.PublishEvent(loadRepositoriesManifestFileResult);
                     break;
+                case ManifestFileType.Dewey:
+                    var loadDeweyManifestResult = DeweyManifestLoader.LoadDeweyManifest(manifestFile);
+                    _eventAggregator.PublishEvent(loadDeweyManifestResult);
+                    break;
                 case ManifestFileType.Unknown:
                 default:
                     break;
