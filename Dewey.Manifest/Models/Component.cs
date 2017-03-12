@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dewey.File;
+using System;
 
 namespace Dewey.Manifest.Models
 {
@@ -10,6 +11,7 @@ namespace Dewey.Manifest.Models
         public string context { get; set; }
         public Build[] builds { get; set; }
         public Dependency[] dependencies { get; set; }
+        public IManifestFileReader File { get; set; }
 
         public bool Equals(Component other)
         {

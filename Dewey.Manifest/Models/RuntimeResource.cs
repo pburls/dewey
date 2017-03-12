@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dewey.File;
+using System;
 
 namespace Dewey.Manifest.Models
 {
@@ -9,6 +10,7 @@ namespace Dewey.Manifest.Models
         public string provider { get; set; }
         public string format { get; set; }
         public string context { get; set; }
+        public IManifestFileReader File { get; set; }
 
         public bool Equals(RuntimeResource other)
         {

@@ -6,11 +6,7 @@ using Moq;
 using Newtonsoft.Json;
 using Ploeh.AutoFixture;
 using SimpleInjector;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Dewey.Manifest.Test

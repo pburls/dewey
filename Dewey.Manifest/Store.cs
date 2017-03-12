@@ -39,6 +39,7 @@ namespace Dewey.Manifest
             {
                 foreach (var component in loadResult.Manifest.components)
                 {
+                    component.File = loadResult.ManifestFile;
                     _componentsDictionary.Add(component.name, component);
                 }
             }
@@ -47,6 +48,7 @@ namespace Dewey.Manifest
             {
                 foreach (var runtimeResource in loadResult.Manifest.runtimeResources)
                 {
+                    runtimeResource.File = loadResult.ManifestFile;
                     _runtimeResourcesDictionary.Add(runtimeResource.name, runtimeResource);
                 }
             }
