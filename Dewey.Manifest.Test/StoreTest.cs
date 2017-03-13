@@ -2,6 +2,7 @@
 using Dewey.Manifest.Events;
 using Dewey.Manifest.Messages;
 using Dewey.Messaging;
+using Dewey.Test;
 using Moq;
 using Ploeh.AutoFixture;
 using System.Linq;

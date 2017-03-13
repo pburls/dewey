@@ -2,13 +2,13 @@
 using System;
 using System.Reflection;
 
-namespace Dewey.Manifest.Test
+namespace Dewey.Test
 {
-    internal class PropertyTypeOmitter : ISpecimenBuilder
+    public class PropertyTypeOmitter : ISpecimenBuilder
     {
         private readonly Type type;
 
-        internal PropertyTypeOmitter(Type type)
+        public PropertyTypeOmitter(Type type)
         {
             if (type == null)
                 throw new ArgumentNullException("type");
@@ -16,7 +16,7 @@ namespace Dewey.Manifest.Test
             this.type = type;
         }
 
-        internal Type Type
+        public Type Type
         {
             get { return this.type; }
         }
