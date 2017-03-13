@@ -84,6 +84,7 @@
     <Compile Include="PropertyTypeOmitter.cs" />
     <Compile Include="RepositoryManifestTest.cs" />
     <Compile Include="RuntimeResourcesManifestLoaderTest.cs" />
+    <Compile Include="StoreTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
