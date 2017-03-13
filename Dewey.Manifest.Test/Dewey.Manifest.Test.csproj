@@ -79,6 +79,7 @@
     <Compile Include="DeweyManifestJsonLoaderTest.cs" />
     <Compile Include="DeweyManifestLoaderTest.cs" />
     <Compile Include="DeweyManifestTest.cs" />
+    <Compile Include="ManifestLoadHandlerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyTypeOmitter.cs" />
     <Compile Include="RepositoryManifestTest.cs" />
