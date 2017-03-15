@@ -31,7 +31,7 @@ namespace Dewey.Manifest.Test
         public void Handle_JsonManifestLoadResult_should_load_ManifestFile_references()
         {
             //Given
-            var manifest = _fixture.Build<Models.Manifest>()
+            var manifest = _fixture.Build<Manifest.Models.Manifest>()
                 .Without(x => x.components)
                 .Without(x => x.runtimeResources)
                 .Create();

@@ -1,17 +1,41 @@
 ﻿using Dewey.File;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 
 namespace Dewey.Manifest.Models
 {
     public class Component : IEquatable<Component>
     {
-        public string name { get; set; }
-        public string type { get; set; }
-        public string subtype { get; set; }
-        public string context { get; set; }
-        public Build[] builds { get; set; }
-        public Dependency[] dependencies { get; set; }
+        public JObject BackingData { get; private set; }
+
+        public string name { get { return (string)BackingData["name"]; } set { BackingData["name"] = value; } }
+        public string type { get { return (string)BackingData["type"]; } set { BackingData["type"] = value; } }
+        public string subtype { get { return (string)BackingData["subtype"]; } set { BackingData["subtype"] = value; } }
+        public string context { get { return (string)BackingData["context"]; } set { BackingData["context"] = value; } }
+
         public IManifestFileReader File { get; set; }
+
+        public Component()
+        {
+            BackingData = new JObject();
+        }
+
+        public Component(JObject data)
+        {
+            BackingData = data;
+        }
+
+        public string ToJson()
+        {
+            return BackingData.ToString();
+        }
+
+        public static Component FromJson(string json)
+        {
+            return new Component(JObject.Parse(json));
+        }
 
         public bool Equals(Component other)
         {
@@ -52,13 +76,6 @@ namespace Dewey.Manifest.Models
         {
             return !(a == b);
         }
-    }
-
-    public class Build
-    {
-        public string type { get; set; }
-        public string target { get; set; }
-        public string msbuildVersion { get; set; }
     }
 
     public class Dependency

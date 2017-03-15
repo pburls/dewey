@@ -33,7 +33,7 @@ namespace Dewey.Manifest.Test
         public void Handle_JsonManifestLoadResult_should_store_components_by_name()
         {
             //Given
-            var manifest = _fixture.Build<Models.Manifest>().Create();
+            var manifest = _fixture.Build<Manifest.Models.Manifest>().Create();
             var jsonManifestLoadResult = new JsonManifestLoadResult(null, manifest);
 
             var expectedComponent = manifest.components.First();
@@ -54,7 +54,7 @@ namespace Dewey.Manifest.Test
         public void Handle_JsonManifestLoadResult_should_store_all_components()
         {
             //Given
-            var manifest = _fixture.Build<Models.Manifest>().Create();
+            var manifest = _fixture.Build<Manifest.Models.Manifest>().Create();
             var jsonManifestLoadResult = new JsonManifestLoadResult(null, manifest);
 
             GetComponentsResult actualGetComponentsResult = null;
@@ -73,7 +73,7 @@ namespace Dewey.Manifest.Test
         public void Handle_JsonManifestLoadResult_should_store_all_runtime_resources()
         {
             //Given
-            var manifest = _fixture.Build<Models.Manifest>().Create();
+            var manifest = _fixture.Build<Manifest.Models.Manifest>().Create();
             var jsonManifestLoadResult = new JsonManifestLoadResult(null, manifest);
 
             GetRuntimeResourcesResult actualGetRuntimeResourcesResult = null;

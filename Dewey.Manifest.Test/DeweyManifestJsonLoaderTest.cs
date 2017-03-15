@@ -1,6 +1,5 @@
 ﻿using Dewey.Manifest.Events;
 using Dewey.Test;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Dewey.Manifest.Test

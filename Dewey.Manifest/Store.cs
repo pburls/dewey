@@ -39,7 +39,7 @@ namespace Dewey.Manifest
             {
                 foreach (var component in loadResult.Manifest.components)
                 {
-                    component.File = loadResult.ManifestFile;
+                    component.File = loadResult.ManifestFile; //todo: could this not just be a location string set by the loader rather?
                     _componentsDictionary.Add(component.name, component);
                 }
             }
@@ -48,7 +48,7 @@ namespace Dewey.Manifest
             {
                 foreach (var runtimeResource in loadResult.Manifest.runtimeResources)
                 {
-                    runtimeResource.File = loadResult.ManifestFile;
+                    runtimeResource.File = loadResult.ManifestFile; //todo: could this not just be a location string set by the loader rather?
                     _runtimeResourcesDictionary.Add(runtimeResource.name, runtimeResource);
                 }
             }

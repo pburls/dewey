@@ -1,16 +1,39 @@
 ﻿using Dewey.File;
+using Newtonsoft.Json.Linq;
 using System;
 
 namespace Dewey.Manifest.Models
 {
     public class RuntimeResource : IEquatable<RuntimeResource>
     {
-        public string type { get; set; }
-        public string name { get; set; }
-        public string provider { get; set; }
-        public string format { get; set; }
-        public string context { get; set; }
+        public JObject BackingData { get; private set; }
+
+        public string type { get { return (string)BackingData["type"]; } set { BackingData["type"] = value; } }
+        public string name { get { return (string)BackingData["name"]; } set { BackingData["name"] = value; } }
+        public string provider { get { return (string)BackingData["provider"]; } set { BackingData["provider"] = value; } }
+        public string format { get { return (string)BackingData["format"]; } set { BackingData["format"] = value; } }
+        public string context { get { return (string)BackingData["context"]; } set { BackingData["context"] = value; } }
         public IManifestFileReader File { get; set; }
+
+        public RuntimeResource()
+        {
+            BackingData = new JObject();
+        }
+
+        public RuntimeResource(JObject data)
+        {
+            BackingData = data;
+        }
+
+        public string ToJson()
+        {
+            return BackingData.ToString();
+        }
+
+        public static RuntimeResource FromJson(string json)
+        {
+            return new RuntimeResource(JObject.Parse(json));
+        }
 
         public bool Equals(RuntimeResource other)
         {
