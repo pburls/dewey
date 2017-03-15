@@ -39,14 +39,15 @@ namespace Dewey.Manifest
         {
             if (!manifestFile.DirectoryExists || !manifestFile.FileExists) return new ManifestFileNotFound(manifestFile);
 
-            var manifest = JsonConvert.DeserializeObject<Manifest.Models.Manifest>(manifestFile.LoadText());
-
-            if (manifest == null)
+            try
             {
-                return new EmptyManifestFile(manifestFile);
+                var manifest = Models.Manifest.FromJson(manifestFile.LoadText());
+                return new JsonManifestLoadResult(manifestFile, manifest);
             }
-
-            return new JsonManifestLoadResult(manifestFile, manifest);
+            catch (System.Exception ex)
+            {
+                return new InvalidJsonManifestFile(manifestFile, ex);
+            }
         }
     }
 

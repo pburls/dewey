@@ -64,6 +64,7 @@
     <Compile Include="Dependency\QueueDependency.cs" />
     <Compile Include="DeweyManifestLoader.cs" />
     <Compile Include="Events\EmptyManifestFile.cs" />
+    <Compile Include="Events\InvalidJsonManifestFile.cs" />
     <Compile Include="Events\InvalidManifestFile.cs" />
     <Compile Include="Events\JsonManifestLoadResult.cs" />
     <Compile Include="Events\LoadManifestFilesResult.cs" />

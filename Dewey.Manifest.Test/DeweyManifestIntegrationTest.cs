@@ -42,7 +42,7 @@ namespace Dewey.Manifest.Test
         {
             //Given
             var manifest = _fixture.Build<Manifest.Models.Manifest>().Without(x => x.manifestFiles).Create();
-            var manifestFileReader = new MockManifestFileReader() { Text = JsonConvert.SerializeObject(manifest), MandifestFileType = ManifestFileType.Dewey };
+            var manifestFileReader = new MockManifestFileReader() { Text = manifest.ToJson(), MandifestFileType = ManifestFileType.Dewey };
             _mockManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(manifestFileReader);
 
             var mockGetRuntimeResourcesResultEventHandler = new Mock<IEventHandler<GetRuntimeResourcesResult>>();
@@ -61,7 +61,7 @@ namespace Dewey.Manifest.Test
         {
             //Given
             var manifest = _fixture.Build<Manifest.Models.Manifest>().Without(x => x.manifestFiles).Create();
-            var manifestFileReader = new MockManifestFileReader() { Text = JsonConvert.SerializeObject(manifest), MandifestFileType = ManifestFileType.Dewey };
+            var manifestFileReader = new MockManifestFileReader() { Text = manifest.ToJson(), MandifestFileType = ManifestFileType.Dewey };
             _mockManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(manifestFileReader);
 
             var mockGetComponentsResultEventHandler = new Mock<IEventHandler<GetComponentsResult>>();

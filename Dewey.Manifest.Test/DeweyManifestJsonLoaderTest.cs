@@ -7,7 +7,7 @@ namespace Dewey.Manifest.Test
     public class DeweyManifestJsonLoaderTest
     {
         [Fact]
-        public void LoadJsonDeweyManifest_returns_EmptyManifestFile_for_ManifestFileReader_with_no_text()
+        public void LoadJsonDeweyManifest_returns_InvalidJsonManifestFile_for_ManifestFileReader_with_no_text()
         {
             //Given
             var manifestFileReader = new MockManifestFileReader() { Text = @"" };
@@ -16,7 +16,20 @@ namespace Dewey.Manifest.Test
             var result = DeweyManifestLoader.LoadJsonDeweyManifest(manifestFileReader);
 
             //Then
-            Assert.IsType<EmptyManifestFile>(result);
+            Assert.IsType<InvalidJsonManifestFile>(result);
+        }
+
+        [Fact]
+        public void LoadJsonDeweyManifest_returns_InvalidJsonManifestFile_for_ManifestFileReader_with_invalid_text()
+        {
+            //Given
+            var manifestFileReader = new MockManifestFileReader() { Text = @" {as[dfasd\t<>\\£${%#]}" };
+
+            //When
+            var result = DeweyManifestLoader.LoadJsonDeweyManifest(manifestFileReader);
+
+            //Then
+            Assert.IsType<InvalidJsonManifestFile>(result);
         }
 
         [Fact]

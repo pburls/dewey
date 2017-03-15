@@ -11,33 +11,54 @@ namespace Dewey.Manifest.Models
         {
             get
             {
-                return BackingData["manifestFiles"].Select(x => new ManifestFile(x as JObject)).ToArray();
+                return BackingData["manifestFiles"]?.Select(x => new ManifestFile(x as JObject)).ToArray();
             }
             set
             {
-                BackingData["manifestFiles"] = new JArray(value.Select(x => x.BackingData));
+                if (value != null)
+                {
+                    BackingData["manifestFiles"] = new JArray(value.Select(x => x.BackingData));
+                }
+                else
+                {
+                    BackingData.Remove("manifestFiles");
+                }
             }
         }
         public Component[] components
         {
             get
             {
-                return BackingData["components"].Select(x => new Component(x as JObject)).ToArray();
+                return BackingData["components"]?.Select(x => new Component(x as JObject)).ToArray();
             }
             set
             {
-                BackingData["components"] = new JArray(value.Select(x => x.BackingData));
+                if (value != null)
+                {
+                    BackingData["components"] = new JArray(value.Select(x => x.BackingData));
+                }
+                else
+                {
+                    BackingData.Remove("components");
+                }
             }
         }
         public RuntimeResource[] runtimeResources
         {
             get
             {
-                return BackingData["runtimeResources"].Select(x => new RuntimeResource(x as JObject)).ToArray();
+                return BackingData["runtimeResources"]?.Select(x => new RuntimeResource(x as JObject)).ToArray();
             }
             set
             {
-                BackingData["runtimeResources"] = new JArray(value.Select(x => x.BackingData));
+                if (value != null)
+                {
+                    BackingData["runtimeResources"] = new JArray(value.Select(x => x.BackingData));
+                }
+                else
+                {
+                    BackingData.Remove("runtimeResources");
+                }
             }
         }
 
@@ -58,7 +79,8 @@ namespace Dewey.Manifest.Models
 
         public static Manifest FromJson(string json)
         {
-            return new Manifest(JObject.Parse(json));
+            var data = JObject.Parse(json);
+            return new Manifest(data);
         }
     }
 

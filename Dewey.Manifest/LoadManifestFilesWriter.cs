@@ -20,7 +20,8 @@ namespace Dewey.Manifest
         IEventHandler<RuntimeResourcesManifestLoadResult>,
         IEventHandler<ManifestFileNotFound>,
         IEventHandler<InvalidManifestFile>,
-        IEventHandler<EmptyManifestFile>
+        IEventHandler<EmptyManifestFile>,
+        IEventHandler<InvalidJsonManifestFile>
     {
         public LoadManifestFilesWriter(IEventAggregator eventAggregator)
         {
@@ -62,6 +63,12 @@ namespace Dewey.Manifest
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Unable to load manifest file '{@event.ManifestFile.FileName}'. The xml file is not a valid manifest.");
+        }
+
+        public void Handle(InvalidJsonManifestFile @event)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Unable to parse json manifest file '{@event.ManifestFile.FileName}'. {@event.ParseException.Message}");
         }
 
         public void Handle(ManifestFilesFound @event)
