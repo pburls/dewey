@@ -17,13 +17,12 @@ namespace Dewey.Build
         {
             var buildActions = _container.GetAllInstances<IBuildAction>().ToDictionary(x => x.BuildType);
 
-            IBuildAction buildAction;
-            if(!buildActions.TryGetValue(buildType, out buildAction))
+            if (buildActions.ContainsKey(buildType))
             {
-                throw new ArgumentOutOfRangeException("buildType", buildType, string.Format("Unknown build type {0}.", buildType));
+                return buildActions[buildType];
             }
 
-            return buildAction;
+            return null;
         }
     }
 }

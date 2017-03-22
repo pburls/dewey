@@ -1,13 +1,19 @@
 ﻿using Dewey.Manifest.Component;
+using Dewey.Manifest.Models;
 using Dewey.Messaging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Dewey.Build.Events
 {
+    public class JsonMSBuildExecutableNotFoundResult : JsonBuildEvent
+    {
+        public string MSBuildVersion { get; private set; }
+
+        public JsonMSBuildExecutableNotFoundResult(Component componentManifest, Models.Build build, string msbuildVersion) : base(componentManifest, build)
+        {
+            MSBuildVersion = msbuildVersion;
+        }
+    }
+
     public class MSBuildExecutableNotFoundResult : IEvent
     {
         public ComponentManifest ComponentManifest { get; private set; }

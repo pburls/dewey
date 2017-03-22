@@ -1,7 +1,8 @@
 ﻿using Dewey.Build.Events;
 using Dewey.Manifest.Dependency;
+using Dewey.Manifest.Messages;
+using Dewey.Manifest.Models;
 using Dewey.Messaging;
-using Dewey.State.Messages;
 using Dewey.Test;
 using Moq;
 using Ploeh.AutoFixture;
@@ -44,28 +45,23 @@ namespace Dewey.Build.Test
         {
             //Given
             var buildCommand = new BuildCommand("testComponentName", true);
-            var getComponentResult = fixture.Create<GetComponentResult>();
-            getComponentResult = getComponentResult.WithCommand(new GetComponent(buildCommand.ComponentName))
-                                                   .WithComponent(getComponentResult.Component.WithComponentMandifest(getComponentResult.Component.ComponentManifest.WithName(buildCommand.ComponentName)));
+            var component = fixture.Build<Component>()
+                                   .With(x => x.name, buildCommand.ComponentName)
+                                   .Create();
+            var getComponent = new GetComponent(buildCommand.ComponentName);
+            var getComponentResult = new GetComponentResult(getComponent, component);
             commandProcessorMock.Setup(x => x.Execute(getComponentResult.Command)).Callback<ICommand>((command) =>
             {
                 target.Handle(getComponentResult);
             });
 
-            var buildElementResult = fixture.Create<BuildElementResult>();
-            buildElementResult = buildElementResult.WithCommand(buildCommand);
-            buildElementLoaderMock.Setup(x => x.LoadFromComponentManifest(buildCommand, getComponentResult.Component.ComponentElement)).Callback(() =>
-            {
-                target.Handle(buildElementResult);
-            });
+            //var dependencyElementResult = fixture.Create<DependencyElementResult>().WithType(ComponentDependency.COMPONENT_DEPENDENCY_TYPE).WithComponentManifest(getComponentResult.Component.ComponentManifest);
+            //dependencyElementLoaderMock.Setup(x => x.LoadFromComponentManifest(getComponentResult.Component.ComponentManifest, getComponentResult.Component.ComponentElement)).Callback(() =>
+            //{
+            //    target.Handle(dependencyElementResult);
+            //});
 
-            var dependencyElementResult = fixture.Create<DependencyElementResult>().WithType(ComponentDependency.COMPONENT_DEPENDENCY_TYPE).WithComponentManifest(getComponentResult.Component.ComponentManifest);
-            dependencyElementLoaderMock.Setup(x => x.LoadFromComponentManifest(getComponentResult.Component.ComponentManifest, getComponentResult.Component.ComponentElement)).Callback(() =>
-            {
-                target.Handle(dependencyElementResult);
-            });
-
-            var dependecyBuildCommand = new BuildCommand(dependencyElementResult.Name, true);
+            var dependecyBuildCommand = new BuildCommand("replaceme"/*dependencyElementResult.Name*/, true);
             commandProcessorMock.Setup(x => x.Execute(dependecyBuildCommand)).Callback(() =>
             {
                 var childDependencyElementResult = fixture.Create<DependencyElementResult>();
@@ -78,5 +74,45 @@ namespace Dewey.Build.Test
             //Then
             commandProcessorMock.Verify(x => x.Execute(dependecyBuildCommand), Times.Once, "A build command was not dispatched for the dependency.");
         }
+
+        //[Fact]
+        //public void BuildCommandHandler_onlyBuildsDependciesForCommandsComponent()
+        //{
+        //    //Given
+        //    var buildCommand = new BuildCommand("testComponentName", true);
+        //    var getComponentResult = fixture.Create<GetComponentResult>();
+        //    getComponentResult = getComponentResult.WithCommand(new GetComponent(buildCommand.ComponentName))
+        //                                           .WithComponent(getComponentResult.Component.WithComponentMandifest(getComponentResult.Component.ComponentManifest.WithName(buildCommand.ComponentName)));
+        //    commandProcessorMock.Setup(x => x.Execute(getComponentResult.Command)).Callback<ICommand>((command) =>
+        //    {
+        //        //target.Handle(getComponentResult);
+        //    });
+
+        //    var buildElementResult = fixture.Create<BuildElementResult>();
+        //    buildElementResult = buildElementResult.WithCommand(buildCommand);
+        //    buildElementLoaderMock.Setup(x => x.LoadFromComponentManifest(buildCommand, getComponentResult.Component.ComponentElement)).Callback(() =>
+        //    {
+        //        target.Handle(buildElementResult);
+        //    });
+
+        //    var dependencyElementResult = fixture.Create<DependencyElementResult>().WithType(ComponentDependency.COMPONENT_DEPENDENCY_TYPE).WithComponentManifest(getComponentResult.Component.ComponentManifest);
+        //    dependencyElementLoaderMock.Setup(x => x.LoadFromComponentManifest(getComponentResult.Component.ComponentManifest, getComponentResult.Component.ComponentElement)).Callback(() =>
+        //    {
+        //        target.Handle(dependencyElementResult);
+        //    });
+
+        //    var dependecyBuildCommand = new BuildCommand(dependencyElementResult.Name, true);
+        //    commandProcessorMock.Setup(x => x.Execute(dependecyBuildCommand)).Callback(() =>
+        //    {
+        //        var childDependencyElementResult = fixture.Create<DependencyElementResult>();
+        //        target.Handle(childDependencyElementResult);
+        //    });
+
+        //    //When
+        //    target.Execute(buildCommand);
+
+        //    //Then
+        //    commandProcessorMock.Verify(x => x.Execute(dependecyBuildCommand), Times.Once, "A build command was not dispatched for the dependency.");
+        //}
     }
 }
