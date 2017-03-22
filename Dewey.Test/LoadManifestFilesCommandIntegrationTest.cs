@@ -1,11 +1,11 @@
 ﻿using Dewey.File;
 using Dewey.Manifest;
-using Dewey.Manifest.Component;
-using Dewey.Manifest.Repositories;
-using Dewey.Manifest.Repository;
+using Dewey.Manifest.Events;
 using Dewey.Messaging;
 using Moq;
+using Ploeh.AutoFixture;
 using SimpleInjector;
+using System.Linq;
 using Xunit;
 
 namespace Dewey.Test
@@ -17,6 +17,8 @@ namespace Dewey.Test
         Container container;
         ICommandProcessor commandProcessor;
         IEventAggregator eventAggregator;
+
+        Fixture fixture;
 
         public LoadManifestFilesCommandIntegrationTest()
         {
@@ -35,18 +37,24 @@ namespace Dewey.Test
 
             commandProcessor = container.GetInstance<ICommandProcessor>();
             eventAggregator = container.GetInstance<IEventAggregator>();
+
+            fixture = new Fixture();
+            fixture.Register<File.IManifestFileReader>(() => { return new MockManifestFileReader() { DirectoryName = "test" }; });
         }
 
         [Fact]
-        public void LoadManifestFilesCommand_ForComponentManifestFileReader_Should_Publish_ComponentManifestLoadResult()
+        public void LoadManifestFilesCommand_ForDeweyManifestFileReader_Should_Publish_JsonManifestLoadResult()
         {
             //Given
-            var xmlText = "<componentManifest name=\"ExampleWebApiComp\" type=\"web\"/>";
-            var manifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Component, XmlText = xmlText };
+            var manifest = fixture.Create<Manifest.Models.Manifest>();
+            var manifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Dewey, Text = manifest.ToJson() };
             mockIManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(manifestFileReader);
 
-            var mockComponentManifestLoadResultEventHandler = new Mock<IEventHandler<ComponentManifestLoadResult>>();
-            eventAggregator.Subscribe(mockComponentManifestLoadResultEventHandler.Object);
+            var manifestFileReferenceReader = new MockManifestFileReader() { FileExists = false };
+            mockIManifestFileReaderService.Setup(x => x.ReadDeweyManifestFile(It.IsAny<string[]>())).Returns(manifestFileReferenceReader);
+
+            var mockJsonManifestLoadResultEventHandler = new Mock<IEventHandler<JsonManifestLoadResult>>();
+            eventAggregator.Subscribe(mockJsonManifestLoadResultEventHandler.Object);
 
             var command = new LoadManifestFiles();
 
@@ -54,19 +62,33 @@ namespace Dewey.Test
             commandProcessor.Execute(command);
 
             //Then
-            mockComponentManifestLoadResultEventHandler.Verify(x => x.Handle(It.IsAny<ComponentManifestLoadResult>()), Times.Once);
+            mockJsonManifestLoadResultEventHandler.Verify(x => x.Handle(It.IsAny<JsonManifestLoadResult>()), Times.Once);
         }
 
         [Fact]
-        public void LoadManifestFilesCommand_ForRepositoryManifestFileReader_Should_Publish_RepositoryManifestLoadResult()
+        public void LoadManifestFilesCommand_ForDeweyManifestFileReader_Should_Publish_JsonManifestLoadResults_for_referenced_manifestFiles()
         {
             //Given
-            var xmlText = "<repository name=\"TestRepo\"/>";
-            var manifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Repository, XmlText = xmlText };
-            mockIManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(manifestFileReader);
+            var manifestFileReferences = fixture.Build<Manifest.Models.ManifestFile>().CreateMany(1).ToArray();
 
-            var mockRepositoryManifestLoadResultEventHandler = new Mock<IEventHandler<RepositoryManifestLoadResult>>();
-            eventAggregator.Subscribe(mockRepositoryManifestLoadResultEventHandler.Object);
+            var rootManifest = fixture.Build<Manifest.Models.Manifest>()
+                                      .Without(x => x.components)
+                                      .Without(x => x.runtimeResources)
+                                      .With(x => x.manifestFiles, manifestFileReferences)
+                                      .Create();
+
+            var referencedManifest = fixture.Build<Manifest.Models.Manifest>()
+                                            .Without(x => x.manifestFiles)
+                                            .Create();
+
+            var rootManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Dewey, Text = rootManifest.ToJson(), DirectoryName = "root" };
+            mockIManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(rootManifestFileReader);
+
+            var referencedManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Dewey, Text = referencedManifest.ToJson() };
+            mockIManifestFileReaderService.Setup(x => x.ReadDeweyManifestFile(rootManifestFileReader.DirectoryName, manifestFileReferences[0].location)).Returns(referencedManifestFileReader);
+
+            var mockJsonManifestLoadResultEventHandler = new Mock<IEventHandler<JsonManifestLoadResult>>();
+            eventAggregator.Subscribe(mockJsonManifestLoadResultEventHandler.Object);
 
             var command = new LoadManifestFiles();
 
@@ -74,87 +96,7 @@ namespace Dewey.Test
             commandProcessor.Execute(command);
 
             //Then
-            mockRepositoryManifestLoadResultEventHandler.Verify(x => x.Handle(It.IsAny<RepositoryManifestLoadResult>()), Times.Once);
-        }
-
-        [Fact]
-        public void LoadManifestFilesCommand_ForRepositoriesManifestFileReader_Should_Publish_RepositoriesManifestLoadResult()
-        {
-            //Given
-            var xmlText = "<repositories/>";
-            var manifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Repositories, XmlText = xmlText };
-            mockIManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(manifestFileReader);
-
-            var mockRepositoriesManifestLoadResultEventHandler = new Mock<IEventHandler<RepositoriesManifestLoadResult>>();
-            eventAggregator.Subscribe(mockRepositoriesManifestLoadResultEventHandler.Object);
-
-            var command = new LoadManifestFiles();
-
-            //When
-            commandProcessor.Execute(command);
-
-            //Then
-            mockRepositoriesManifestLoadResultEventHandler.Verify(x => x.Handle(It.IsAny<RepositoriesManifestLoadResult>()), Times.Once);
-        }
-
-        [Fact]
-        public void LoadManifestFilesCommand_ForRepositoriesManifestFileReader_WithRepositoryElements_Should_Publish_RepositoryManifestLoadResult()
-        {
-            //Given
-            var repositoriesDirectory = "testDirectory";
-            var repositoriesXmlText =
-@"<repositories>
-	<repository name=""TestRepo"" location=""TestLocation"" />
-</repositories>";
-
-            var repositoriesManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Repositories, XmlText = repositoriesXmlText, DirectoryName = repositoriesDirectory };
-            mockIManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(repositoriesManifestFileReader);
-
-            var repositoryXmlText = "<repository name=\"TestRepo\"/>";
-            var repositoryManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Repository, XmlText = repositoryXmlText };
-            mockIManifestFileReaderService.Setup(x => x.ReadRepositoryManifestFile(repositoriesDirectory, "TestLocation")).Returns(repositoryManifestFileReader);
-
-            var mockRepositoryManifestLoadResultEventHandler = new Mock<IEventHandler<RepositoryManifestLoadResult>>();
-            eventAggregator.Subscribe(mockRepositoryManifestLoadResultEventHandler.Object);
-
-            var command = new LoadManifestFiles();
-
-            //When
-            commandProcessor.Execute(command);
-
-            //Then
-            mockRepositoryManifestLoadResultEventHandler.Verify(x => x.Handle(It.IsAny<RepositoryManifestLoadResult>()), Times.Once);
-        }
-
-        [Fact]
-        public void LoadManifestFilesCommand_ForRepositoryManifestFileReader_WithComponentElements_Should_Publish_ComponentManifestLoadResult()
-        {
-            //Given
-            var repositoryDirectory = "testDirectory";
-            var repositoryXmlText =
-@"<repository name=""TestRepo"">
-	<components>
-		<component name=""TestComp"" location=""TestLocation"" />
-	</components>
-</repository>";
-
-            var repositoryManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Repository, XmlText = repositoryXmlText, DirectoryName = repositoryDirectory };
-            mockIManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(repositoryManifestFileReader);
-
-            var componentXmlText = "<componentManifest name=\"TestComp\" type=\"web\"/>";
-            var componentManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Component, XmlText = componentXmlText };
-            mockIManifestFileReaderService.Setup(x => x.ReadComponentManifestFile(repositoryDirectory, "TestLocation")).Returns(componentManifestFileReader);
-
-            var mockComponentManifestLoadResultEventHandler = new Mock<IEventHandler<ComponentManifestLoadResult>>();
-            eventAggregator.Subscribe(mockComponentManifestLoadResultEventHandler.Object);
-
-            var command = new LoadManifestFiles();
-
-            //When
-            commandProcessor.Execute(command);
-
-            //Then
-            mockComponentManifestLoadResultEventHandler.Verify(x => x.Handle(It.IsAny<ComponentManifestLoadResult>()), Times.Once);
+            mockJsonManifestLoadResultEventHandler.Verify(x => x.Handle(It.IsAny<JsonManifestLoadResult>()), Times.Exactly(2));
         }
     }
 }
