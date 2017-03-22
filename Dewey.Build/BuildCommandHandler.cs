@@ -5,7 +5,6 @@ using Dewey.Manifest.Messages;
 using Dewey.Manifest.Models;
 using Dewey.Messaging;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -13,32 +12,22 @@ namespace Dewey.Build
 {
     public class BuildCommandHandler : 
         ICommandHandler<BuildCommand>,
-        IEventHandler<GetComponentResult>,
-        IEventHandler<DependencyElementResult>
+        IEventHandler<GetComponentResult>
     {
         readonly ICommandProcessor _commandProcessor;
         readonly IEventAggregator _eventAggregator;
         readonly IBuildActionFactory _buildActionFactory;
-        readonly IBuildElementLoader _buildElementLoader;
-        readonly IDependencyElementLoader _dependencyElementLoader;
-
-        readonly List<DependencyElementResult> _dependencies;
 
         BuildCommand _command;
         Component _component;
 
-        public BuildCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IBuildActionFactory buildActionFactory, IBuildElementLoader buildElementLoader, IDependencyElementLoader dependencyElementLoader)
+        public BuildCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IBuildActionFactory buildActionFactory)
         {
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
             _buildActionFactory = buildActionFactory;
-            _buildElementLoader = buildElementLoader;
-            _dependencyElementLoader = dependencyElementLoader;
 
-            _dependencies = new List<DependencyElementResult>();
-
-            eventAggregator.Subscribe<GetComponentResult>(this);
-            eventAggregator.Subscribe<DependencyElementResult>(this);
+            eventAggregator.Subscribe(this);
         }
 
         public void Execute(BuildCommand command)
@@ -78,21 +67,14 @@ namespace Dewey.Build
                 return false;
             }
 
-            //if (_command.BuildDependencies)
-            //{
-            //    _dependencyElementLoader.LoadFromComponentManifest(_component.ComponentManifest, _component.ComponentElement);
-
-            //    if (_dependencies.Any())
-            //    {
-            //        foreach (var dependency in _dependencies)
-            //        {
-            //            if (dependency.Type == ComponentDependency.COMPONENT_DEPENDENCY_TYPE)
-            //            {
-            //                _commandProcessor.Execute(new BuildCommand(dependency.Name, _command.BuildDependencies));
-            //            }
-            //        }
-            //    }
-            //}
+            if (_command.BuildDependencies)
+            {
+                var componentDependencies = _component.dependencies.Where(d => d.type == ComponentDependency.COMPONENT_DEPENDENCY_TYPE && !string.IsNullOrWhiteSpace(d.name));
+                foreach (var componentDependency in componentDependencies)
+                {
+                    _commandProcessor.Execute(new BuildCommand(componentDependency.name, _command.BuildDependencies));
+                }
+            }
 
             var result = false;
             try
@@ -112,14 +94,6 @@ namespace Dewey.Build
             if (getComponentResult.Component != null && getComponentResult.Component.name == _command.ComponentName)
             {
                 _component = getComponentResult.Component;
-            }
-        }
-
-        public void Handle(DependencyElementResult dependencyElementResult)
-        {
-            if (_component != null && _component.name == dependencyElementResult.ComponentManifest.Name)
-            {
-                _dependencies.Add(dependencyElementResult);
             }
         }
     }

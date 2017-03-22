@@ -4,8 +4,8 @@ namespace Dewey.Build.Models
 {
     public class MSBuild : Build
     {
-        public string target { get { return (string)BackingData[nameof(target)]; } set { BackingData[nameof(target)] = value; } }
-        public string msbuildVersion { get { return (string)BackingData[nameof(msbuildVersion)]; } set { BackingData[nameof(msbuildVersion)] = value; } }
+        public string target { get { return (string)BackingData["target"]; } set { BackingData["target"] = value; } }
+        public string msbuildVersion { get { return (string)BackingData["msbuildVersion"]; } set { BackingData["msbuildVersion"] = value; } }
 
         public MSBuild(Build build)
         {
@@ -18,12 +18,12 @@ namespace Dewey.Build.Models
 
             if (string.IsNullOrWhiteSpace(target))
             {
-                missingAttList.Add(nameof(target));
+                missingAttList.Add("target");
             }
 
             if (string.IsNullOrWhiteSpace(msbuildVersion))
             {
-                missingAttList.Add(nameof(msbuildVersion));
+                missingAttList.Add("msbuildVersion");
             }
 
             return missingAttList;

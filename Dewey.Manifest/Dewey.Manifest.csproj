@@ -81,6 +81,7 @@
     <Compile Include="Messages\GetComponents.cs" />
     <Compile Include="Messages\GetRuntimeResources.cs" />
     <Compile Include="Models\Component.cs" />
+    <Compile Include="Models\Dependency.cs" />
     <Compile Include="Models\Manifest.cs" />
     <Compile Include="Models\RuntimeResource.cs" />
     <Compile Include="Module.cs" />

@@ -1,6 +1,7 @@
 ﻿using Dewey.File;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 
 namespace Dewey.Manifest.Models
 {
@@ -12,6 +13,25 @@ namespace Dewey.Manifest.Models
         public string type { get { return (string)BackingData["type"]; } set { BackingData["type"] = value; } }
         public string subtype { get { return (string)BackingData["subtype"]; } set { BackingData["subtype"] = value; } }
         public string context { get { return (string)BackingData["context"]; } set { BackingData["context"] = value; } }
+
+        public Dependency[] dependencies
+        {
+            get
+            {
+                return BackingData["dependencies"]?.Select(x => new Dependency(x as JObject)).ToArray();
+            }
+            set
+            {
+                if (value != null)
+                {
+                    BackingData["dependencies"] = new JArray(value.Select(x => x.BackingData));
+                }
+                else
+                {
+                    BackingData.Remove("dependencies");
+                }
+            }
+        }
 
         public IManifestFileReader File { get; set; }
 
@@ -74,11 +94,5 @@ namespace Dewey.Manifest.Models
         {
             return !(a == b);
         }
-    }
-
-    public class Dependency
-    {
-        public string type { get; set; }
-        public string name { get; set; }
     }
 }
