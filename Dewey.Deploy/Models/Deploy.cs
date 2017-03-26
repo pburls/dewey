@@ -1,19 +1,19 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 
-namespace Dewey.Build.Models
+namespace Dewey.Deploy.Models
 {
-    public class Build : IEquatable<Build>
+    public class Deploy : IEquatable<Deploy>
     {
         public JObject BackingData { get; protected set; }
         public string type { get { return (string)BackingData["type"]; } set { BackingData["type"] = value; } }
 
-        public Build()
+        public Deploy()
         {
             BackingData = new JObject();
         }
 
-        public Build(JObject data)
+        public Deploy(JObject data)
         {
             BackingData = data;
         }
@@ -22,8 +22,7 @@ namespace Dewey.Build.Models
         {
             return BackingData.ToString();
         }
-
-        public bool Equals(Build other)
+        public bool Equals(Deploy other)
         {
             if (other == null) return false;
 
@@ -34,7 +33,7 @@ namespace Dewey.Build.Models
         {
             if (obj == null) return false;
 
-            Build other = obj as Build;
+            Deploy other = obj as Deploy;
             return Equals(other);
         }
 
@@ -43,7 +42,7 @@ namespace Dewey.Build.Models
             return type.GetHashCode();
         }
 
-        public static bool operator ==(Build a, Build b)
+        public static bool operator ==(Deploy a, Deploy b)
         {
             if (ReferenceEquals(a, b))
             {
@@ -58,7 +57,7 @@ namespace Dewey.Build.Models
             return a.type == b.type;
         }
 
-        public static bool operator !=(Build a, Build b)
+        public static bool operator !=(Deploy a, Deploy b)
         {
             return !(a == b);
         }

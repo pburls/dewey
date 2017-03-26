@@ -1,6 +1,4 @@
-﻿using Dewey.Messaging;
-using SimpleInjector;
-using System;
+﻿using SimpleInjector;
 using System.Linq;
 
 namespace Dewey.Deploy
@@ -17,14 +15,13 @@ namespace Dewey.Deploy
         public IDeploymentAction CreateDeploymentAction(string deploymentType)
         {
             var deploymentActions = _container.GetAllInstances<IDeploymentAction>().ToDictionary(x => x.Type);
-
-            IDeploymentAction deployAction;
-            if (!deploymentActions.TryGetValue(deploymentType, out deployAction))
+            
+            if (deploymentActions.ContainsKey(deploymentType))
             {
-                throw new ArgumentOutOfRangeException("deploymentType", deploymentType, string.Format("Unknown deployment type {0}.", deploymentType));
+                return deploymentActions[deploymentType];
             }
 
-            return deployAction;
+            return null;
         }
     }
 }

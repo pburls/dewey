@@ -18,7 +18,6 @@ namespace Dewey.Build.Test
         MSBuildAction target;
 
         Fixture fixture;
-        ComponentManifest componentManifest;
 
         public MSBuildActionTest()
         {
@@ -29,7 +28,6 @@ namespace Dewey.Build.Test
 
             fixture = new Fixture();
             fixture.Register<File.IManifestFileReader>(() => { return new MockManifestFileReader() { DirectoryName = "test" }; });
-            componentManifest = fixture.Create<ComponentManifest>();
         }
 
         [Fact]

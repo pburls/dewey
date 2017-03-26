@@ -1,10 +1,15 @@
-﻿using Dewey.File;
+﻿using Dewey.Deploy.Events;
+using Dewey.Deploy.Models;
+using Dewey.File;
 using Dewey.Manifest;
 using Dewey.Manifest.Component;
+using Dewey.Manifest.Models;
 using Dewey.Messaging;
 using Dewey.Test;
 using Moq;
+using Ploeh.AutoFixture;
 using SimpleInjector;
+using System.Linq;
 using System.Xml.Linq;
 using Xunit;
 
@@ -12,15 +17,21 @@ namespace Dewey.Deploy.Test
 {
     public class DeployCommandTest
     {
+        Fixture fixture;
+
         Mock<IManifestFileReaderService> mockIManifestFileReaderService;
         Mock<IDeploymentAction> mockDeploymentAction;
         Mock<IDeploymentActionFactory> mockDeploymentActionFactory;
 
         Container container;
         ICommandProcessor commandProcessor;
+        IEventAggregator eventAggregator;
 
         public DeployCommandTest()
         {
+            fixture = new Fixture();
+            fixture.Customizations.Add(new PropertyTypeOmitter(typeof(IManifestFileReader)));
+
             mockIManifestFileReaderService = new Mock<IManifestFileReaderService>();
             mockDeploymentAction = new Mock<IDeploymentAction>();
             mockDeploymentActionFactory = new Mock<IDeploymentActionFactory>();
@@ -42,206 +53,66 @@ namespace Dewey.Deploy.Test
             moduleCataloge.Load<Deploy.Module>();
 
             commandProcessor = container.GetInstance<ICommandProcessor>();
+            eventAggregator = container.GetInstance<IEventAggregator>();
         }
 
         [Fact]
-        public void DeployCommand_Should_InvokeDeployAction()
+        public void DeployCommand_Should_InvokeDeployAction_For_DeployableComponent()
         {
             //Given
-            var xmlText =
-@"<componentManifest name=""testComponent"" type=""web"">
-	<deployments>
-		<deployment type=""testType"" port=""13319"" siteName=""WebApplication"" appPool=""WebApplication"" content=""src/WebApplication"" />
-	</deployments>
-</componentManifest>";
-            var manifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Component, XmlText = xmlText, DirectoryName = "testLocation" };
+            var components = fixture.Build<DeployableComponent>().CreateMany(3).ToArray();
+            var manifest = fixture.Build<Manifest.Models.Manifest>()
+                .Without(x => x.manifestFiles)
+                .With(x => x.components, components)
+                .Create();
+            var manifestFileReader = new MockManifestFileReader() { Text = manifest.ToJson(), MandifestFileType = ManifestFileType.Dewey };
             mockIManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(manifestFileReader);
 
-            mockDeploymentActionFactory.Setup(x => x.CreateDeploymentAction("testType")).Returns(mockDeploymentAction.Object);
+            var firstComponent = components.First();
+            var deployment = firstComponent.deploy;
 
-            var deployCommand = DeployCommand.Create("testComponent", false);
+            mockDeploymentActionFactory.Setup(x => x.CreateDeploymentAction(deployment.type)).Returns(mockDeploymentAction.Object);
+
+            var buildCommand = DeployCommand.Create(firstComponent.name, false);
 
             //When
             commandProcessor.Execute(new LoadManifestFiles());
-            commandProcessor.Execute(deployCommand);
+            commandProcessor.Execute(buildCommand);
 
             //Then
-            mockDeploymentAction.Verify(x => x.Deploy(It.IsAny<ComponentManifest>(), It.IsAny<XElement>()), Times.Once);
+            mockDeploymentAction.Verify(x => x.Deploy(firstComponent, deployment), Times.Once);
         }
 
         [Fact]
-        public void DeployCommand_Without_Dependenices_Should_Not_InvokeDeployAction_For_Dependencies()
+        public void DeployCommand_Should_Not_InvokeDeployAction_For_Non_DeployableComponent()
         {
             //Given
-            var repositoryDirectory = "testDirectory";
-            var repositoryManifestText =
-@"<repository name=""TestRepo"">
-	<components>
-		<component name=""testComponent"" location=""TestLocation"" />
-		<component name=""dependencyComponent"" location=""DependencyLocation"" />
-	</components>
-</repository>";
-            var repositoriesManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Repository, XmlText = repositoryManifestText, DirectoryName = repositoryDirectory };
-            mockIManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(repositoriesManifestFileReader);
+            var components = fixture.Build<Component>().CreateMany(3).ToArray();
+            var manifest = fixture.Build<Manifest.Models.Manifest>()
+                .Without(x => x.manifestFiles)
+                .With(x => x.components, components)
+                .Create();
+            var manifestFileReader = new MockManifestFileReader() { Text = manifest.ToJson(), MandifestFileType = ManifestFileType.Dewey };
+            mockIManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(manifestFileReader);
 
-            var testComponentManifestText =
-@"<componentManifest name=""testComponent"" type=""web"">
-	<deployments>
-		<deployment type=""testType"" port=""13319"" siteName=""WebApplication"" appPool=""WebApplication"" content=""src/WebApplication"" />
-	</deployments>
-	<dependencies>
-		<dependency type=""component"" name=""dependencyComponent"" />
-	</dependencies>
-</componentManifest>";
-            var componentManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Component, XmlText = testComponentManifestText };
-            mockIManifestFileReaderService.Setup(x => x.ReadComponentManifestFile(repositoryDirectory, "TestLocation")).Returns(componentManifestFileReader);
+            var firstComponent = components.First();
 
-            var dependencyComponentManifestText =
-@"<componentManifest name=""dependencyComponent"" type=""web"">
-	<deployments>
-		<deployment type=""testType"" port=""13319"" siteName=""WebApplication"" appPool=""WebApplication"" content=""src/WebApplication"" />
-	</deployments>
-</componentManifest>";
-            var dependencyComponentManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Component, XmlText = dependencyComponentManifestText };
-            mockIManifestFileReaderService.Setup(x => x.ReadComponentManifestFile(repositoryDirectory, "DependencyLocation")).Returns(dependencyComponentManifestFileReader);
+            var buildCommand = DeployCommand.Create(firstComponent.name, false);
 
-            mockDeploymentActionFactory.Setup(x => x.CreateDeploymentAction("testType")).Returns(mockDeploymentAction.Object);
+            var mockNoJsonDeployManifestFoundEventHandler = new Mock<IEventHandler<NoJsonDeployManifestFound>>();
 
-            var deployCommand = DeployCommand.Create("testComponent", false);
+            NoJsonDeployManifestFound noJsonDeployManifestFoundEvent = null;
+            mockNoJsonDeployManifestFoundEventHandler.Setup(x => x.Handle(It.IsAny<NoJsonDeployManifestFound>())).Callback<NoJsonDeployManifestFound>(@event => noJsonDeployManifestFoundEvent = @event);
+
+            eventAggregator.Subscribe(mockNoJsonDeployManifestFoundEventHandler.Object);
 
             //When
             commandProcessor.Execute(new LoadManifestFiles());
-            commandProcessor.Execute(deployCommand);
+            commandProcessor.Execute(buildCommand);
 
             //Then
-            mockDeploymentAction.Verify(x => x.Deploy(It.IsAny<ComponentManifest>(), It.IsAny<XElement>()), Times.Once);
-        }
-
-        //Fixes Issue #6
-        [Fact]
-        public void DeployCommand_With_Dependencies_Should_InvokeDeploymentAction_For_Dependencies()
-        {
-            //Given
-            var repositoryDirectory = "testDirectory";
-            var repositoryManifestText =
-@"<repository name=""TestRepo"">
-	<components>
-		<component name=""testComponent"" location=""TestLocation"" />
-		<component name=""dependencyComponent"" location=""DependencyLocation"" />
-		<component name=""dependencyComponent2"" location=""DependencyLocation2"" />
-	</components>
-</repository>";
-            var repositoriesManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Repository, XmlText = repositoryManifestText, DirectoryName = repositoryDirectory };
-            mockIManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(repositoriesManifestFileReader);
-
-            var testComponentManifestText =
-@"<componentManifest name=""testComponent"" type=""web"">
-	<deployments>
-		<deployment type=""testType"" port=""13319"" siteName=""WebApplication"" appPool=""WebApplication"" content=""src/WebApplication"" />
-	</deployments>
-	<dependencies>
-		<dependency type=""component"" name=""dependencyComponent"" />
-	</dependencies>
-</componentManifest>";
-            var componentManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Component, XmlText = testComponentManifestText };
-            mockIManifestFileReaderService.Setup(x => x.ReadComponentManifestFile(repositoryDirectory, "TestLocation")).Returns(componentManifestFileReader);
-
-            var dependencyComponentManifestText =
-@"<componentManifest name=""dependencyComponent"" type=""web"">
-	<deployments>
-		<deployment type=""testType"" port=""13319"" siteName=""WebApplication"" appPool=""WebApplication"" content=""src/WebApplication"" />
-	</deployments>
-	<dependencies>
-		<dependency type=""component"" name=""dependencyComponent2"" />
-	</dependencies>
-</componentManifest>";
-            var dependencyComponentManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Component, XmlText = dependencyComponentManifestText };
-            mockIManifestFileReaderService.Setup(x => x.ReadComponentManifestFile(repositoryDirectory, "DependencyLocation")).Returns(dependencyComponentManifestFileReader);
-
-            var dependencyComponent2ManifestText =
-@"<componentManifest name=""dependencyComponent2"" type=""web"">
-	<deployments>
-		<deployment type=""testType"" port=""13319"" siteName=""WebApplication"" appPool=""WebApplication"" content=""src/WebApplication"" />
-	</deployments>
-</componentManifest>";
-            var dependencyComponent2ManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Component, XmlText = dependencyComponent2ManifestText };
-            mockIManifestFileReaderService.Setup(x => x.ReadComponentManifestFile(repositoryDirectory, "DependencyLocation2")).Returns(dependencyComponent2ManifestFileReader);
-
-            var deployCommand = DeployCommand.Create("testComponent", true);
-
-            mockDeploymentActionFactory.Setup(x => x.CreateDeploymentAction("testType")).Returns(mockDeploymentAction.Object);
-
-            //When
-            commandProcessor.Execute(new LoadManifestFiles());
-            commandProcessor.Execute(deployCommand);
-
-            //Then
-            mockDeploymentAction.Verify(x => x.Deploy(It.IsAny<ComponentManifest>(), It.IsAny<XElement>()), Times.Exactly(3));
-        }
-        
-        [Fact]
-        public void DeployCommand_With_Dependencies_Should_Not_InvokeDeploymentAction_For_Dependencies_That_Do_Not_Exist()
-        {
-            //Given
-            var repositoryDirectory = "testDirectory";
-            var repositoryManifestText =
-@"<repository name=""TestRepo"">
-	<components>
-		<component name=""testComponent"" location=""TestLocation"" />
-		<component name=""dependencyComponent"" location=""DependencyLocation"" />
-		<component name=""dependencyComponent2"" location=""DependencyLocation2"" />
-	</components>
-</repository>";
-            var repositoriesManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Repository, XmlText = repositoryManifestText, DirectoryName = repositoryDirectory };
-            mockIManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(repositoriesManifestFileReader);
-
-            var testComponentManifestText =
-@"<componentManifest name=""testComponent"" type=""web"">
-	<deployments>
-		<deployment type=""testType"" port=""13319"" siteName=""WebApplication"" appPool=""WebApplication"" content=""src/WebApplication"" />
-	</deployments>
-	<dependencies>
-		<dependency type=""component"" name=""dependencyComponent"" />
-		<dependency type=""component"" name=""dependencyComponent2"" />
-	</dependencies>
-</componentManifest>";
-            var componentManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Component, XmlText = testComponentManifestText };
-            mockIManifestFileReaderService.Setup(x => x.ReadComponentManifestFile(repositoryDirectory, "TestLocation")).Returns(componentManifestFileReader);
-
-            var dependencyComponentManifestText =
-@"<componentManifest name=""dependencyComponent"" type=""web"">
-	<deployments>
-		<deployment type=""testType"" port=""13319"" siteName=""WebApplication"" appPool=""WebApplication"" content=""src/WebApplication"" />
-	</deployments>
-	<dependencies>
-		<dependency type=""component"" name=""missingDependencyComponent"" />
-	</dependencies>
-</componentManifest>";
-            var dependencyComponentManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Component, XmlText = dependencyComponentManifestText };
-            mockIManifestFileReaderService.Setup(x => x.ReadComponentManifestFile(repositoryDirectory, "DependencyLocation")).Returns(dependencyComponentManifestFileReader);
-
-            var dependencyComponent2ManifestText =
-@"<componentManifest name=""dependencyComponent2"" type=""web"">
-	<deployments>
-		<deployment type=""testType"" port=""13319"" siteName=""WebApplication"" appPool=""WebApplication"" content=""src/WebApplication"" />
-	</deployments>
-	<dependencies>
-		<dependency type=""component"" name=""missingDependencyComponent"" />
-	</dependencies>
-</componentManifest>";
-            var dependencyComponent2ManifestFileReader = new MockManifestFileReader() { MandifestFileType = ManifestFileType.Component, XmlText = dependencyComponent2ManifestText };
-            mockIManifestFileReaderService.Setup(x => x.ReadComponentManifestFile(repositoryDirectory, "DependencyLocation2")).Returns(dependencyComponent2ManifestFileReader);
-
-            var deployCommand = DeployCommand.Create("testComponent", true);
-
-            mockDeploymentActionFactory.Setup(x => x.CreateDeploymentAction("testType")).Returns(mockDeploymentAction.Object);
-
-            //When
-            commandProcessor.Execute(new LoadManifestFiles());
-            commandProcessor.Execute(deployCommand);
-
-            //Then
-            mockDeploymentAction.Verify(x => x.Deploy(It.IsAny<ComponentManifest>(), It.IsAny<XElement>()), Times.Exactly(3));
+            Assert.NotNull(noJsonDeployManifestFoundEvent);
+            Assert.Equal(firstComponent.name, noJsonDeployManifestFoundEvent.Component.name);
         }
     }
 }

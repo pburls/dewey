@@ -79,8 +79,7 @@
     <Compile Include="BuildCommandHandlerTest.cs" />
     <Compile Include="BuildCommandIntegrationTest.cs" />
     <Compile Include="BuildElementResultTest.cs" />
-    <Compile Include="JsonBuildManifestLoaderTest.cs" />
-    <Compile Include="MSBuildTest.cs" />
+    <Compile Include="MSBuildActionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

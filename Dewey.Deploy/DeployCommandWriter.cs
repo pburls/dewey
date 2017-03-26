@@ -16,22 +16,20 @@ namespace Dewey.Deploy
         IEventHandler<DeploymentActionStarted>,
         IEventHandler<DeploymentActionOutputMessage>,
         IEventHandler<DeploymentActionCompletedResult>,
-        IEventHandler<DeploymentActionFailed>
+        IEventHandler<DeploymentActionFailed>,
+        IEventHandler<NoJsonDeployManifestFound>,
+        IEventHandler<JsonDeployManifestInvalidType>,
+        IEventHandler<JsonDeploymentActionErrorResult>,
+        IEventHandler<JsonDeploymentMissingAttributesResult>,
+        IEventHandler<JsonDeploymentActionContentNotFoundResult>,
+        IEventHandler<JsonDeploymentActionFailed>,
+        IEventHandler<JsonDeploymentActionStarted>,
+        IEventHandler<JsonDeploymentActionOutputMessage>,
+        IEventHandler<JsonDeploymentActionCompletedResult>
     {
         public DeployCommandWriter(IEventAggregator eventAggregator)
         {
-            eventAggregator.Subscribe<DeployCommandStarted>(this);
-            eventAggregator.Subscribe<ComponentNotFoundResult>(this);
-            eventAggregator.Subscribe<NoDeploymentElementsFoundResult>(this);
-            eventAggregator.Subscribe<DeploymentElementMissingTypeAttributeResult>(this);
-            eventAggregator.Subscribe<DeploymentActionErrorResult>(this);
-            eventAggregator.Subscribe<DeploymentElementMissingAttributeResult>(this);
-            eventAggregator.Subscribe<DeploymentElementInvalidAttributeResult>(this);
-            eventAggregator.Subscribe<DeploymentActionContentNotFoundResult>(this);
-            eventAggregator.Subscribe<DeploymentActionStarted>(this);
-            eventAggregator.Subscribe<DeploymentActionOutputMessage>(this);
-            eventAggregator.Subscribe<DeploymentActionCompletedResult>(this);
-            eventAggregator.Subscribe<DeploymentActionFailed>(this);
+            eventAggregator.SubscribeAll(this);
         }
 
         public void Handle(DeployCommandStarted deployCommandStarted)
@@ -54,12 +52,35 @@ namespace Dewey.Deploy
                 noDeploymentElementsFoundResult.ComponentElement.ToString()));
         }
 
+        public void Handle(NoJsonDeployManifestFound noJsonDeployManifestFound)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(string.Format("No deployment found for component '{0}' in manifest: {1}",
+                noJsonDeployManifestFound.Component.name,
+                noJsonDeployManifestFound.Component.ToJson()));
+        }
+
+        public void Handle(JsonDeployManifestInvalidType jsonDeployManifestInvalidType)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(string.Format("Invalid or unknown deploy type '{0}' in component manifest '{1}'",
+                jsonDeployManifestInvalidType.Deploy.type,
+                jsonDeployManifestInvalidType.Component.name));
+        }
+
         public void Handle(DeploymentElementMissingTypeAttributeResult deploymentElementMissingTypeAttributeResult)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(string.Format("Skipping deployment element of component '{0}' without a valid type: {1}", 
                 deploymentElementMissingTypeAttributeResult.ComponentName, 
                 deploymentElementMissingTypeAttributeResult.DeploymentElement.ToString()));
+        }
+
+        public void Handle(JsonDeploymentMissingAttributesResult jsonDeploymentMissingAttributesResult)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            var attributes = string.Join(", ", jsonDeploymentMissingAttributesResult.AttributeNames);
+            Console.WriteLine($"Deployment of type '{jsonDeploymentMissingAttributesResult.Deploy.type}' for component '{jsonDeploymentMissingAttributesResult.Component.name}' is missing attributes '{attributes}' requied for action.");
         }
 
         public void Handle(DeploymentActionErrorResult deploymentActionErrorResult)
@@ -97,6 +118,16 @@ namespace Dewey.Deploy
                 deploymentActionContentNotFoundResult.DeploymentType,
                 deploymentActionContentNotFoundResult.ComponentManifest.Name));
         }
+        
+
+        public void Handle(JsonDeploymentActionContentNotFoundResult jsonDeploymentActionContentNotFoundResult)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(string.Format("Content path '{0}' does not exist for '{1}' deployment of component '{2}'.",
+                jsonDeploymentActionContentNotFoundResult.ContentPath,
+                jsonDeploymentActionContentNotFoundResult.Deploy.type,
+                jsonDeploymentActionContentNotFoundResult.Component.name));
+        }
 
         public void Handle(DeploymentActionStarted deploymentActionStarted)
         {
@@ -105,6 +136,14 @@ namespace Dewey.Deploy
                 deploymentActionStarted.DeploymentType,
                 deploymentActionStarted.ComponentManifest.Name,
                 deploymentActionStarted.DeploymentArgs.ToString()));
+        }
+
+        public void Handle(JsonDeploymentActionStarted deploymentActionStarted)
+        {
+            Console.ResetColor();
+            Console.WriteLine(string.Format("Deployment action '{0}' of component '{1}' started.",
+                deploymentActionStarted.Deploy.ToJson(),
+                deploymentActionStarted.Component.name));
         }
 
         public void Handle(DeploymentActionFailed deploymentActionFailed)
@@ -116,7 +155,22 @@ namespace Dewey.Deploy
                 deploymentActionFailed.Reason));
         }
 
+        public void Handle(JsonDeploymentActionFailed deploymentActionFailed)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(string.Format("Deployment action '{0}' of component '{1}' failed with reason: {2}",
+                deploymentActionFailed.Deploy.type,
+                deploymentActionFailed.Component.name,
+                deploymentActionFailed.Reason));
+        }
+
         public void Handle(DeploymentActionOutputMessage deploymentActionOutputMessage)
+        {
+            Console.ResetColor();
+            Console.WriteLine(deploymentActionOutputMessage.Message);
+        }
+
+        public void Handle(JsonDeploymentActionOutputMessage deploymentActionOutputMessage)
         {
             Console.ResetColor();
             Console.WriteLine(deploymentActionOutputMessage.Message);
@@ -129,6 +183,23 @@ namespace Dewey.Deploy
                 deploymentActionCompletedResult.DeploymentType,
                 deploymentActionCompletedResult.ComponentManifest.Name,
                 deploymentActionCompletedResult.DeploymentArgs.ToString()));
+        }
+
+        public void Handle(JsonDeploymentActionCompletedResult deploymentActionCompletedResult)
+        {
+            Console.ResetColor();
+            Console.WriteLine(string.Format("Deployment action '{0}' of component '{1}' completed.",
+                deploymentActionCompletedResult.Deploy.ToJson(),
+                deploymentActionCompletedResult.Component.name));
+        }
+
+        public void Handle(JsonDeploymentActionErrorResult deploymentActionErrorResult)
+        {
+            Console.ResetColor();
+            Console.WriteLine(string.Format("Deploy action '{0}' of component '{1}' threw exception: {2}",
+                deploymentActionErrorResult.Deploy.type,
+                deploymentActionErrorResult.Component.name,
+                deploymentActionErrorResult.Exception));
         }
     }
 }

@@ -8,6 +8,7 @@ namespace Dewey.File
         {
             container.Register<IFileService, FileService>(Lifestyle.Singleton);
             container.Register<IManifestFileReaderService, ManifestFileReaderService>(Lifestyle.Singleton);
+            container.Register<IUserService, UserService>(Lifestyle.Singleton);
         }
     }
 }

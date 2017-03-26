@@ -34,6 +34,10 @@
       <HintPath>..\packages\Microsoft.Web.Administration.7.0.0.0\lib\net20\Microsoft.Web.Administration.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="SimpleInjector, Version=3.2.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
       <HintPath>..\packages\SimpleInjector.3.2.0\lib\net45\SimpleInjector.dll</HintPath>
       <Private>True</Private>
@@ -69,11 +73,24 @@
     <Compile Include="Events\DeploymentElementMissingAttributeResult.cs" />
     <Compile Include="Events\DeploymentElementMissingTypeAttributeResult.cs" />
     <Compile Include="Events\DeploymentElementResult.cs" />
+    <Compile Include="Events\JsonDeployEvent.cs" />
+    <Compile Include="Events\JsonDeployManifestInvalidType.cs" />
+    <Compile Include="Events\JsonDeployManifestLoadEvent.cs" />
+    <Compile Include="Events\JsonDeploymentActionContentNotFoundResult.cs" />
+    <Compile Include="Events\JsonDeploymentInvalidAttributeResult.cs" />
     <Compile Include="Events\NoDeploymentElementsFoundResult.cs" />
+    <Compile Include="Events\NoJsonDeployManifestFound.cs" />
     <Compile Include="IDeploymentAction.cs" />
     <Compile Include="IDeploymentActionFactory.cs" />
+    <Compile Include="IIISDeployProcess.cs" />
     <Compile Include="IISDeploumentArgs.cs" />
-    <Compile Include="IISDeployment.cs" />
+    <Compile Include="IISDeploymentAction.cs" />
+    <Compile Include="Events\JsonDeploymentMissingAttributeResult.cs" />
+    <Compile Include="IISDeployProcess.cs" />
+    <Compile Include="Models\BuildableComponent.cs" />
+    <Compile Include="Models\ComponentExtensions.cs" />
+    <Compile Include="Models\Deploy.cs" />
+    <Compile Include="Models\IISDeploy.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
