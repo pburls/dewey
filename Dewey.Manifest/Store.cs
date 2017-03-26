@@ -44,7 +44,7 @@ namespace Dewey.Manifest
                 }
             }
 
-            if (loadResult.Manifest.components != null)
+            if (loadResult.Manifest.runtimeResources != null)
             {
                 foreach (var runtimeResource in loadResult.Manifest.runtimeResources)
                 {

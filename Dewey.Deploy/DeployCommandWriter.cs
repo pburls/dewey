@@ -142,7 +142,7 @@ namespace Dewey.Deploy
         {
             Console.ResetColor();
             Console.WriteLine(string.Format("Deployment action '{0}' of component '{1}' started.",
-                deploymentActionStarted.Deploy.ToJson(),
+                deploymentActionStarted.Deploy.BackingData.ToString(Newtonsoft.Json.Formatting.None),
                 deploymentActionStarted.Component.name));
         }
 
@@ -189,7 +189,7 @@ namespace Dewey.Deploy
         {
             Console.ResetColor();
             Console.WriteLine(string.Format("Deployment action '{0}' of component '{1}' completed.",
-                deploymentActionCompletedResult.Deploy.ToJson(),
+                deploymentActionCompletedResult.Deploy.BackingData.ToString(Newtonsoft.Json.Formatting.None),
                 deploymentActionCompletedResult.Component.name));
         }
 
