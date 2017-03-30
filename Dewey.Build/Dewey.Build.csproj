@@ -73,12 +73,9 @@
     <Compile Include="Events\BuildCommandCompleted.cs" />
     <Compile Include="Events\BuildCommandEvent.cs" />
     <Compile Include="Events\BuildCommandStarted.cs" />
-    <Compile Include="Events\BuildElementMissingTypeAttributeResult.cs" />
-    <Compile Include="Events\BuildElementResult.cs" />
     <Compile Include="Events\ComponentNotFoundResult.cs" />
     <Compile Include="Events\BuildActionTargetNotFoundResult.cs" />
     <Compile Include="Events\MSBuildExecutableNotFoundResult.cs" />
-    <Compile Include="Events\NoBuildElementsFoundResult.cs" />
     <Compile Include="IBuildAction.cs" />
     <Compile Include="IBuildActionFactory.cs" />
     <Compile Include="IMSBuildProcess.cs" />
@@ -88,7 +85,6 @@
     <Compile Include="Models\MSBuild.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="MSBuildAction.cs" />
-    <Compile Include="MSBuildArgs.cs" />
     <Compile Include="MSBuildProcess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

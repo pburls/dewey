@@ -80,7 +80,6 @@
     <Compile Include="MockManifestFileReaderService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyTypeOmitter.cs" />
-    <Compile Include="XmlElement.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

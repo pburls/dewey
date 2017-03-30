@@ -1,5 +1,4 @@
 ﻿using Dewey.File;
-using System.Xml.Linq;
 using System;
 
 namespace Dewey.Test
@@ -18,27 +17,7 @@ namespace Dewey.Test
             throw new NotImplementedException();
         }
 
-        public IManifestFileReader ReadComponentManifestFile(params string[] paths)
-        {
-            return _mockManifestFileReader;
-        }
-
         public IManifestFileReader ReadDeweyManifestFile(params string[] paths)
-        {
-            return _mockManifestFileReader;
-        }
-
-        public IManifestFileReader ReadRepositoriesManifestFile()
-        {
-            return _mockManifestFileReader;
-        }
-
-        public IManifestFileReader ReadRepositoryManifestFile(params string[] paths)
-        {
-            return _mockManifestFileReader;
-        }
-
-        public IManifestFileReader ReadRuntimeResourcesManifestFile(params string[] paths)
         {
             return _mockManifestFileReader;
         }
@@ -56,8 +35,6 @@ namespace Dewey.Test
 
         public string ScenarioName { get; set; }
 
-        public string XmlText { get; set; }
-
         public string Text { get; set; }
 
         public ManifestFileType MandifestFileType { get; set; }
@@ -66,11 +43,6 @@ namespace Dewey.Test
         {
             DirectoryExists = true;
             FileExists = true;
-        }
-
-        public XElement Load()
-        {
-            return XElement.Parse(XmlText);
         }
 
         public string LoadText()

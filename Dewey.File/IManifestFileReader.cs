@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace Dewey.File
+﻿namespace Dewey.File
 {
     public enum ManifestFileType
     {
@@ -20,8 +18,6 @@ namespace Dewey.File
         string DirectoryName { get; }
         bool FileExists { get; }
         string FileName { get; }
-
-        XElement Load();
 
         string LoadText();
     }

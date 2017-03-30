@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Xml.Linq;
 
 namespace Dewey.File
 {
@@ -25,11 +24,6 @@ namespace Dewey.File
         {
             FileExists = fileInfo.Exists;
             FileName = fileInfo.FullName;
-        }
-
-        public XElement Load()
-        {
-            return XElement.Load(FileName);
         }
 
         public string LoadText()

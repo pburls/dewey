@@ -1,8 +1,5 @@
 ﻿using Dewey.File;
 using Dewey.Manifest.Events;
-using Newtonsoft.Json;
-using System.Linq;
-using System.Xml.Linq;
 
 namespace Dewey.Manifest
 {

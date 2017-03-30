@@ -7,8 +7,6 @@ namespace Dewey.Build
     class BuildCommandWriter : 
         IEventHandler<BuildCommandStarted>, 
         IEventHandler<ComponentNotFoundResult>, 
-        IEventHandler<NoBuildElementsFoundResult>, 
-        IEventHandler<BuildElementMissingTypeAttributeResult>,
         IEventHandler<NoJsonBuildManifestFound>,
         IEventHandler<JsonBuildManifestInvalidType>,
         IEventHandler<JsonBuildMissingAttributesResult>,
@@ -35,14 +33,6 @@ namespace Dewey.Build
             Console.WriteLine(string.Format("No component manifest file found for component with name '{0}'.", componentNotFoundResult.ComponentName));
         }
 
-        public void Handle(NoBuildElementsFoundResult noBuildElementsFoundResult)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(string.Format("No builds found for component '{0}' in manifest: {1}", 
-                noBuildElementsFoundResult.ComponentName, 
-                noBuildElementsFoundResult.ComponentElement.ToString()));
-        }
-
         public void Handle(NoJsonBuildManifestFound noJsonBuildManifestFound)
         {
             Console.ForegroundColor = ConsoleColor.Red;
@@ -64,14 +54,6 @@ namespace Dewey.Build
             Console.ForegroundColor = ConsoleColor.Red;
             var attributes = string.Join(", ", jsonBuildMissingAttributesResult.AttributeNames);
             Console.WriteLine($"Build of type '{jsonBuildMissingAttributesResult.Build.type}' for component '{jsonBuildMissingAttributesResult.Component.name}' is missing attributes '{attributes}' requied for action.");
-        }
-
-        public void Handle(BuildElementMissingTypeAttributeResult buildElementMissingTypeAttributeResult)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(string.Format("Skipping build element of component '{0}' without a valid type: {1}", 
-                buildElementMissingTypeAttributeResult.ComponentName, 
-                buildElementMissingTypeAttributeResult.BuildElement.ToString()));
         }
 
         public void Handle(JsonBuildActionTargetNotFoundResult jsonBuildActionTargetNotFoundResult)

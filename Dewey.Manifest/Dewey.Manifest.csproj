@@ -50,13 +50,10 @@
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="DeweyManifestLoader.cs" />
-    <Compile Include="Events\EmptyManifestFile.cs" />
     <Compile Include="Events\InvalidJsonManifestFile.cs" />
-    <Compile Include="Events\InvalidManifestFile.cs" />
     <Compile Include="Events\JsonManifestLoadResult.cs" />
     <Compile Include="Events\LoadManifestFilesResult.cs" />
     <Compile Include="Events\ManifestFileNotFound.cs" />
-    <Compile Include="Events\ManifestLoadResult.cs" />
     <Compile Include="Events\ManifestFileEvent.cs" />
     <Compile Include="Events\ManifestFilesFound.cs" />
     <Compile Include="Events\NoManifestFileFoundResult.cs" />

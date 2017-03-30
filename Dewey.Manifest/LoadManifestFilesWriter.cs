@@ -11,8 +11,6 @@ namespace Dewey.Manifest
         IEventHandler<NoManifestFileFoundResult>,
         IEventHandler<ManifestFilesFound>,
         IEventHandler<ManifestFileNotFound>,
-        IEventHandler<InvalidManifestFile>,
-        IEventHandler<EmptyManifestFile>,
         IEventHandler<InvalidJsonManifestFile>
     {
         public LoadManifestFilesWriter(IEventAggregator eventAggregator)
@@ -43,18 +41,6 @@ namespace Dewey.Manifest
             {
                 Console.WriteLine($"Unable to load manifest file '{@event.ManifestFile.FileName}'. File does not exist.");
             }
-        }
-
-        public void Handle(EmptyManifestFile @event)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"No dewey xml elements to load in manifest file '{@event.ManifestFile.FileName}'.");
-        }
-
-        public void Handle(InvalidManifestFile @event)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Unable to load manifest file '{@event.ManifestFile.FileName}'. The xml file is not a valid manifest.");
         }
 
         public void Handle(InvalidJsonManifestFile @event)
