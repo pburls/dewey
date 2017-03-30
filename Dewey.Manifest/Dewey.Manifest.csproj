@@ -49,8 +49,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
-    <Compile Include="Component\ComponentManifest.cs" />
-    <Compile Include="Component\ComponentManifestLoadResult.cs" />
     <Compile Include="DeweyManifestLoader.cs" />
     <Compile Include="Events\EmptyManifestFile.cs" />
     <Compile Include="Events\InvalidJsonManifestFile.cs" />
@@ -77,21 +75,6 @@
     <Compile Include="Models\RuntimeResource.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\RepositoriesManifestLoadResult.cs" />
-    <Compile Include="Repositories\LoadRepositoryElementResult.cs" />
-    <Compile Include="Repositories\RepositoriesManifest.cs" />
-    <Compile Include="Repositories\RepositoryItem.cs" />
-    <Compile Include="Repository\ManifestFileItem.cs" />
-    <Compile Include="Repository\ComponentItem.cs" />
-    <Compile Include="Repository\LoadManifestFileElementResult.cs" />
-    <Compile Include="Repository\LoadComponentElementResult.cs" />
-    <Compile Include="Repository\RepositoryManifestLoadResult.cs" />
-    <Compile Include="Repository\RepositoryManifest.cs" />
-    <Compile Include="RuntimeResources\RuntimeResourceItem.cs" />
-    <Compile Include="RuntimeResources\RuntimeResourceItemLoadResult.cs" />
-    <Compile Include="RuntimeResources\RuntimeResourcesManifestLoadResult.cs" />
-    <Compile Include="RuntimeResources\RuntimeResourcesManifest.cs" />
-    <Compile Include="RuntimeResources\RuntimeResourcesManifestLoader.cs" />
     <Compile Include="Store.cs" />
   </ItemGroup>
   <ItemGroup>

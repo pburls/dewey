@@ -62,15 +62,11 @@
     <Compile Include="Events\DeployCommandCompleted.cs" />
     <Compile Include="Events\DeployCommandEvent.cs" />
     <Compile Include="Events\DeployCommandStarted.cs" />
-    <Compile Include="Events\DeploymentActionContentNotFoundResult.cs" />
     <Compile Include="Events\DeploymentActionErrorResult.cs" />
-    <Compile Include="Events\DeploymentActionEvent.cs" />
     <Compile Include="Events\DeploymentActionFailed.cs" />
     <Compile Include="Events\DeploymentActionOutputMessage.cs" />
     <Compile Include="Events\DeploymentActionCompletedResult.cs" />
     <Compile Include="Events\DeploymentActionStarted.cs" />
-    <Compile Include="Events\DeploymentElementInvalidAttributeResult.cs" />
-    <Compile Include="Events\DeploymentElementMissingAttributeResult.cs" />
     <Compile Include="Events\DeploymentElementMissingTypeAttributeResult.cs" />
     <Compile Include="Events\DeploymentElementResult.cs" />
     <Compile Include="Events\JsonDeployEvent.cs" />

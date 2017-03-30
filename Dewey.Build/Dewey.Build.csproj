@@ -68,13 +68,11 @@
     <Compile Include="Events\NoJsonBuildManifestFound.cs" />
     <Compile Include="CLICommandProvider.cs" />
     <Compile Include="Events\BuildActionCompletedResult.cs" />
-    <Compile Include="Events\BuildActionEvent.cs" />
     <Compile Include="Events\BuildActionErrorResult.cs" />
     <Compile Include="Events\BuildActionStarted.cs" />
     <Compile Include="Events\BuildCommandCompleted.cs" />
     <Compile Include="Events\BuildCommandEvent.cs" />
     <Compile Include="Events\BuildCommandStarted.cs" />
-    <Compile Include="Events\BuildElementMissingAttributeResult.cs" />
     <Compile Include="Events\BuildElementMissingTypeAttributeResult.cs" />
     <Compile Include="Events\BuildElementResult.cs" />
     <Compile Include="Events\ComponentNotFoundResult.cs" />

@@ -1,6 +1,5 @@
 ﻿using Dewey.Build.Events;
 using Dewey.Build.Models;
-using Dewey.Manifest.Component;
 using Dewey.Messaging;
 using Dewey.Test;
 using Moq;

@@ -75,8 +75,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComponentItemTest.cs" />
-    <Compile Include="ComponentManifestTest.cs" />
     <Compile Include="LoadManifestFilesCommandIntegrationTest.cs" />
     <Compile Include="MockFileService.cs" />
     <Compile Include="MockManifestFileReaderService.cs" />

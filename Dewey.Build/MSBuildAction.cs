@@ -1,12 +1,9 @@
 ﻿using Dewey.Build.Events;
 using Dewey.File;
-using Dewey.Manifest.Component;
 using Dewey.Messaging;
 using System.Linq;
-using System.Xml.Linq;
 using Dewey.Build.Models;
 using Dewey.Manifest.Models;
-using System;
 
 namespace Dewey.Build
 {

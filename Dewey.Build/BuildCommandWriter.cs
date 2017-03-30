@@ -9,12 +9,6 @@ namespace Dewey.Build
         IEventHandler<ComponentNotFoundResult>, 
         IEventHandler<NoBuildElementsFoundResult>, 
         IEventHandler<BuildElementMissingTypeAttributeResult>,
-        IEventHandler<BuildElementMissingAttributeResult>,
-        IEventHandler<BuildActionTargetNotFoundResult>,
-        IEventHandler<BuildActionStarted>,
-        IEventHandler<BuildActionCompletedResult>,
-        IEventHandler<BuildActionErrorResult>,
-        IEventHandler<MSBuildExecutableNotFoundResult>,
         IEventHandler<NoJsonBuildManifestFound>,
         IEventHandler<JsonBuildManifestInvalidType>,
         IEventHandler<JsonBuildMissingAttributesResult>,
@@ -80,16 +74,6 @@ namespace Dewey.Build
                 buildElementMissingTypeAttributeResult.BuildElement.ToString()));
         }
 
-        public void Handle(BuildElementMissingAttributeResult buildElementMissingAttributeResult)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(string.Format("Skipping build element of component '{0}' with missing attributes '{1}' requied for action {2}: {3}", 
-                buildElementMissingAttributeResult.ComponentManifest.Name, 
-                buildElementMissingAttributeResult.AttributeName, 
-                buildElementMissingAttributeResult.BuildType, 
-                buildElementMissingAttributeResult.BuildElement.ToString()));
-        }
-
         public void Handle(JsonBuildActionTargetNotFoundResult jsonBuildActionTargetNotFoundResult)
         {
             Console.ForegroundColor = ConsoleColor.Red;
@@ -97,15 +81,6 @@ namespace Dewey.Build
                 jsonBuildActionTargetNotFoundResult.Target,
                 jsonBuildActionTargetNotFoundResult.Build.type,
                 jsonBuildActionTargetNotFoundResult.Component.name));
-        }
-
-        public void Handle(BuildActionTargetNotFoundResult buildTargetNotFoundResult)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(string.Format("Target file '{0}' not found for '{1}' action of component '{2}'.", 
-                buildTargetNotFoundResult.Target, 
-                buildTargetNotFoundResult.BuildType, 
-                buildTargetNotFoundResult.ComponentManifest.Name));
         }
 
         public void Handle(JsonMSBuildExecutableNotFoundResult jsonMSBuildExecutableNotFoundResult)
@@ -116,23 +91,6 @@ namespace Dewey.Build
                 jsonMSBuildExecutableNotFoundResult.MSBuildVersion));
         }
 
-        public void Handle(MSBuildExecutableNotFoundResult msbuildExecutableNotFoundResult)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(string.Format("Fail to build component '{0}' because no msbuild executable version '{1}' can be found on this system.",
-                msbuildExecutableNotFoundResult.ComponentManifest.Name,
-                msbuildExecutableNotFoundResult.MSBuildVersion));
-        }
-
-        public void Handle(BuildActionStarted buildActionStartedResult)
-        {
-            Console.ResetColor();
-            Console.WriteLine(string.Format("Build action '{0}' of component '{1}' started with args: {2}", 
-                buildActionStartedResult.BuildType, 
-                buildActionStartedResult.ComponentManifest.Name, 
-                buildActionStartedResult.Arguments));
-        }
-
         public void Handle(JsonBuildActionStarted buildActionStarted)
         {
             Console.ResetColor();
@@ -141,30 +99,12 @@ namespace Dewey.Build
                 buildActionStarted.Component.name));
         }
 
-        public void Handle(BuildActionCompletedResult buildActionCompletedResult)
-        {
-            Console.ResetColor();
-            Console.WriteLine(string.Format("Build action '{0}' of component '{1}' completed with args: {2}", 
-                buildActionCompletedResult.BuildType, 
-                buildActionCompletedResult.ComponentManifest.Name, 
-                buildActionCompletedResult.Arguments));
-        }
-
         public void Handle(JsonBuildActionCompletedResult buildActionCompletedResult)
         {
             Console.ResetColor();
             Console.WriteLine(string.Format("Build action '{0}' of component '{1}' completed.",
                 buildActionCompletedResult.Build.ToJson(),
                 buildActionCompletedResult.Component.name));
-        }
-
-        public void Handle(BuildActionErrorResult buildActionErrorResult)
-        {
-            Console.ResetColor();
-            Console.WriteLine(string.Format("Build action '{0}' of component '{1}' threw exception: {2}", 
-                buildActionErrorResult.BuildType, 
-                buildActionErrorResult.ComponentManifest.Name, 
-                buildActionErrorResult.Exception));
         }
 
         public void Handle(JsonBuildActionErrorResult buildActionErrorResult)

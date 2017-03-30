@@ -1,6 +1,4 @@
-﻿using Dewey.Manifest.Component;
-using Dewey.Manifest.Models;
-using System.Xml.Linq;
+﻿using Dewey.Manifest.Models;
 
 namespace Dewey.Build
 {

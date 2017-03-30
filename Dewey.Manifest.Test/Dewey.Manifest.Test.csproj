@@ -77,13 +77,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DeweyManifestJsonLoaderTest.cs" />
-    <Compile Include="DeweyManifestLoaderTest.cs" />
     <Compile Include="DeweyManifestIntegrationTest.cs" />
     <Compile Include="ManifestLoadHandlerTest.cs" />
     <Compile Include="Models\ManifestTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RepositoryManifestTest.cs" />
-    <Compile Include="RuntimeResourcesManifestLoaderTest.cs" />
     <Compile Include="StoreTest.cs" />
   </ItemGroup>
   <ItemGroup>
