@@ -35,7 +35,6 @@ namespace Dewey.Build.Test
             Messaging.Bootstrapper.RegisterTypes(container);
             File.Bootstrapper.RegisterTypes(container);
             Manifest.Bootstrapper.RegisterTypes(container);
-            State.Bootstrapper.RegisterTypes(container);
             Build.Bootstrapper.RegisterTypes(container);
 
             container.Options.AllowOverridingRegistrations = true;
@@ -43,7 +42,6 @@ namespace Dewey.Build.Test
             container.RegisterSingleton(mockBuildActionFactory.Object);
 
             var moduleCataloge = container.GetInstance<ModuleCatalogue>();
-            moduleCataloge.Load<State.Module>();
             moduleCataloge.Load<Manifest.Module>();
             moduleCataloge.Load<Build.Module>();
 

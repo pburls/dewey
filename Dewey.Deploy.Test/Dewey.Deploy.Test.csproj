@@ -101,10 +101,6 @@
       <Project>{A3986E8A-3009-41B1-8636-0C431305255C}</Project>
       <Name>Dewey.Messaging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Dewey.State\Dewey.State.csproj">
-      <Project>{972c3e2d-b209-4c63-97da-fa4c16822e21}</Project>
-      <Name>Dewey.State</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Dewey.Test\Dewey.Test.csproj">
       <Project>{8F96AC59-2297-4885-B5A7-8D286CE8DAB6}</Project>
       <Name>Dewey.Test</Name>

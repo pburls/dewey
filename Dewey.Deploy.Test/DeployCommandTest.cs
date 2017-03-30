@@ -2,7 +2,6 @@
 using Dewey.Deploy.Models;
 using Dewey.File;
 using Dewey.Manifest;
-using Dewey.Manifest.Component;
 using Dewey.Manifest.Models;
 using Dewey.Messaging;
 using Dewey.Test;
@@ -10,7 +9,6 @@ using Moq;
 using Ploeh.AutoFixture;
 using SimpleInjector;
 using System.Linq;
-using System.Xml.Linq;
 using Xunit;
 
 namespace Dewey.Deploy.Test
@@ -40,7 +38,6 @@ namespace Dewey.Deploy.Test
             Messaging.Bootstrapper.RegisterTypes(container);
             File.Bootstrapper.RegisterTypes(container);
             Manifest.Bootstrapper.RegisterTypes(container);
-            State.Bootstrapper.RegisterTypes(container);
             Deploy.Bootstrapper.RegisterTypes(container);
 
             container.Options.AllowOverridingRegistrations = true;
@@ -48,7 +45,6 @@ namespace Dewey.Deploy.Test
             container.RegisterSingleton(mockDeploymentActionFactory.Object);
 
             var moduleCataloge = container.GetInstance<ModuleCatalogue>();
-            moduleCataloge.Load<State.Module>();
             moduleCataloge.Load<Manifest.Module>();
             moduleCataloge.Load<Deploy.Module>();
 

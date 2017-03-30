@@ -78,10 +78,6 @@
       <Project>{a3986e8a-3009-41b1-8636-0c431305255c}</Project>
       <Name>Dewey.Messaging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Dewey.State\Dewey.State.csproj">
-      <Project>{972c3e2d-b209-4c63-97da-fa4c16822e21}</Project>
-      <Name>Dewey.State</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
