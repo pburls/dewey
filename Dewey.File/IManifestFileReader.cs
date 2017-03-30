@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace Dewey.File
+﻿namespace Dewey.File
 {
     public enum ManifestFileType
     {
@@ -8,7 +6,8 @@ namespace Dewey.File
         Component,
         Repository,
         Repositories,
-        RuntimeResources
+        RuntimeResources,
+        Dewey
     }
 
     public interface IManifestFileReader
@@ -20,6 +19,6 @@ namespace Dewey.File
         bool FileExists { get; }
         string FileName { get; }
 
-        XElement Load();
+        string LoadText();
     }
 }

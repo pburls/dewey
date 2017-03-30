@@ -1,12 +1,12 @@
-﻿using Dewey.Manifest.Component;
+﻿using Dewey.Manifest.Models;
 
 namespace Dewey.Deploy.Events
 {
-    public class DeploymentActionFailed : DeploymentActionEvent
+    public class JsonDeploymentActionFailed : JsonDeployEvent
     {
         public string Reason { get; private set; }
 
-        public DeploymentActionFailed(ComponentManifest componentManifest, string deployType, string reason) : base(componentManifest, deployType)
+        public JsonDeploymentActionFailed(Component componentManifest, Models.Deploy deploy, string reason) : base(componentManifest, deploy)
         {
             Reason = reason;
         }

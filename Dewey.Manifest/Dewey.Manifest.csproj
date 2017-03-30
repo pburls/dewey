@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="SimpleInjector, Version=3.2.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
       <HintPath>..\packages\SimpleInjector.3.2.0\lib\net45\SimpleInjector.dll</HintPath>
       <Private>True</Private>
@@ -45,43 +49,30 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
-    <Compile Include="Component\ComponentManifest.cs" />
-    <Compile Include="Component\ComponentManifestLoadResult.cs" />
-    <Compile Include="Dependency\RuntimeResourceDependency.cs" />
-    <Compile Include="Dependency\ComponentDependency.cs" />
-    <Compile Include="Dependency\DependenciesElementNotFoundResult.cs" />
-    <Compile Include="Dependency\DependencyElementEvent.cs" />
-    <Compile Include="Dependency\DependencyElementLoader.cs" />
-    <Compile Include="Dependency\DependencyElementMissingAttributesResult.cs" />
-    <Compile Include="Dependency\DependencyElementResult.cs" />
-    <Compile Include="Dependency\DependencyElementsNotFoundResult.cs" />
-    <Compile Include="Dependency\IDependencyElementLoader.cs" />
-    <Compile Include="Dependency\DatabaseDependency.cs" />
-    <Compile Include="Dependency\QueueDependency.cs" />
+    <Compile Include="DeweyManifestLoader.cs" />
+    <Compile Include="Events\InvalidJsonManifestFile.cs" />
+    <Compile Include="Events\JsonManifestLoadResult.cs" />
     <Compile Include="Events\LoadManifestFilesResult.cs" />
+    <Compile Include="Events\ManifestFileNotFound.cs" />
+    <Compile Include="Events\ManifestFileEvent.cs" />
     <Compile Include="Events\ManifestFilesFound.cs" />
     <Compile Include="Events\NoManifestFileFoundResult.cs" />
     <Compile Include="LoadManifestFiles.cs" />
     <Compile Include="Events\LoadManifestFilesStarted.cs" />
     <Compile Include="LoadManifestFilesWriter.cs" />
     <Compile Include="ManifestLoadHandler.cs" />
+    <Compile Include="Messages\GetComponent.cs" />
+    <Compile Include="Messages\GetComponents.cs" />
+    <Compile Include="Messages\GetRuntimeResources.cs" />
+    <Compile Include="Models\Component.cs" />
+    <Compile Include="Models\ComponentDependency.cs" />
+    <Compile Include="Models\Dependency.cs" />
+    <Compile Include="Models\DependencyExtensions.cs" />
+    <Compile Include="Models\Manifest.cs" />
+    <Compile Include="Models\RuntimeResource.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\RepositoriesManifestLoadResult.cs" />
-    <Compile Include="Repositories\LoadRepositoryElementResult.cs" />
-    <Compile Include="Repositories\RepositoriesManifest.cs" />
-    <Compile Include="Repositories\RepositoryItem.cs" />
-    <Compile Include="Repository\ManifestFileItem.cs" />
-    <Compile Include="Repository\ComponentItem.cs" />
-    <Compile Include="Repository\LoadManifestFileElementResult.cs" />
-    <Compile Include="Repository\LoadComponentElementResult.cs" />
-    <Compile Include="Repository\RepositoryManifestLoadResult.cs" />
-    <Compile Include="Repository\RepositoryManifest.cs" />
-    <Compile Include="RuntimeResources\RuntimeResourceItem.cs" />
-    <Compile Include="RuntimeResources\RuntimeResourceItemLoadResult.cs" />
-    <Compile Include="RuntimeResources\RuntimeResourcesManifestLoadResult.cs" />
-    <Compile Include="RuntimeResources\RuntimeResourcesManifest.cs" />
-    <Compile Include="RuntimeResources\RuntimeResourcesManifestLoader.cs" />
+    <Compile Include="Store.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dewey.File\Dewey.File.csproj">

@@ -8,10 +8,8 @@ namespace Dewey.Build
         {
             container.Register<IMSBuildProcess, MSBuildProcess>();
             container.Register<IBuildActionFactory, BuildActionFactory>();
-            container.Register<IBuildElementLoader, BuildElementLoader>();
 
             container.RegisterCollection(typeof(IBuildAction), new[] { typeof(Bootstrapper).Assembly });
-
         }
     }
 }

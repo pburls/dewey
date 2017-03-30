@@ -1,4 +1,4 @@
-﻿using Dewey.State;
+﻿using Dewey.Manifest.Models;
 using System;
 using System.Collections.Generic;
 
@@ -22,7 +22,7 @@ namespace Dewey.ListItems
 
         private static string BuildDescription(this RuntimeResource runtimeResource)
         {
-            return string.Format("{0} ({1}) - \"{2}\"", runtimeResource.RuntimeResourceItem.Name, runtimeResource.RuntimeResourceItem.Type, runtimeResource.RuntimeResourceItem.RuntimeResourcesManifest.File.DirectoryName);
+            return string.Format("{0} ({1}) - \"{2}\"", runtimeResource.name, runtimeResource.type, runtimeResource.File.DirectoryName);
         }
     }
 }

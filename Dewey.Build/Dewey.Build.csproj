@@ -38,6 +38,10 @@
       <HintPath>..\packages\Microsoft.Build.Utilities.Core.14.3.0\lib\net45\Microsoft.Build.Utilities.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="SimpleInjector, Version=3.2.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
       <HintPath>..\packages\SimpleInjector.3.2.0\lib\net45\SimpleInjector.dll</HintPath>
       <Private>True</Private>
@@ -57,29 +61,30 @@
     <Compile Include="BuildCommand.cs" />
     <Compile Include="BuildCommandHandler.cs" />
     <Compile Include="BuildCommandWriter.cs" />
-    <Compile Include="BuildElementLoader.cs" />
+    <Compile Include="Events\JsonBuildEvent.cs" />
+    <Compile Include="Events\JsonBuildMissingAttributesResult.cs" />
+    <Compile Include="Events\JsonBuildManifestLoadEvent.cs" />
+    <Compile Include="Events\JsonBuildManifestInvalidType.cs" />
+    <Compile Include="Events\NoJsonBuildManifestFound.cs" />
     <Compile Include="CLICommandProvider.cs" />
     <Compile Include="Events\BuildActionCompletedResult.cs" />
-    <Compile Include="Events\BuildActionEvent.cs" />
     <Compile Include="Events\BuildActionErrorResult.cs" />
     <Compile Include="Events\BuildActionStarted.cs" />
     <Compile Include="Events\BuildCommandCompleted.cs" />
     <Compile Include="Events\BuildCommandEvent.cs" />
     <Compile Include="Events\BuildCommandStarted.cs" />
-    <Compile Include="Events\BuildElementMissingAttributeResult.cs" />
-    <Compile Include="Events\BuildElementMissingTypeAttributeResult.cs" />
-    <Compile Include="Events\BuildElementResult.cs" />
     <Compile Include="Events\ComponentNotFoundResult.cs" />
     <Compile Include="Events\BuildActionTargetNotFoundResult.cs" />
     <Compile Include="Events\MSBuildExecutableNotFoundResult.cs" />
-    <Compile Include="Events\NoBuildElementsFoundResult.cs" />
     <Compile Include="IBuildAction.cs" />
     <Compile Include="IBuildActionFactory.cs" />
-    <Compile Include="IBuildElementLoader.cs" />
     <Compile Include="IMSBuildProcess.cs" />
+    <Compile Include="Models\Build.cs" />
+    <Compile Include="Models\BuildableComponent.cs" />
+    <Compile Include="Models\ComponentExtensions.cs" />
+    <Compile Include="Models\MSBuild.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="MSBuild.cs" />
-    <Compile Include="MSBuildArgs.cs" />
+    <Compile Include="MSBuildAction.cs" />
     <Compile Include="MSBuildProcess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -95,10 +100,6 @@
     <ProjectReference Include="..\Dewey.Messaging\Dewey.Messaging.csproj">
       <Project>{a3986e8a-3009-41b1-8636-0c431305255c}</Project>
       <Name>Dewey.Messaging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Dewey.State\Dewey.State.csproj">
-      <Project>{972c3e2d-b209-4c63-97da-fa4c16822e21}</Project>
-      <Name>Dewey.State</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

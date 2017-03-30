@@ -30,13 +30,11 @@ namespace Dewey.Graph.Test
             Messaging.Bootstrapper.RegisterTypes(container);
             File.Bootstrapper.RegisterTypes(container);
             Manifest.Bootstrapper.RegisterTypes(container);
-            State.Bootstrapper.RegisterTypes(container);
 
             container.RegisterSingleton(mockIGraphGenerator.Object);
             container.RegisterSingleton(mockIGraphWriterFactory.Object);
 
             var moduleCataloge = container.GetInstance<ModuleCatalogue>();
-            moduleCataloge.Load<State.Module>();
             moduleCataloge.Load<Manifest.Module>();
 
             commandProcessor = container.GetInstance<ICommandProcessor>();

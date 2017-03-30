@@ -1,5 +1,4 @@
-﻿using Dewey.Manifest.Component;
-using System.Xml.Linq;
+﻿using Dewey.Manifest.Models;
 
 namespace Dewey.Build
 {
@@ -7,6 +6,6 @@ namespace Dewey.Build
     {
         string BuildType { get; }
 
-        bool Build(ComponentManifest componentManifest, XElement buildElement);
+        bool Build(Component componentManifest, Models.Build build);
     }
 }

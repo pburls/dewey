@@ -1,6 +1,4 @@
-﻿using Dewey.Manifest.Component;
-using Dewey.Manifest.Repository;
-using System.Xml.Linq;
+﻿using Dewey.Manifest.Models;
 
 namespace Dewey.Deploy
 {
@@ -8,6 +6,6 @@ namespace Dewey.Deploy
     {
         string Type { get; }
 
-        bool Deploy(ComponentManifest componentManifest, XElement deploymentElement);
+        bool Deploy(Component componentManifest, Models.Deploy deploy);
     }
 }

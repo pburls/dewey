@@ -38,6 +38,10 @@
       <HintPath>..\packages\Moq.4.5.21\lib\net45\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Ploeh.AutoFixture, Version=3.49.0.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoFixture.3.49.0\lib\net40\Ploeh.AutoFixture.dll</HintPath>
       <Private>True</Private>
@@ -74,8 +78,7 @@
   <ItemGroup>
     <Compile Include="BuildCommandHandlerTest.cs" />
     <Compile Include="BuildCommandIntegrationTest.cs" />
-    <Compile Include="BuildElementResultTest.cs" />
-    <Compile Include="MSBuildTest.cs" />
+    <Compile Include="MSBuildActionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -90,10 +93,6 @@
     <ProjectReference Include="..\Dewey.Messaging\Dewey.Messaging.csproj">
       <Project>{a3986e8a-3009-41b1-8636-0c431305255c}</Project>
       <Name>Dewey.Messaging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Dewey.State\Dewey.State.csproj">
-      <Project>{972C3E2D-B209-4C63-97DA-FA4C16822E21}</Project>
-      <Name>Dewey.State</Name>
     </ProjectReference>
     <ProjectReference Include="..\Dewey.Test\Dewey.Test.csproj">
       <Project>{8f96ac59-2297-4885-b5a7-8d286ce8dab6}</Project>

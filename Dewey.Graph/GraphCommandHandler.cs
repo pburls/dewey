@@ -1,44 +1,31 @@
 ﻿using Dewey.Graph.DOT;
 using Dewey.Graph.Writers;
-using Dewey.Manifest.Dependency;
+using Dewey.Manifest.Messages;
+using Dewey.Manifest.Models;
 using Dewey.Messaging;
-using Dewey.State;
-using Dewey.State.Messages;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 
 namespace Dewey.Graph
 {
     public class GraphCommandHandler :
         ICommandHandler<GraphCommand>,
         IEventHandler<GetComponentsResult>,
-        IEventHandler<GetRuntimeResourcesResult>,
-        IEventHandler<DependencyElementResult>
+        IEventHandler<GetRuntimeResourcesResult>
     {
         readonly ICommandProcessor _commandProcessor;
         readonly IEventAggregator _eventAggregator;
-        readonly IDependencyElementLoader _dependencyElementLoader;
         readonly IGraphGenerator _graphGenerator;
         readonly IGraphWriterFactory _graphWriterFactory;
-
-
-        readonly List<DependencyElementResult> _dependencies = new List<DependencyElementResult>();
-
-        readonly string[] LAYER_COMPONENT_TYPES = { QueueDependency.QUEUE_DEPENDENCY_TYPE, DependencyElementResult.FILE_DEPENDENCY_TYPE, DependencyElementResult.ENVIRONMENT_VARIABLE_DEPENDENCY_TYPE, DatabaseDependency.DATABASE_DEPENDENCY_TYPE };
 
         GraphCommand _command;
         IEnumerable<Component> _components;
         IReadOnlyDictionary<string, RuntimeResource> _runtimeResources;
 
-        public GraphCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IDependencyElementLoader dependencyElementLoader, IGraphGenerator graphGenerator, IGraphWriterFactory graphWriterFactory)
+        public GraphCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IGraphGenerator graphGenerator, IGraphWriterFactory graphWriterFactory)
         {
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
-            _dependencyElementLoader = dependencyElementLoader;
             _graphGenerator = graphGenerator;
             _graphWriterFactory = graphWriterFactory;
 
@@ -70,17 +57,15 @@ namespace Dewey.Graph
             foreach (var component in _components)
             {
                 string type;
-                if (string.IsNullOrWhiteSpace(component.ComponentManifest.SubType))
-                    type = string.Join("-", Node.COMPONENT_NODE_TYPE, component.ComponentManifest.Type);
+                if (string.IsNullOrWhiteSpace(component.subtype))
+                    type = string.Join("-", Node.COMPONENT_NODE_TYPE, component.type);
                 else
-                    type = string.Join("-", Node.COMPONENT_NODE_TYPE, component.ComponentManifest.Type, component.ComponentManifest.SubType);
+                    type = string.Join("-", Node.COMPONENT_NODE_TYPE, component.type, component.subtype);
 
-                var node = new Node(nodeId++, component.ComponentManifest.Name, type);
-                nodeDictionary.Add(component.ComponentManifest.Name, node);
+                var node = new Node(nodeId++, component.name, type);
+                nodeDictionary.Add(component.name, node);
 
-                _dependencyElementLoader.LoadFromComponentManifest(component.ComponentManifest, component.ComponentElement);
-
-                var clusterName = component.ComponentManifest.Context;
+                var clusterName = component.context;
                 if (!string.IsNullOrWhiteSpace(clusterName))
                 {
                     Cluster layer = null;
@@ -100,11 +85,11 @@ namespace Dewey.Graph
 
             foreach (var runtimeResource in _runtimeResources.Values)
             {
-                var name = !string.IsNullOrWhiteSpace(runtimeResource.RuntimeResourceItem.Provider) ? string.Format("{0}\n{1}", runtimeResource.RuntimeResourceItem.Name, runtimeResource.RuntimeResourceItem.Provider) : runtimeResource.RuntimeResourceItem.Name;
-                var node = new Node(nodeId++, name, runtimeResource.RuntimeResourceItem.Type);
-                nodeDictionary.Add(runtimeResource.RuntimeResourceItem.Name, node);
+                var name = !string.IsNullOrWhiteSpace(runtimeResource.provider) ? string.Format("{0}\n{1}", runtimeResource.name, runtimeResource.provider) : runtimeResource.name;
+                var node = new Node(nodeId++, name, runtimeResource.type);
+                nodeDictionary.Add(runtimeResource.name, node);
 
-                var clusterName = runtimeResource.RuntimeResourceItem.Context;
+                var clusterName = runtimeResource.context;
                 if (!string.IsNullOrWhiteSpace(clusterName))
                 {
                     Cluster layer = null;
@@ -123,44 +108,46 @@ namespace Dewey.Graph
             }
 
             var edgeList = new List<Edge>();
-            foreach (var dependecy in _dependencies)
+            foreach (var component in _components)
             {
-                if (dependecy is ComponentDependency)
+                foreach (var dependecy in component.dependencies)
                 {
-                    var componentDependency = dependecy as ComponentDependency;
-                    Node node1, node2;
-                    if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out node1) && nodeDictionary.TryGetValue(dependecy.Name, out node2))
+                    if (dependecy.IsComponentDependency())
                     {
-                        edgeList.Add(new Edge(node1.Id, node2.Id, componentDependency.Protocol));
-                    }
-                }
-                else if (dependecy is RuntimeResourceDependency)
-                {
-                    var runtimeResourceDependency = dependecy as RuntimeResourceDependency;
-                    Node node1, node2;
-                    RuntimeResource runtimeResource;
-                    if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out node1) && nodeDictionary.TryGetValue(dependecy.Name, out node2))
-                    {
-                        string format = null;
-                        if (_runtimeResources.TryGetValue(dependecy.Name, out runtimeResource))
+                        var componentDependency = new ComponentDependency(dependecy);
+                        Node node1, node2;
+                        if (nodeDictionary.TryGetValue(component.name, out node1) && nodeDictionary.TryGetValue(componentDependency.name, out node2))
                         {
-                            format = runtimeResource.RuntimeResourceItem.Format;
+                            edgeList.Add(new Edge(node1.Id, node2.Id, componentDependency.protocol));
                         }
-                        edgeList.Add(new Edge(node1.Id, node2.Id, format));
                     }
-                }
-                else
-                {
-                    Node componentNode, node;
-                    if (nodeDictionary.TryGetValue(dependecy.ComponentManifest.Name, out componentNode))
+                    else if (dependecy.IsRuntimeResourceDependency())
                     {
-                        if (!nodeDictionary.TryGetValue(dependecy.Name, out node))
+                        Node node1, node2;
+                        RuntimeResource runtimeResource;
+                        if (nodeDictionary.TryGetValue(component.name, out node1) && nodeDictionary.TryGetValue(dependecy.name, out node2))
                         {
-                            node = new Node(nodeId++, dependecy.Name, dependecy.Type);
-                            nodeDictionary.Add(node.Name, node);
+                            string format = null;
+                            if (_runtimeResources.TryGetValue(dependecy.name, out runtimeResource))
+                            {
+                                format = runtimeResource.format;
+                            }
+                            edgeList.Add(new Edge(node1.Id, node2.Id, format));
                         }
+                    }
+                    else
+                    {
+                        Node componentNode, node;
+                        if (nodeDictionary.TryGetValue(component.name, out componentNode))
+                        {
+                            if (!nodeDictionary.TryGetValue(dependecy.name, out node))
+                            {
+                                node = new Node(nodeId++, dependecy.name, dependecy.type);
+                                nodeDictionary.Add(node.Name, node);
+                            }
 
-                        edgeList.Add(new Edge(componentNode.Id, node.Id));
+                            edgeList.Add(new Edge(componentNode.Id, node.Id));
+                        }
                     }
                 }
             }
@@ -175,11 +162,6 @@ namespace Dewey.Graph
         public void Handle(GetComponentsResult getComponentsResult)
         {
             _components = getComponentsResult.Components;
-        }
-
-        public void Handle(DependencyElementResult dependencyElementResult)
-        {
-            _dependencies.Add(dependencyElementResult);
         }
 
         public void Handle(GetRuntimeResourcesResult getRuntimeResourcesResult)

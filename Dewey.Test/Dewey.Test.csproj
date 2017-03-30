@@ -75,13 +75,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComponentItemTest.cs" />
-    <Compile Include="ComponentManifestTest.cs" />
     <Compile Include="LoadManifestFilesCommandIntegrationTest.cs" />
     <Compile Include="MockFileService.cs" />
     <Compile Include="MockManifestFileReaderService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="XmlElement.cs" />
+    <Compile Include="PropertyTypeOmitter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

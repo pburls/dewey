@@ -1,13 +1,11 @@
 ﻿using Dewey.Messaging;
-using Dewey.State.Messages;
+using Dewey.Manifest.Messages;
 using System.Linq;
 
 namespace Dewey.ListItems
 {
     public class ListItemsCommandHandler :
         ICommandHandler<ListItemsCommand>,
-        IEventHandler<GetRepositoriesFilesResult>,
-        IEventHandler<GetRepositoriesResult>,
         IEventHandler<GetComponentsResult>,
         IEventHandler<GetRuntimeResourcesResult>
     {
@@ -22,38 +20,8 @@ namespace Dewey.ListItems
 
         public void Execute(ListItemsCommand command)
         {
-            _commandProcessor.Execute(new GetRepositoriesFiles());
-        }
-
-        public void Handle(GetRepositoriesFilesResult getRepositoriesFilesResult)
-        {
-            if (getRepositoriesFilesResult.RepositoriesFiles.Any())
-            {
-                foreach (var repositoriesFile in getRepositoriesFilesResult.RepositoriesFiles)
-                {
-                    repositoriesFile.Write();
-                }
-            }
-            else
-            {
-                _commandProcessor.Execute(new GetRepositories());
-            }
-        }
-
-        public void Handle(GetRepositoriesResult getRepositoriesResult)
-        {
-            if (getRepositoriesResult.Repositories.Any())
-            {
-                foreach (var repository in getRepositoriesResult.Repositories)
-                {
-                    repository.Write();
-                }
-            }
-            else
-            {
-                _commandProcessor.Execute(new GetComponents());
-                _commandProcessor.Execute(new GetRuntimeResources());
-            }
+            _commandProcessor.Execute(new GetComponents());
+            _commandProcessor.Execute(new GetRuntimeResources());
         }
 
         public void Handle(GetComponentsResult getComponentsResult)

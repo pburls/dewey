@@ -1,44 +1,32 @@
 ﻿using System;
 using Dewey.Deploy.Events;
 using Dewey.Messaging;
-using Dewey.State.Messages;
-using Dewey.State;
-using Dewey.Manifest.Dependency;
-using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
+using Dewey.Manifest.Messages;
+using Dewey.Manifest.Models;
+using Dewey.Deploy.Models;
 
 namespace Dewey.Deploy
 {
     public class DeployCommandHandler :
         ICommandHandler<DeployCommand>,
-        IEventHandler<GetComponentResult>,
-        IEventHandler<DeploymentElementResult>,
-        IEventHandler<DependencyElementResult>
+        IEventHandler<GetComponentResult>
     {
         readonly ICommandProcessor _commandProcessor;
         readonly IEventAggregator _eventAggregator;
-        readonly IDependencyElementLoader _dependencyElementLoader;
         readonly IDeploymentActionFactory _deploymentActionFactory;
-
-        readonly List<DependencyElementResult> _dependencies;
 
         DeployCommand _command;
         Component _component;
-        DeploymentElementResult _deploymentElementResult;
 
-        public DeployCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IDependencyElementLoader dependencyElementLoader, IDeploymentActionFactory deploymentActionFactory)
+        public DeployCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IDeploymentActionFactory deploymentActionFactory)
         {
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
-            _dependencyElementLoader = dependencyElementLoader;
             _deploymentActionFactory = deploymentActionFactory;
 
-            _dependencies = new List<DependencyElementResult>();
-
-            eventAggregator.Subscribe<GetComponentResult>(this);
-            eventAggregator.Subscribe<DeploymentElementResult>(this);
-            eventAggregator.Subscribe<DependencyElementResult>(this);
+            eventAggregator.Subscribe(this);
         }
 
         public void Execute(DeployCommand command)
@@ -63,38 +51,38 @@ namespace Dewey.Deploy
                 return false;
             }
 
-            DeploymentElementResult.LoadDeployActionsFromComponentMandifest(_command, _component.ComponentElement, _eventAggregator);
-
-            if (_deploymentElementResult == null)
+            if (!_component.IsDeployable())
             {
+                _eventAggregator.PublishEvent(new NoJsonDeployManifestFound(_component));
+                return false;
+            }
+
+            var deployableComponent = new DeployableComponent(_component);
+            var deploy = deployableComponent.deploy;
+            var deployAction = _deploymentActionFactory.CreateDeploymentAction(deploy.type);
+            if (deployAction == null)
+            {
+                _eventAggregator.PublishEvent(new JsonDeployManifestInvalidType(_component, deploy));
                 return false;
             }
 
             if (_command.DeployDependencies)
             {
-                _dependencyElementLoader.LoadFromComponentManifest(_component.ComponentManifest, _component.ComponentElement);
-
-                if (_dependencies.Any())
+                var componentDependencies = _component.dependencies.Where(d => d.IsComponentDependency() && !string.IsNullOrWhiteSpace(d.name));
+                foreach (var componentDependency in componentDependencies)
                 {
-                    foreach (var dependency in _dependencies)
-                    {
-                        if (dependency.Type == ComponentDependency.COMPONENT_DEPENDENCY_TYPE)
-                        {
-                            _commandProcessor.Execute(DeployCommand.Create(dependency.Name, _command.DeployDependencies));
-                        }
-                    }
+                    _commandProcessor.Execute(DeployCommand.Create(componentDependency.name, _command.DeployDependencies));
                 }
             }
 
             var result = false;
             try
             {
-                var deploymentAction = _deploymentActionFactory.CreateDeploymentAction(_deploymentElementResult.DeploymentType);
-                result = deploymentAction.Deploy(_component.ComponentManifest, _deploymentElementResult.DeploymentElement);
+                result = deployAction.Deploy(_component, deploy);
             }
             catch (Exception ex)
             {
-                _eventAggregator.PublishEvent(new DeploymentActionErrorResult(_component.ComponentManifest, _deploymentElementResult.DeploymentType, ex));
+                _eventAggregator.PublishEvent(new JsonDeploymentActionErrorResult(_component, deploy, ex));
             }
 
             return result;
@@ -102,25 +90,9 @@ namespace Dewey.Deploy
 
         public void Handle(GetComponentResult getComponentResult)
         {
-            if (getComponentResult.Component != null && getComponentResult.Component.ComponentManifest.Name == _command.ComponentName)
+            if (getComponentResult.Component != null && getComponentResult.Component.name == _command.ComponentName)
             {
                 _component = getComponentResult.Component;
-            }
-        }
-
-        public void Handle(DependencyElementResult dependencyElementResult)
-        {
-            if (_component != null && _component.ComponentManifest.Name == dependencyElementResult.ComponentManifest.Name)
-            {
-                _dependencies.Add(dependencyElementResult);
-            }
-        }
-
-        public void Handle(DeploymentElementResult deploymentElementResult)
-        {
-            if (deploymentElementResult.ComponentName == _command.ComponentName)
-            {
-                _deploymentElementResult = deploymentElementResult;
             }
         }
     }

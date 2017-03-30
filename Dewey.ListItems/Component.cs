@@ -1,4 +1,4 @@
-﻿using Dewey.State;
+﻿using Dewey.Manifest.Models;
 using System;
 using System.Collections.Generic;
 
@@ -22,13 +22,13 @@ namespace Dewey.ListItems
 
         private static string BuildDescription(this Component component)
         {
-            string type = component.ComponentManifest.Type;
-            if (!string.IsNullOrWhiteSpace(component.ComponentManifest.SubType))
+            string type = component.type;
+            if (!string.IsNullOrWhiteSpace(component.subtype))
             {
-                type = string.Format("{0}-{1}", type, component.ComponentManifest.SubType);
+                type = string.Format("{0}-{1}", type, component.subtype);
             }
 
-            return string.Format("{0} ({1}) - \"{2}\"", component.ComponentManifest.Name, type, component.ComponentManifest.File.DirectoryName);
+            return string.Format("{0} ({1}) - \"{2}\"", component.name, type, component.File.DirectoryName);
         }
     }
 }

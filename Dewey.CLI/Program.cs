@@ -16,7 +16,6 @@ namespace Dewey.CLI
             Messaging.Bootstrapper.RegisterTypes(container);
             File.Bootstrapper.RegisterTypes(container);
             Manifest.Bootstrapper.RegisterTypes(container);
-            State.Bootstrapper.RegisterTypes(container);
             Build.Bootstrapper.RegisterTypes(container);
             Deploy.Bootstrapper.RegisterTypes(container);
             Graph.Bootstrapper.RegisterTypes(container);
@@ -24,7 +23,6 @@ namespace Dewey.CLI
             var commandManager = container.GetInstance<CLICommandManager>();
 
             var moduleCataloge = container.GetInstance<ModuleCatalogue>();
-            moduleCataloge.Load<State.Module>();
             moduleCataloge.Load<Manifest.Module>();
             moduleCataloge.Load<ListItems.Module>();
             moduleCataloge.Load<Build.Module>();
