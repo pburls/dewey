@@ -39,75 +39,94 @@ Commands:
 - The `deploy` command loads all discoverable manifests and attempts to deploy the component that matches the given name. All the component's dependencies can also be built.
 - The `graph` command loads all discoverable manifests and builds a dependency graph of all the known components and runtime resources. More information can be found [here](Dewey.Graph).
 
-# Manifests
-The following xml manifests files can be used to catalogue the components that form part of a software system:
-- Component Manifest - Used to describe a software component that can be built and deployed and all it's dependencies.
-- Runtime Resources Manifest - A list of runtime resources used by different components.
-- Repository Manifest - A manifest containing a listing of components and runtime resources inside a repository.
-- Repositories Manifest - A manifest containing a list of repositories.
+# Manifest File
+Dewey manifest files `dewey.json` are used to capture the location of components in a repository and information required to perform different tasks.
+The following root information can be captured:
+- Location of other manifest files.
+- Details about components.
+- Details about runtime resources used by components.
 
 ## Examples
-### Repositories
-A `repositories.xml` file can be placed in a directory that is a common ancestor to the repositories it references.
-As shown in the example below, the name and location of each required repository can be listed in the xml manifest file as a `repository` xml element.
+### Locations
+When Dewey is run in a folder, it looks for a `dewey.json` file.
+If the manifest contains locations to other manifest files under the root `manifestFiles` array field, Dewey will in turn try load them.
+Each location item is required to have the following attributes:
+* `name` - The name of the component for reference purposes.
+* `location` - The relative path of a directory containing a manifest file.
 ```
-<?xml version="1.0" encoding="UTF-8"?>
-<repositories>
-	<repository name="repo1" location="repo/" />
-	<repository name="repo2" location="repo2/" />
-</repositories>
-```
-### Repository
-A `repository.xml` file can be placed in the root directory of a repository.
-As shown in the example below, the name and location of each component stored in the repository can be listed in the xml manifest file as a 'component' xml element.
-The name and location of a manifest file used to describe multiple runtime resources can be listed under the `runtimeResources` xml element.
-```
-<?xml version="1.0" encoding="UTF-8"?>
-<repository name="repo1">
-	<components>
-		<component name="ExampleComp1" location="ExampleComp1/" />
-		<component name="ExampleComp2" location="ExampleComp2/" />
-	</components>
-	<runtimeResources>
-		<manifestFile name="ExampleComp1" location="ExampleComp1/" />
-	</runtimeResources>
-</repository>
+{
+  "manifestFiles": [
+    { "name": "ExampleComp1", "location": "ExampleComp1/" },
+    { "name": "ExampleComp2", "location": "ExampleComp2/" }
+  ]
+}
 ```
 ### Component
-A `component.xml` file can be placed in the root directory of a component.
-An example manifest is shown below.
-- The name and type of the component are set as attributes of the root `componentManifest` element.
-- An optional sub-type attribute can be set to give more detail.
-- The context that the component relates to can be set using the `context` attribute.
-- Build actions for the component can be described using `build` elements.
-- Deployment actions for the component can be described using `deployment` elements.
-- Dependencies on other components or runtime resources can be described using `dependency` elements.
+The root JSON object of manifest file can have a `components` array field.
+Each component object in this array can be used to describe a component.
+* `name` - A mandatory unique name of the component.
+* `type` - A mandatory field describing the type of the component. e.g. executable, web.
+* `subtype` - An option field describing in more detail the type of the component. e.g. serivce, worker.
+* `context` - The context that the component relates to.
+* `build` - A Build object describing how to build the component.
+* `deploy` - A Deploy object describing how to deploy the component.
+* `dependencies` - An array of Dependency objects.
 ```
-<?xml version="1.0" encoding="UTF-8"?>
-<componentManifest name="ExampleComp1" type="web" sub-type="service" context="context1">
-	<builds>
-		<build type="msbuild" target="src/ExampleComp1/ExampleComp1.csproj" msbuildVersion="14.0" />
-	</builds>
-	<deployments>
-		<deployment type="iis" port="53971" siteName="ExampleApplication" appPool="ExampleApplication" content="src/ExampleApplication" />
-	</deployments>
-	<dependencies>
-		<dependency type="component" name="ExampleComp2" />
-		<dependency type="runtimeResource" name="ExampleQueue1" />
-	</dependencies>
-</componentManifest>
+{
+"components": [{
+  "name": "ExampleAgent",
+  "type": "executable",
+  "subtype": "worker",
+  "context": "context1",
+  "build": {
+    "type": "msbuild",
+    "target": "src/ExampleWebApiApplication/ExampleWebApiApplication.csproj",
+    "msbuildVersion": "14.0"
+  },
+  "deploy": {
+    "type": "iis",
+    "port": "53971",
+    "siteName": "ExampleWebApiApplication",
+    "appPool": "ExampleWebApiApplication",
+    "content": "src/ExampleWebApiApplication/"
+  },
+  "dependencies": [
+    { "type": "component", "name": "ExampleComp2" },
+    { "type": "runtimeResource", "name": "incoming" }
+  ]
+}
 ```  
 ### Runtime Resources
-A `runtime-resources.xml` file can be placed in a component directory that best 'owns' the resources or along side files that the resources relate to.
-An example manifest is shown below.
-- Each runtime resource being described is listed as `runtimeResource` elements.
-- The name and type of the resource are set as attributes of the `runtimeResource` element.
-- The technology provider of the resource can be listed as a `provider` attribute.
-- The format that the resource is interacted with can be listed under the `format` attribute.
-- The context that the resource relates to can be set using the `context` attribute.
+The root JSON object of manifest file can have a `runtimeResources` array field.
+Each object in this array can be used to describe a Runtime Resource.
+* `name` - A mandatory unique name of the runtime resource.
+* `type` - A mandatory field describing the type of the runtime resource. e.g. file, queue, environment-variable, database, etc
+* `provider` - An option field for the technology provider for the resource.
+* `format` - An option field for the type of transport format. e.g. XML, JSON.
+* `context` - The context that the component relates to.
 ```
-<?xml version="1.0" encoding="UTF-8"?>
-<runtimeResourcesManifest name="ExampleComp1">
-	<runtimeResource type="queue" name="ExampleQueue1" provider="ActiveMQ" format="XML" context="context1" />
-</runtimeResourcesManifest>
+{
+  "runtimeResources": [{
+    "type": "queue",
+    "name": "incoming",
+    "provider": "ActiveMQ",
+    "format": "XML",
+    "context": "context1"
+  }, {
+    "type": "environment-variable",
+    "name": "queue-host",
+    "context": "context1"
+  }]
+}
 ```
+### Build
+A JSON object that can fall under a Component to describe how to build the component.
+* `type` - A mandatory field describing the type of build action supported by Dewey. e.g. msbuild
+* `target` - A mandatory field giving the location of a file the build action will try use.
+### Deploy
+A JSON object that can fall under a Component to describe how to deploy the component.
+* `type` - A mandatory field describing the type of deployment action supported by Dewey. e.g. iis
+### Dependency
+A JSON object that can fall under a Component to describe what dependency it has at runtime.
+* `type` - A mandatory field describing the type of dependency, either another `component` or a `runtimeResource`.
+* `name` - A mandatory unique name of the dependency that should already be described in a manifest file.
