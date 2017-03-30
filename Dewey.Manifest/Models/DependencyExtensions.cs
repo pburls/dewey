@@ -1,6 +1,6 @@
 ﻿using Dewey.Manifest.Models;
 
-namespace Dewey.Graph.Models
+namespace Dewey.Manifest.Models
 {
     public static class DependencyExtensions
     {

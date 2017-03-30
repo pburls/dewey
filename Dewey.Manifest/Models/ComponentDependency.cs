@@ -1,7 +1,7 @@
 ﻿using Dewey.Manifest.Models;
 using Newtonsoft.Json.Linq;
 
-namespace Dewey.Graph.Models
+namespace Dewey.Manifest.Models
 {
     public class ComponentDependency : Dependency
     {

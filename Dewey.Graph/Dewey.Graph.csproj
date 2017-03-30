@@ -59,8 +59,6 @@
     <Compile Include="DOT\GraphViz.cs" />
     <Compile Include="IGraphGenerator.cs" />
     <Compile Include="DOT\Cluster.cs" />
-    <Compile Include="Models\ComponentDependency.cs" />
-    <Compile Include="Models\DependencyExtensions.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="DOT\Node.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -117,6 +115,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

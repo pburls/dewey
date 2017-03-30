@@ -1,8 +1,6 @@
 ﻿using System;
 using Dewey.Deploy.Events;
 using Dewey.Messaging;
-using Dewey.Manifest.Dependency;
-using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using Dewey.Manifest.Messages;
@@ -19,8 +17,6 @@ namespace Dewey.Deploy
         readonly IEventAggregator _eventAggregator;
         readonly IDeploymentActionFactory _deploymentActionFactory;
 
-        readonly List<DependencyElementResult> _dependencies;
-
         DeployCommand _command;
         Component _component;
 
@@ -29,8 +25,6 @@ namespace Dewey.Deploy
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
             _deploymentActionFactory = deploymentActionFactory;
-
-            _dependencies = new List<DependencyElementResult>();
 
             eventAggregator.Subscribe(this);
         }
@@ -74,7 +68,7 @@ namespace Dewey.Deploy
 
             if (_command.DeployDependencies)
             {
-                var componentDependencies = _component.dependencies.Where(d => d.type == ComponentDependency.COMPONENT_DEPENDENCY_TYPE && !string.IsNullOrWhiteSpace(d.name));
+                var componentDependencies = _component.dependencies.Where(d => d.IsComponentDependency() && !string.IsNullOrWhiteSpace(d.name));
                 foreach (var componentDependency in componentDependencies)
                 {
                     _commandProcessor.Execute(DeployCommand.Create(componentDependency.name, _command.DeployDependencies));

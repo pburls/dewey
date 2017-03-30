@@ -66,7 +66,6 @@
     <Compile Include="Events\JsonBuildManifestLoadEvent.cs" />
     <Compile Include="Events\JsonBuildManifestInvalidType.cs" />
     <Compile Include="Events\NoJsonBuildManifestFound.cs" />
-    <Compile Include="BuildElementLoader.cs" />
     <Compile Include="CLICommandProvider.cs" />
     <Compile Include="Events\BuildActionCompletedResult.cs" />
     <Compile Include="Events\BuildActionEvent.cs" />
@@ -84,7 +83,6 @@
     <Compile Include="Events\NoBuildElementsFoundResult.cs" />
     <Compile Include="IBuildAction.cs" />
     <Compile Include="IBuildActionFactory.cs" />
-    <Compile Include="IBuildElementLoader.cs" />
     <Compile Include="IMSBuildProcess.cs" />
     <Compile Include="Models\Build.cs" />
     <Compile Include="Models\BuildableComponent.cs" />

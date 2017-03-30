@@ -1,6 +1,5 @@
 ﻿using Dewey.Build.Events;
 using Dewey.Build.Models;
-using Dewey.Manifest.Dependency;
 using Dewey.Manifest.Messages;
 using Dewey.Manifest.Models;
 using Dewey.Messaging;
@@ -69,7 +68,7 @@ namespace Dewey.Build
 
             if (_command.BuildDependencies)
             {
-                var componentDependencies = _component.dependencies.Where(d => d.type == ComponentDependency.COMPONENT_DEPENDENCY_TYPE && !string.IsNullOrWhiteSpace(d.name));
+                var componentDependencies = _component.dependencies.Where(d => d.IsComponentDependency() && !string.IsNullOrWhiteSpace(d.name));
                 foreach (var componentDependency in componentDependencies)
                 {
                     _commandProcessor.Execute(new BuildCommand(componentDependency.name, _command.BuildDependencies));

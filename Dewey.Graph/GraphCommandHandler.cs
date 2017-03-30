@@ -1,5 +1,4 @@
 ﻿using Dewey.Graph.DOT;
-using Dewey.Graph.Models;
 using Dewey.Graph.Writers;
 using Dewey.Manifest.Messages;
 using Dewey.Manifest.Models;
