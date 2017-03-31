@@ -34,7 +34,7 @@ Commands:
 ## Commands
 - The `list` command loads all discoverable manifests and lists the known components and runtime-resources. More information can be found [here](Dewey.ListItems).
 - The `build` command loads all discoverable manifests and attempts to build the component that matches the given name. All the component's dependencies can also be built. More information can be found [here](Dewey.Build).
-- The `deploy` command loads all discoverable manifests and attempts to deploy the component that matches the given name. All the component's dependencies can also be built. More information can be found [here](Dewey.Build).
+- The `deploy` command loads all discoverable manifests and attempts to deploy the component that matches the given name. All the component's dependencies can also be built. More information can be found [here](Dewey.Deploy).
 - The `graph` command loads all discoverable manifests and builds a dependency graph of all the known components and runtime resources. More information can be found [here](Dewey.Graph).
 
 # Manifest File
