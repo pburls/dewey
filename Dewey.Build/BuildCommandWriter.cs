@@ -14,11 +14,18 @@ namespace Dewey.Build
         IEventHandler<JsonMSBuildExecutableNotFoundResult>,
         IEventHandler<JsonBuildActionStarted>,
         IEventHandler<JsonBuildActionCompletedResult>,
-        IEventHandler<JsonBuildActionErrorResult>
+        IEventHandler<JsonBuildActionErrorResult>,
+        IEventHandler<BuildCommandSkipped>
     {
         public BuildCommandWriter(IEventAggregator eventAggregator)
         {
             eventAggregator.SubscribeAll(this);
+        }
+
+        public void Handle(BuildCommandSkipped @event)
+        {
+            Console.ResetColor();
+            Console.WriteLine(string.Format("Skipped building component '{0}'.", @event.ComponentName));
         }
 
         public void Handle(BuildCommandStarted buildCommandStarted)
@@ -77,7 +84,7 @@ namespace Dewey.Build
         {
             Console.ResetColor();
             Console.WriteLine(string.Format("Build action '{0}' of component '{1}' started.",
-                buildActionStarted.Build.ToJson(),
+                buildActionStarted.Build.BackingData.ToString(Newtonsoft.Json.Formatting.None),
                 buildActionStarted.Component.name));
         }
 
@@ -85,7 +92,7 @@ namespace Dewey.Build
         {
             Console.ResetColor();
             Console.WriteLine(string.Format("Build action '{0}' of component '{1}' completed.",
-                buildActionCompletedResult.Build.ToJson(),
+                buildActionCompletedResult.Build.BackingData.ToString(Newtonsoft.Json.Formatting.None),
                 buildActionCompletedResult.Component.name));
         }
 

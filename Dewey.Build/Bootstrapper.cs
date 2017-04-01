@@ -8,6 +8,7 @@ namespace Dewey.Build
         {
             container.Register<IMSBuildProcess, MSBuildProcess>();
             container.Register<IBuildActionFactory, BuildActionFactory>();
+            container.Register<IBuildCommandCache, BuildCommandCache>(Lifestyle.Singleton);
 
             container.RegisterCollection(typeof(IBuildAction), new[] { typeof(Bootstrapper).Assembly });
         }

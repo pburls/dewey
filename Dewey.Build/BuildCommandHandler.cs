@@ -4,6 +4,7 @@ using Dewey.Manifest.Messages;
 using Dewey.Manifest.Models;
 using Dewey.Messaging;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -16,15 +17,17 @@ namespace Dewey.Build
         readonly ICommandProcessor _commandProcessor;
         readonly IEventAggregator _eventAggregator;
         readonly IBuildActionFactory _buildActionFactory;
+        readonly IBuildCommandCache _buildCommandCache;
 
         BuildCommand _command;
         Component _component;
 
-        public BuildCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IBuildActionFactory buildActionFactory)
+        public BuildCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IBuildActionFactory buildActionFactory, IBuildCommandCache buildCommandCache)
         {
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
             _buildActionFactory = buildActionFactory;
+            _buildCommandCache = buildCommandCache;
 
             eventAggregator.Subscribe(this);
         }
@@ -32,6 +35,12 @@ namespace Dewey.Build
         public void Execute(BuildCommand command)
         {
             _command = command;
+
+            if (_buildCommandCache.IsComponentAlreadyBuilt(command.ComponentName))
+            {
+                _eventAggregator.PublishEvent(new BuildCommandSkipped(command));
+                return;
+            }
             _eventAggregator.PublishEvent(new BuildCommandStarted(command));
 
             var stopwatch = Stopwatch.StartNew();

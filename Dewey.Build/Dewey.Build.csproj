@@ -59,8 +59,10 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="BuildActionFactory.cs" />
     <Compile Include="BuildCommand.cs" />
+    <Compile Include="BuildCommandCache.cs" />
     <Compile Include="BuildCommandHandler.cs" />
     <Compile Include="BuildCommandWriter.cs" />
+    <Compile Include="Events\BuildCommandSkipped.cs" />
     <Compile Include="Events\JsonBuildEvent.cs" />
     <Compile Include="Events\JsonBuildMissingAttributesResult.cs" />
     <Compile Include="Events\JsonBuildManifestLoadEvent.cs" />
@@ -78,6 +80,7 @@
     <Compile Include="Events\MSBuildExecutableNotFoundResult.cs" />
     <Compile Include="IBuildAction.cs" />
     <Compile Include="IBuildActionFactory.cs" />
+    <Compile Include="IBuildCommandCache.cs" />
     <Compile Include="IMSBuildProcess.cs" />
     <Compile Include="Models\Build.cs" />
     <Compile Include="Models\BuildableComponent.cs" />
