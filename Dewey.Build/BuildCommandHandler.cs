@@ -4,7 +4,6 @@ using Dewey.Manifest.Messages;
 using Dewey.Manifest.Models;
 using Dewey.Messaging;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -28,8 +27,6 @@ namespace Dewey.Build
             _eventAggregator = eventAggregator;
             _buildActionFactory = buildActionFactory;
             _buildCommandCache = buildCommandCache;
-
-            eventAggregator.Subscribe(this);
         }
 
         public void Execute(BuildCommand command)
@@ -43,9 +40,11 @@ namespace Dewey.Build
             }
             _eventAggregator.PublishEvent(new BuildCommandStarted(command));
 
+            _eventAggregator.Subscribe(this);
             var stopwatch = Stopwatch.StartNew();
             var result = Execute();
             stopwatch.Stop();
+            _eventAggregator.Unsubscribe(this);
 
             _eventAggregator.PublishEvent(new BuildCommandCompleted(command, result, stopwatch.Elapsed));
         }
