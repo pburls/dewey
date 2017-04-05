@@ -16,15 +16,17 @@ namespace Dewey.Deploy
         readonly ICommandProcessor _commandProcessor;
         readonly IEventAggregator _eventAggregator;
         readonly IDeploymentActionFactory _deploymentActionFactory;
+        readonly IDeployCommandCache _deployCommandCache;
 
         DeployCommand _command;
         Component _component;
 
-        public DeployCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IDeploymentActionFactory deploymentActionFactory)
+        public DeployCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator, IDeploymentActionFactory deploymentActionFactory, IDeployCommandCache deployCommandCache)
         {
             _commandProcessor = commandProcessor;
             _eventAggregator = eventAggregator;
             _deploymentActionFactory = deploymentActionFactory;
+            _deployCommandCache = deployCommandCache;
 
             eventAggregator.Subscribe(this);
         }
@@ -32,6 +34,12 @@ namespace Dewey.Deploy
         public void Execute(DeployCommand command)
         {
             _command = command;
+
+            if (_deployCommandCache.IsComponentAlreadyDeployed(command.ComponentName))
+            {
+                _eventAggregator.PublishEvent(new DeployCommandSkipped(command));
+                return;
+            }
             _eventAggregator.PublishEvent(new DeployCommandStarted(command));
 
             var stopwatch = Stopwatch.StartNew();

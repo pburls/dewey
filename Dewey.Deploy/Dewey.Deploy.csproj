@@ -55,12 +55,14 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="CLICommandProvider.cs" />
     <Compile Include="DeployCommand.cs" />
+    <Compile Include="DeployCommandCache.cs" />
     <Compile Include="DeployCommandHandler.cs" />
     <Compile Include="DeployCommandWriter.cs" />
     <Compile Include="DeploymentActionFactory.cs" />
     <Compile Include="Events\ComponentNotFoundResult.cs" />
     <Compile Include="Events\DeployCommandCompleted.cs" />
     <Compile Include="Events\DeployCommandEvent.cs" />
+    <Compile Include="Events\DeployCommandSkipped.cs" />
     <Compile Include="Events\DeployCommandStarted.cs" />
     <Compile Include="Events\DeploymentActionErrorResult.cs" />
     <Compile Include="Events\DeploymentActionFailed.cs" />
@@ -73,6 +75,7 @@
     <Compile Include="Events\JsonDeploymentActionContentNotFoundResult.cs" />
     <Compile Include="Events\JsonDeploymentInvalidAttributeResult.cs" />
     <Compile Include="Events\NoJsonDeployManifestFound.cs" />
+    <Compile Include="IDeployCommandCache.cs" />
     <Compile Include="IDeploymentAction.cs" />
     <Compile Include="IDeploymentActionFactory.cs" />
     <Compile Include="IIISDeployProcess.cs" />

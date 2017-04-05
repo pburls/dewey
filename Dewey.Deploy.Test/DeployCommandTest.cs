@@ -112,7 +112,7 @@ namespace Dewey.Deploy.Test
         }
 
         [Fact]
-        public void DeployCommand_Should_Not_Invoke_CreateDeploymentAction_Twice_For_Same_DeployableComponent()
+        public void DeployCommand_Should_Publish_DeployCommandStarted_Only_Once_When_Deploying_Same_DeployableComponent_Twice()
         {
             //Given
             var components = fixture.Build<DeployableComponent>().CreateMany(3).ToArray();
@@ -126,7 +126,8 @@ namespace Dewey.Deploy.Test
             var firstComponent = components.First();
             var deployment = firstComponent.deploy;
 
-            mockDeploymentActionFactory.Setup(x => x.CreateDeploymentAction(deployment.type)).Returns(mockDeploymentAction.Object);
+            var mockDeployCommandStartedEventHandler = new Mock<IEventHandler<DeployCommandStarted>>();
+            eventAggregator.Subscribe(mockDeployCommandStartedEventHandler.Object);
 
             var buildCommand1 = DeployCommand.Create(firstComponent.name, false);
             var buildCommand2 = DeployCommand.Create(firstComponent.name, false);
@@ -137,7 +138,37 @@ namespace Dewey.Deploy.Test
             commandProcessor.Execute(buildCommand2);
 
             //Then
-            mockDeploymentActionFactory.Verify(x => x.CreateDeploymentAction(deployment.type), Times.Once);
+            mockDeployCommandStartedEventHandler.Verify(x => x.Handle(It.IsAny<DeployCommandStarted>()), Times.Once);
+        }
+
+        [Fact]
+        public void DeployCommand_Should_Publish_DeployCommandSkipped_When_Deploying_Same_DeployableComponent_Twice()
+        {
+            //Given
+            var components = fixture.Build<DeployableComponent>().CreateMany(3).ToArray();
+            var manifest = fixture.Build<Manifest.Models.Manifest>()
+                .Without(x => x.manifestFiles)
+                .With(x => x.components, components)
+                .Create();
+            var manifestFileReader = new MockManifestFileReader() { Text = manifest.ToJson(), MandifestFileType = ManifestFileType.Dewey };
+            mockIManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(manifestFileReader);
+
+            var firstComponent = components.First();
+            var deployment = firstComponent.deploy;
+
+            var mockDeployCommandSkippedEventHandler = new Mock<IEventHandler<DeployCommandSkipped>>();
+            eventAggregator.Subscribe(mockDeployCommandSkippedEventHandler.Object);
+
+            var buildCommand1 = DeployCommand.Create(firstComponent.name, false);
+            var buildCommand2 = DeployCommand.Create(firstComponent.name, false);
+
+            //When
+            commandProcessor.Execute(new LoadManifestFiles());
+            commandProcessor.Execute(buildCommand1);
+            commandProcessor.Execute(buildCommand2);
+
+            //Then
+            mockDeployCommandSkippedEventHandler.Verify(x => x.Handle(It.IsAny<DeployCommandSkipped>()), Times.Once);
         }
     }
 }
