@@ -110,5 +110,34 @@ namespace Dewey.Deploy.Test
             Assert.NotNull(noJsonDeployManifestFoundEvent);
             Assert.Equal(firstComponent.name, noJsonDeployManifestFoundEvent.Component.name);
         }
+
+        [Fact]
+        public void DeployCommand_Should_Not_Invoke_CreateDeploymentAction_Twice_For_Same_DeployableComponent()
+        {
+            //Given
+            var components = fixture.Build<DeployableComponent>().CreateMany(3).ToArray();
+            var manifest = fixture.Build<Manifest.Models.Manifest>()
+                .Without(x => x.manifestFiles)
+                .With(x => x.components, components)
+                .Create();
+            var manifestFileReader = new MockManifestFileReader() { Text = manifest.ToJson(), MandifestFileType = ManifestFileType.Dewey };
+            mockIManifestFileReaderService.Setup(x => x.FindManifestFileInCurrentDirectory()).Returns(manifestFileReader);
+
+            var firstComponent = components.First();
+            var deployment = firstComponent.deploy;
+
+            mockDeploymentActionFactory.Setup(x => x.CreateDeploymentAction(deployment.type)).Returns(mockDeploymentAction.Object);
+
+            var buildCommand1 = DeployCommand.Create(firstComponent.name, false);
+            var buildCommand2 = DeployCommand.Create(firstComponent.name, false);
+
+            //When
+            commandProcessor.Execute(new LoadManifestFiles());
+            commandProcessor.Execute(buildCommand1);
+            commandProcessor.Execute(buildCommand2);
+
+            //Then
+            mockDeploymentActionFactory.Verify(x => x.CreateDeploymentAction(deployment.type), Times.Once);
+        }
     }
 }
