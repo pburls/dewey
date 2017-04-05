@@ -10,6 +10,8 @@ namespace Dewey.Messaging
     {
         void Subscribe<TEvent>(IEventHandler<TEvent> eventHandler) where TEvent : IEvent;
         void SubscribeAll(object eventHandler);
+        void Unsubscribe<TEvent>(IEventHandler<TEvent> eventHandler) where TEvent : IEvent;
+        void UnsubscribeAll(object eventHandler);
         void PublishEvent<TEvent>(TEvent @event) where TEvent : IEvent;
     }
 }
