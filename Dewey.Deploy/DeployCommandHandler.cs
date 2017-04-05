@@ -27,8 +27,6 @@ namespace Dewey.Deploy
             _eventAggregator = eventAggregator;
             _deploymentActionFactory = deploymentActionFactory;
             _deployCommandCache = deployCommandCache;
-
-            eventAggregator.Subscribe(this);
         }
 
         public void Execute(DeployCommand command)
@@ -42,9 +40,11 @@ namespace Dewey.Deploy
             }
             _eventAggregator.PublishEvent(new DeployCommandStarted(command));
 
+            _eventAggregator.Subscribe(this);
             var stopwatch = Stopwatch.StartNew();
             var result = Execute();
             stopwatch.Stop();
+            _eventAggregator.Unsubscribe(this);
 
             _eventAggregator.PublishEvent(new DeployCommandCompleted(command, result, stopwatch.Elapsed));
         }
