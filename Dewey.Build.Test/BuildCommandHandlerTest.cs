@@ -16,6 +16,7 @@ namespace Dewey.Build.Test
         Mock<IEventAggregator> eventAggregatorMock;
         Mock<IBuildActionFactory> buildActionFactoryMock;
         Mock<IBuildAction> buildActionMock;
+        Mock<IBuildCommandCache> buildCommandCacheMock;
 
         Fixture fixture;
         BuildCommandHandler target;
@@ -26,12 +27,13 @@ namespace Dewey.Build.Test
             eventAggregatorMock = new Mock<IEventAggregator>();
             buildActionFactoryMock = new Mock<IBuildActionFactory>();
             buildActionMock = new Mock<IBuildAction>();
+            buildCommandCacheMock = new Mock<IBuildCommandCache>();
 
             buildActionFactoryMock.Setup(x => x.CreateBuildAction(It.IsAny<string>())).Returns(buildActionMock.Object);
 
             fixture = new Fixture();
             fixture.Register<File.IManifestFileReader>(() => { return new MockManifestFileReader() { DirectoryName = "test" }; });
-            target = new BuildCommandHandler(commandProcessorMock.Object, eventAggregatorMock.Object, buildActionFactoryMock.Object);
+            target = new BuildCommandHandler(commandProcessorMock.Object, eventAggregatorMock.Object, buildActionFactoryMock.Object, buildCommandCacheMock.Object);
         }
 
         [Fact]
@@ -83,6 +85,32 @@ namespace Dewey.Build.Test
 
             //Then
             commandProcessorMock.Verify(x => x.Execute(It.IsAny<BuildCommand>()), Times.Never, "A build command was incorrectly dispatched for a dependency.");
+        }
+
+        [Fact]
+        public void BuildCommandHandler_does_not_InvokeBuildAction_for_Components_Already_Built()
+        {
+            //Given
+            var buildCommand = new BuildCommand("testComponentName", false);
+            var component = fixture.Build<BuildableComponent>()
+                                   .With(x => x.name, buildCommand.ComponentName)
+                                   .Create();
+
+            var getComponent = new GetComponent(buildCommand.ComponentName);
+            var getComponentResult = new GetComponentResult(getComponent, component);
+            commandProcessorMock.Setup(x => x.Execute(getComponentResult.Command)).Callback<ICommand>((command) =>
+            {
+                target.Handle(getComponentResult);
+            });
+
+            buildCommandCacheMock.Setup(x => x.IsComponentAlreadyBuilt(buildCommand.ComponentName)).Returns(true);
+
+
+            //When
+            target.Execute(buildCommand);
+
+            //Then
+            buildActionMock.Verify(x => x.Build(It.IsAny<Component>(), It.IsAny<Models.Build>()), Times.Never);
         }
     }
 }
