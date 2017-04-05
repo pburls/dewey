@@ -15,8 +15,6 @@ namespace Dewey.Manifest
         {
             _eventAggregator = eventAggregator;
             _manifestFileReaderService = manifestFileReaderService;
-
-            _eventAggregator.SubscribeAll(this);
         }
 
         public void Execute(LoadManifestFiles command)
@@ -30,6 +28,7 @@ namespace Dewey.Manifest
                 return;
             }
 
+            _eventAggregator.SubscribeAll(this);
             _eventAggregator.PublishEvent(new ManifestFilesFound(manifestFileReader.FileName));
 
             switch (manifestFileReader.MandifestFileType)
@@ -44,6 +43,7 @@ namespace Dewey.Manifest
             }
 
             _eventAggregator.PublishEvent(new LoadManifestFilesResult());
+            _eventAggregator.UnsubscribeAll(this);
         }
 
         public void Handle(JsonManifestLoadResult loadResult)

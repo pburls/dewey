@@ -10,18 +10,20 @@ namespace Dewey.ListItems
         IEventHandler<GetRuntimeResourcesResult>
     {
         readonly ICommandProcessor _commandProcessor;
+        readonly IEventAggregator _eventAggregator;
 
         public ListItemsCommandHandler(ICommandProcessor commandProcessor, IEventAggregator eventAggregator)
         {
             _commandProcessor = commandProcessor;
-
-            eventAggregator.SubscribeAll(this);
+            _eventAggregator = eventAggregator;
         }
 
         public void Execute(ListItemsCommand command)
         {
+            _eventAggregator.SubscribeAll(this);
             _commandProcessor.Execute(new GetComponents());
             _commandProcessor.Execute(new GetRuntimeResources());
+            _eventAggregator.UnsubscribeAll(this);
         }
 
         public void Handle(GetComponentsResult getComponentsResult)
