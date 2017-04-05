@@ -8,6 +8,7 @@ namespace Dewey.Deploy
         {
             container.Register<IDeploymentActionFactory, DeploymentActionFactory>();
             container.Register<IIISDeployProcess, IISDeployProcess>();
+            container.Register<IDeployCommandCache, DeployCommandCache>(Lifestyle.Singleton);
 
             container.RegisterCollection(typeof(IDeploymentAction), new[] { typeof(Bootstrapper).Assembly });
         }

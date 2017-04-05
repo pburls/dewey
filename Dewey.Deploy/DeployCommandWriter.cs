@@ -15,7 +15,8 @@ namespace Dewey.Deploy
         IEventHandler<JsonDeploymentActionFailed>,
         IEventHandler<JsonDeploymentActionStarted>,
         IEventHandler<JsonDeploymentActionOutputMessage>,
-        IEventHandler<JsonDeploymentActionCompletedResult>
+        IEventHandler<JsonDeploymentActionCompletedResult>,
+        IEventHandler<DeployCommandSkipped>
     {
         public DeployCommandWriter(IEventAggregator eventAggregator)
         {
@@ -26,6 +27,12 @@ namespace Dewey.Deploy
         {
             Console.ResetColor();
             Console.WriteLine(string.Format("Deploying component '{0}'.", deployCommandStarted.ComponentName));
+        }
+
+        public void Handle(DeployCommandSkipped @event)
+        {
+            Console.ResetColor();
+            Console.WriteLine(string.Format("Skipped deployment of component '{0}'.", @event.ComponentName));
         }
 
         public void Handle(ComponentNotFoundResult componentNotFoundResult)
