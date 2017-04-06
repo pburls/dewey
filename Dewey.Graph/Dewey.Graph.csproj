@@ -59,6 +59,7 @@
     <Compile Include="DOT\GraphViz.cs" />
     <Compile Include="IGraphGenerator.cs" />
     <Compile Include="DOT\Cluster.cs" />
+    <Compile Include="GraphCommandHandlerFactory.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="DOT\Node.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

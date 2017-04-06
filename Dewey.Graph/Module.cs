@@ -1,15 +1,18 @@
-﻿using Dewey.Messaging;
-using SimpleInjector;
+﻿using Dewey.Graph.Writers;
+using Dewey.Messaging;
 
 namespace Dewey.Graph
 {
     public class Module : IModule
     {
-        public Module(Container container, ICommandProcessor commandProcessor)
-        {
-            var writer = container.GetInstance<GraphCommandWriter>();
+        readonly GraphCommandWriter _writer;
 
-            commandProcessor.RegisterHandler<GraphCommand, GraphCommandHandler>();
+        public Module(IEventAggregator eventAggregator, ICommandProcessor commandProcessor, IGraphGenerator graphGenerator, IGraphWriterFactory graphWriterFactory)
+        {
+            _writer = new GraphCommandWriter(eventAggregator);
+
+            var graphCommandHandlerFactory = new GraphCommandHandlerFactory(eventAggregator, commandProcessor, graphGenerator, graphWriterFactory);
+            commandProcessor.RegisterHandlerFactory<GraphCommand, GraphCommandHandlerFactory>(graphCommandHandlerFactory);
         }
     }
 }

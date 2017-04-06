@@ -49,6 +49,7 @@
     <Compile Include="ItemColor.cs" />
     <Compile Include="ListItemsCommand.cs" />
     <Compile Include="ListItemsCommandHandler.cs" />
+    <Compile Include="ListItemsCommandHandlerFactory.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RuntimeResource.cs" />

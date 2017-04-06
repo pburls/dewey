@@ -3,8 +3,8 @@
     public interface ICommandProcessor
     {
         object Execute(ICommand command);
-        void RegisterHandler<TCommand, TCommandHandler>()
+        void RegisterHandlerFactory<TCommand, TCommandHandlerFactory>(TCommandHandlerFactory factory)
             where TCommand : ICommand
-            where TCommandHandler : ICommandHandler<TCommand>;
+            where TCommandHandlerFactory : ICommandHandlerFactory<TCommand>;
     }
 }

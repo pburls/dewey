@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="DeployCommandHandlerFactory.cs" />
     <Compile Include="CLICommandProvider.cs" />
     <Compile Include="DeployCommand.cs" />
     <Compile Include="DeployCommandCache.cs" />

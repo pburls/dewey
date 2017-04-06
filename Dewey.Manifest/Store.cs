@@ -24,11 +24,6 @@ namespace Dewey.Manifest
             _componentsDictionary = new Dictionary<string, Models.Component>();
             _runtimeResourcesDictionary = new Dictionary<string, Models.RuntimeResource>();
 
-            //todo: should be able to make a register all.
-            commandProcessor.RegisterHandler<GetComponent, Store>();
-            commandProcessor.RegisterHandler<GetRuntimeResources, Store>();
-            commandProcessor.RegisterHandler<GetComponents, Store>();
-
             _eventAggregator.SubscribeAll(this);
         }
 

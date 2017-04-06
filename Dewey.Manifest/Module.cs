@@ -1,19 +1,26 @@
-﻿using Dewey.Messaging;
+﻿using Dewey.File;
+using Dewey.Manifest.Messages;
+using Dewey.Messaging;
 using SimpleInjector;
 
 namespace Dewey.Manifest
 {
     public class Module : IModule
     {
-        readonly Store _store;
         readonly LoadManifestFilesWriter _writer;
 
-        public Module(IEventAggregator eventAggregator, ICommandProcessor commandProcessor, Store store)
+        public Module(IEventAggregator eventAggregator, ICommandProcessor commandProcessor, Store store, IManifestFileReaderService manifestFileReaderService)
         {
             _writer = new LoadManifestFilesWriter(eventAggregator);
-            _store = store;
 
-            commandProcessor.RegisterHandler<LoadManifestFiles, ManifestLoadHandler>();
+            var loadManifestFilesCommandHandlerFactory = new LoadManifestFilesCommandHandlerFactory(eventAggregator, manifestFileReaderService);
+            commandProcessor.RegisterHandlerFactory<LoadManifestFiles, LoadManifestFilesCommandHandlerFactory>(loadManifestFilesCommandHandlerFactory);
+
+            //todo: should be able to make a register all.
+            var storeCommandHandlerFactory = new StoreCommandHandlerFactory(store);
+            commandProcessor.RegisterHandlerFactory<GetComponent, StoreCommandHandlerFactory>(storeCommandHandlerFactory);
+            commandProcessor.RegisterHandlerFactory<GetRuntimeResources, StoreCommandHandlerFactory>(storeCommandHandlerFactory);
+            commandProcessor.RegisterHandlerFactory<GetComponents, StoreCommandHandlerFactory>(storeCommandHandlerFactory);
         }
     }
 }
