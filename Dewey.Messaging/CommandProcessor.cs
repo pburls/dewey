@@ -1,5 +1,4 @@
-﻿using SimpleInjector;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -7,43 +6,41 @@ namespace Dewey.Messaging
 {
     public class CommandProcessor : ICommandProcessor
     {
-        readonly Container _container;
-        readonly IEventAggregator _eventAggregator;
-        readonly Dictionary<Type, Type> _commandHandlers;
+        readonly Dictionary<Type, object> _commandHandlerFactories;
 
-        public CommandProcessor(Container container, IEventAggregator eventAggregator)
+        public CommandProcessor()
         {
-            _container = container;
-            _eventAggregator = eventAggregator;
-
-            _commandHandlers = new Dictionary<Type, Type>();
+            _commandHandlerFactories = new Dictionary<Type, object>();
         }
 
-        public void RegisterHandler<TCommand, TCommandHandler>()
+        public void RegisterHandlerFactory<TCommand, TCommandHandlerFactory>(TCommandHandlerFactory factory)
             where TCommand : ICommand
-            where TCommandHandler : ICommandHandler<TCommand>
+            where TCommandHandlerFactory : ICommandHandlerFactory<TCommand>
         {
             Type commandType = typeof(TCommand);
-            Type commandHandlerType = typeof(TCommandHandler);
 
-            _commandHandlers.Add(commandType, commandHandlerType);
+            _commandHandlerFactories.Add(commandType, factory);
         }
 
         public object Execute(ICommand command)
         {
             Type commandType = command.GetType();
-            Type commandHandlerType = null;
-            object commandProcessor = null;
+            object commandHandlerFactory;
+            object commandHandler = null;
 
-            if (_commandHandlers.TryGetValue(commandType, out commandHandlerType))
+            if (_commandHandlerFactories.TryGetValue(commandType, out commandHandlerFactory))
             {
-                commandProcessor = _container.GetInstance(commandHandlerType);
+                Type commandHandlerFactoryGenericType = typeof(ICommandHandlerFactory<>);
+                Type commandHandlerFactoryType = commandHandlerFactoryGenericType.MakeGenericType(commandType);
 
-                MethodInfo executeMethod = commandHandlerType.GetMethod("Execute", new[] { commandType });
-                executeMethod.Invoke(commandProcessor, new[] { command });
+                MethodInfo createMethod = commandHandlerFactoryType.GetMethod("CreateHandler");
+                commandHandler = createMethod.Invoke(commandHandlerFactory, null);
+                
+                MethodInfo executeMethod = commandHandler.GetType().GetMethod("Execute", new[] { commandType });
+                executeMethod.Invoke(commandHandler, new[] { command });
             }
 
-            return commandProcessor;
+            return commandHandler;
         }
     }
 }

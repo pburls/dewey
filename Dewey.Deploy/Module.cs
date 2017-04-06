@@ -8,8 +8,9 @@ namespace Dewey.Deploy
         public Module(Container container, ICommandProcessor commandProcessor)
         {
             var writer = container.GetInstance<DeployCommandWriter>();
+            var deployCommandHandlerFactory = container.GetInstance<DeployCommandHandlerFactory>();
 
-            commandProcessor.RegisterHandler<DeployCommand, DeployCommandHandler>();
+            commandProcessor.RegisterHandlerFactory<DeployCommand, DeployCommandHandlerFactory>(deployCommandHandlerFactory);
         }
     }
 }

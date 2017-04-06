@@ -60,6 +60,7 @@
     <Compile Include="BuildActionFactory.cs" />
     <Compile Include="BuildCommand.cs" />
     <Compile Include="BuildCommandCache.cs" />
+    <Compile Include="BuildCommandHandlerFactory.cs" />
     <Compile Include="BuildCommandHandler.cs" />
     <Compile Include="BuildCommandWriter.cs" />
     <Compile Include="Events\BuildCommandSkipped.cs" />

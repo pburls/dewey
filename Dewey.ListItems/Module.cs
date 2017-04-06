@@ -4,9 +4,10 @@ namespace Dewey.ListItems
 {
     public class Module : IModule
     {
-        public Module(ICommandProcessor commandProcessor)
+        public Module(IEventAggregator eventAggregator, ICommandProcessor commandProcessor)
         {
-            commandProcessor.RegisterHandler<ListItemsCommand, ListItemsCommandHandler>();
+            var listItemsCommandHandlerFactory = new ListItemsCommandHandlerFactory(eventAggregator, commandProcessor);
+            commandProcessor.RegisterHandlerFactory<ListItemsCommand, ListItemsCommandHandlerFactory>(listItemsCommandHandlerFactory);
         }
     }
 }

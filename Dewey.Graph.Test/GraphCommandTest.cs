@@ -31,15 +31,14 @@ namespace Dewey.Graph.Test
             File.Bootstrapper.RegisterTypes(container);
             Manifest.Bootstrapper.RegisterTypes(container);
 
-            container.RegisterSingleton(mockIGraphGenerator.Object);
-            container.RegisterSingleton(mockIGraphWriterFactory.Object);
-
             var moduleCataloge = container.GetInstance<ModuleCatalogue>();
             moduleCataloge.Load<Manifest.Module>();
 
             commandProcessor = container.GetInstance<ICommandProcessor>();
+            var eventAggregator = container.GetInstance<IEventAggregator>();
 
-            commandProcessor.RegisterHandler<GraphCommand, GraphCommandHandler>();
+            var graphCommandHandlerFactory = new GraphCommandHandlerFactory(eventAggregator, commandProcessor, mockIGraphGenerator.Object, mockIGraphWriterFactory.Object);
+            commandProcessor.RegisterHandlerFactory<GraphCommand, GraphCommandHandlerFactory>(graphCommandHandlerFactory);
 
             var writeResult = new WriteGraphResult(null, null);
             mockIGraphWriter.Setup(x => x.Write(It.IsAny<string>())).Returns(writeResult);
