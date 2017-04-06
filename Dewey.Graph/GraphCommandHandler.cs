@@ -28,8 +28,6 @@ namespace Dewey.Graph
             _eventAggregator = eventAggregator;
             _graphGenerator = graphGenerator;
             _graphWriterFactory = graphWriterFactory;
-
-            eventAggregator.SubscribeAll(this);
         }
 
         public void Execute(GraphCommand command)
@@ -37,10 +35,12 @@ namespace Dewey.Graph
             _command = command;
             _eventAggregator.PublishEvent(new GenerateGraphStarted());
 
+            _eventAggregator.SubscribeAll(this);
             var stopwatch = Stopwatch.StartNew();
             var result = Execute();
             stopwatch.Stop();
-            
+            _eventAggregator.UnsubscribeAll(this);
+
             _eventAggregator.PublishEvent(GenerateGraphResult.Create(command, stopwatch.Elapsed, result));
         }
 

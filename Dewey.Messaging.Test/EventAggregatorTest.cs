@@ -93,5 +93,39 @@ namespace Dewey.Messaging.Test
             //Then
             mockTestEventHandler.Verify(x => x.Handle(@event), Times.Once);
         }
+
+        [Fact]
+        public void Test_PublishEvent_Does_Not_Invoke_EventHandler_After_Unsubscribing_For_Event_Type()
+        {
+            //Given
+            var @event = new TestEventA();
+            var mockTestEventHandler = new Mock<IEventHandler<TestEventA>>();
+            eventAggregator.Subscribe(mockTestEventHandler.Object);
+
+            //When
+            eventAggregator.PublishEvent(@event);
+            eventAggregator.Unsubscribe(mockTestEventHandler.Object);
+            eventAggregator.PublishEvent(@event);
+
+            //Then
+            mockTestEventHandler.Verify(x => x.Handle(@event), Times.Once);
+        }
+
+        [Fact]
+        public void Test_PublishEvent_Does_Not_Invoke_EventHandler_After_Unsubscribing_For_All_Event_Types()
+        {
+            //Given
+            var @event = new TestEventA();
+            var mockTestEventHandler = new Mock<IEventHandler<TestEventA>>();
+            eventAggregator.Subscribe(mockTestEventHandler.Object);
+
+            //When
+            eventAggregator.PublishEvent(@event);
+            eventAggregator.UnsubscribeAll(mockTestEventHandler.Object);
+            eventAggregator.PublishEvent(@event);
+
+            //Then
+            mockTestEventHandler.Verify(x => x.Handle(@event), Times.Once);
+        }
     }
 }

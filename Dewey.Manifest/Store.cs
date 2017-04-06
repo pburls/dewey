@@ -1,5 +1,4 @@
-﻿using System;
-using Dewey.Manifest.Events;
+﻿using Dewey.Manifest.Events;
 using Dewey.Messaging;
 using System.Collections.Generic;
 using Dewey.Manifest.Messages;
