@@ -1,5 +1,4 @@
-﻿using SimpleInjector;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -7,15 +6,10 @@ namespace Dewey.Messaging
 {
     public class CommandProcessor : ICommandProcessor
     {
-        readonly Container _container;
-        readonly IEventAggregator _eventAggregator;
         readonly Dictionary<Type, object> _commandHandlerFactories;
 
-        public CommandProcessor(Container container, IEventAggregator eventAggregator)
+        public CommandProcessor()
         {
-            _container = container;
-            _eventAggregator = eventAggregator;
-
             _commandHandlerFactories = new Dictionary<Type, object>();
         }
 
