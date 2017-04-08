@@ -1,5 +1,5 @@
 ﻿using Dewey.Manifest.Models;
-using Dewey.Messaging;
+using Ark3.Event;
 
 namespace Dewey.Deploy.Events
 {

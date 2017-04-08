@@ -1,7 +1,8 @@
-﻿using Dewey.File;
+﻿using Ark3.Command;
+using Ark3.Event;
+using Dewey.File;
 using Dewey.Manifest.Messages;
 using Dewey.Messaging;
-using SimpleInjector;
 
 namespace Dewey.Manifest
 {
@@ -14,13 +15,13 @@ namespace Dewey.Manifest
             _writer = new LoadManifestFilesWriter(eventAggregator);
 
             var loadManifestFilesCommandHandlerFactory = new LoadManifestFilesCommandHandlerFactory(eventAggregator, manifestFileReaderService);
-            commandProcessor.RegisterHandlerFactory<LoadManifestFiles, LoadManifestFilesCommandHandlerFactory>(loadManifestFilesCommandHandlerFactory);
+            commandProcessor.RegisterHandlerFactory(loadManifestFilesCommandHandlerFactory);
 
             //todo: should be able to make a register all.
             var storeCommandHandlerFactory = new StoreCommandHandlerFactory(store);
-            commandProcessor.RegisterHandlerFactory<GetComponent, StoreCommandHandlerFactory>(storeCommandHandlerFactory);
-            commandProcessor.RegisterHandlerFactory<GetRuntimeResources, StoreCommandHandlerFactory>(storeCommandHandlerFactory);
-            commandProcessor.RegisterHandlerFactory<GetComponents, StoreCommandHandlerFactory>(storeCommandHandlerFactory);
+            commandProcessor.RegisterHandlerFactory<GetComponent>(storeCommandHandlerFactory);
+            commandProcessor.RegisterHandlerFactory<GetRuntimeResources>(storeCommandHandlerFactory);
+            commandProcessor.RegisterHandlerFactory<GetComponents>(storeCommandHandlerFactory);
         }
     }
 }

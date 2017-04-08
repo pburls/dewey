@@ -1,6 +1,6 @@
 ﻿using Dewey.Build.Models;
 using Dewey.File;
-using Dewey.Manifest;
+using Ark3.Command;
 using Dewey.Messaging;
 using Dewey.Test;
 using Moq;
@@ -8,6 +8,7 @@ using Ploeh.AutoFixture;
 using SimpleInjector;
 using System.Linq;
 using Xunit;
+using Dewey.Manifest;
 
 namespace Dewey.Build.Test
 {

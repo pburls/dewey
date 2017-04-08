@@ -3,13 +3,15 @@ using Dewey.Deploy.Models;
 using Dewey.File;
 using Dewey.Manifest;
 using Dewey.Manifest.Models;
-using Dewey.Messaging;
+using Ark3.Event;
+using Ark3.Command;
 using Dewey.Test;
 using Moq;
 using Ploeh.AutoFixture;
 using SimpleInjector;
 using System.Linq;
 using Xunit;
+using Dewey.Messaging;
 
 namespace Dewey.Deploy.Test
 {

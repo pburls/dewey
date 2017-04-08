@@ -1,8 +1,6 @@
-﻿using Dewey.Manifest.Events;
-using Dewey.Messaging;
+﻿using Ark3.Event;
+using Dewey.Manifest.Events;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Dewey.Manifest
 {

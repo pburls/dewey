@@ -7,7 +7,7 @@ assembly_info:
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'
 before_build:
-  - nuget restore
+  - nuget restore -source "https://api.nuget.org/v3/index.json;https://ci.appveyor.com/nuget/ark3-2s7q98k69s2y"
 build:
   verbosity: minimal
 on_success:
