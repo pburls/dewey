@@ -1,9 +1,9 @@
 ﻿using Dewey.File;
 using Dewey.Manifest.Messages;
-using Dewey.Messaging;
+using Ark3.Event;
+using Ark3.Command;
 using Dewey.Test;
 using Moq;
-using Newtonsoft.Json;
 using Ploeh.AutoFixture;
 using SimpleInjector;
 using Xunit;

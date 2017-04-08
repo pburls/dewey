@@ -1,12 +1,14 @@
 ﻿using Dewey.File;
 using Dewey.Manifest;
 using Dewey.Manifest.Events;
-using Dewey.Messaging;
+using Ark3.Event;
+using Ark3.Command;
 using Moq;
 using Ploeh.AutoFixture;
 using SimpleInjector;
 using System.Linq;
 using Xunit;
+using Dewey.Messaging;
 
 namespace Dewey.Test
 {

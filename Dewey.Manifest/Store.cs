@@ -1,7 +1,8 @@
 ﻿using Dewey.Manifest.Events;
-using Dewey.Messaging;
 using System.Collections.Generic;
 using Dewey.Manifest.Messages;
+using Ark3.Event;
+using Ark3.Command;
 
 namespace Dewey.Manifest
 {

@@ -1,4 +1,5 @@
-﻿using Dewey.Messaging.Events;
+﻿using Ark3.Event;
+using Dewey.Messaging.Events;
 using SimpleInjector;
 using System;
 using System.Collections.Generic;

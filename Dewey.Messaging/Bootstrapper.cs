@@ -1,4 +1,6 @@
-﻿using SimpleInjector;
+﻿using Ark3.Command;
+using Ark3.Event;
+using SimpleInjector;
 
 namespace Dewey.Messaging
 {

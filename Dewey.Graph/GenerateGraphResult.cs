@@ -1,6 +1,7 @@
 ﻿using System;
 using Dewey.Messaging;
 using Dewey.Graph.Writers;
+using Ark3.Command;
 
 namespace Dewey.Graph
 {

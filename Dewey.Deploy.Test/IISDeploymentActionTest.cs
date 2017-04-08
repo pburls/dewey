@@ -1,7 +1,7 @@
 ﻿using Dewey.Deploy.Events;
 using Dewey.Deploy.Models;
 using Dewey.File;
-using Dewey.Messaging;
+using Ark3.Event;
 using Dewey.Test;
 using Moq;
 using Ploeh.AutoFixture;

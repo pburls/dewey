@@ -1,4 +1,6 @@
-﻿using Dewey.Messaging;
+﻿using Ark3.Event;
+using Ark3.Command;
+using Dewey.Messaging;
 
 namespace Dewey.ListItems
 {
@@ -7,7 +9,7 @@ namespace Dewey.ListItems
         public Module(IEventAggregator eventAggregator, ICommandProcessor commandProcessor)
         {
             var listItemsCommandHandlerFactory = new ListItemsCommandHandlerFactory(eventAggregator, commandProcessor);
-            commandProcessor.RegisterHandlerFactory<ListItemsCommand, ListItemsCommandHandlerFactory>(listItemsCommandHandlerFactory);
+            commandProcessor.RegisterHandlerFactory(listItemsCommandHandlerFactory);
         }
     }
 }

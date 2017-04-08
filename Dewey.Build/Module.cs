@@ -1,4 +1,5 @@
 ﻿using Dewey.Messaging;
+using Ark3.Command;
 using SimpleInjector;
 
 namespace Dewey.Build
@@ -10,7 +11,7 @@ namespace Dewey.Build
             var writer = container.GetInstance<BuildCommandWriter>();
             var buildCommandHandlerFactory = container.GetInstance<BuildCommandHandlerFactory>();
 
-            commandProcessor.RegisterHandlerFactory<BuildCommand, BuildCommandHandlerFactory>(buildCommandHandlerFactory);
+            commandProcessor.RegisterHandlerFactory(buildCommandHandlerFactory);
         }
     }
 }

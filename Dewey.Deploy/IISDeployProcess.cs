@@ -3,7 +3,7 @@ using Dewey.Deploy.Models;
 using Microsoft.Web.Administration;
 using Dewey.Deploy.Events;
 using Dewey.Manifest.Models;
-using Dewey.Messaging;
+using Ark3.Event;
 
 namespace Dewey.Deploy
 {

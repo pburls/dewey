@@ -1,6 +1,6 @@
 ﻿using Dewey.Build.Events;
 using Dewey.Build.Models;
-using Dewey.Messaging;
+using Ark3.Event;
 using Dewey.Test;
 using Moq;
 using Ploeh.AutoFixture;

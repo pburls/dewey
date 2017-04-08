@@ -1,4 +1,6 @@
-﻿using Dewey.Messaging;
+﻿//using Dewey.Messaging;
+using Ark3.Command;
+using Ark3.Event;
 using SimpleInjector;
 using System;
 using System.Diagnostics;
@@ -22,7 +24,7 @@ namespace Dewey.CLI
 
             var commandManager = container.GetInstance<CLICommandManager>();
 
-            var moduleCataloge = container.GetInstance<ModuleCatalogue>();
+            var moduleCataloge = container.GetInstance<Messaging.ModuleCatalogue>();
             moduleCataloge.Load<Manifest.Module>();
             moduleCataloge.Load<ListItems.Module>();
             moduleCataloge.Load<Build.Module>();

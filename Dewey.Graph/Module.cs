@@ -1,5 +1,7 @@
 ﻿using Dewey.Graph.Writers;
 using Dewey.Messaging;
+using Ark3.Event;
+using Ark3.Command;
 
 namespace Dewey.Graph
 {
@@ -12,7 +14,7 @@ namespace Dewey.Graph
             _writer = new GraphCommandWriter(eventAggregator);
 
             var graphCommandHandlerFactory = new GraphCommandHandlerFactory(eventAggregator, commandProcessor, graphGenerator, graphWriterFactory);
-            commandProcessor.RegisterHandlerFactory<GraphCommand, GraphCommandHandlerFactory>(graphCommandHandlerFactory);
+            commandProcessor.RegisterHandlerFactory(graphCommandHandlerFactory);
         }
     }
 }

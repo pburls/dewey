@@ -2,6 +2,8 @@
 using Dewey.Graph.Writers;
 using Dewey.Manifest;
 using Dewey.Messaging;
+using Ark3.Event;
+using Ark3.Command;
 using Moq;
 using SimpleInjector;
 using System.Collections.Generic;
@@ -38,7 +40,7 @@ namespace Dewey.Graph.Test
             var eventAggregator = container.GetInstance<IEventAggregator>();
 
             var graphCommandHandlerFactory = new GraphCommandHandlerFactory(eventAggregator, commandProcessor, mockIGraphGenerator.Object, mockIGraphWriterFactory.Object);
-            commandProcessor.RegisterHandlerFactory<GraphCommand, GraphCommandHandlerFactory>(graphCommandHandlerFactory);
+            commandProcessor.RegisterHandlerFactory(graphCommandHandlerFactory);
 
             var writeResult = new WriteGraphResult(null, null);
             mockIGraphWriter.Setup(x => x.Write(It.IsAny<string>())).Returns(writeResult);

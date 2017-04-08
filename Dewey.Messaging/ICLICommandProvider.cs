@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Ark3.Command;
+using System.Collections.Generic;
 
 namespace Dewey.Messaging
 {
